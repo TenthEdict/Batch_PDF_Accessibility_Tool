@@ -1,0 +1,13 @@
+max_workers: 4
+batch_size: 10
+timeout: 300
+retry_count: 3
+
+ocr:
+  language: eng
+  psm: 3
+  oem: 3
+  char_whitelist: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+  additional_params:
+    preserve_interword_spaces: 1
+    textord_heavy_nr: 1

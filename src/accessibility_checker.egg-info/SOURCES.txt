@@ -1,0 +1,5 @@
+setup.py
+src/accessibility_checker.egg-info/PKG-INFO
+src/accessibility_checker.egg-info/SOURCES.txt
+src/accessibility_checker.egg-info/dependency_links.txt
+src/accessibility_checker.egg-info/top_level.txt

@@ -1,0 +1,806 @@
+import os
+from pathlib import Path
+import concurrent.futures
+import logging
+import json
+import time
+from datetime import datetime
+from typing import Dict, List, Tuple, Optional
+import pandas as pd
+from tqdm import tqdm
+import fitz  # PyMuPDF
+import pytesseract
+from pdf2image import convert_from_path
+import cv2
+import numpy as np
+from collections import defaultdict
+import re
+from dataclasses import dataclass
+from PIL import Image
+from .enhance import EnhancedAccessibilityChecker
+from .retry import RetryHandler, RetryConfig, ProcessingError, OCRError
+from .ocr import OCRProcessor, OCRTimeoutError
+
+# ============= Data Classes =============
+
+@dataclass
+class TableCell:
+    text: str
+    row: int
+    col: int
+    colspan: int = 1
+    rowspan: int = 1
+    x: float = 0
+    y: float = 0
+    width: float = 0
+    height: float = 0
+
+@dataclass
+class TextElement:
+    text: str
+    x: float
+    y: float
+    width: float
+    height: float
+    font_size: float
+    font_name: str
+    is_bold: bool
+    page_num: int
+    heading_level: Optional[int] = None
+    reading_order: int = 0
+    table_cell: Optional[TableCell] = None
+    confidence: float = 100.0
+
+@dataclass
+class OCRElement:
+    text: str
+    confidence: float
+    bbox: Tuple[int, int, int, int]
+    type: str  # 'text', 'equation', 'reference', 'table'
+    page_num: int
+
+# ============= Table Structure Class =============
+
+class TableStructure:
+    def __init__(self):
+        self.rows: List[List[Optional[TableCell]]] = []
+        self.bbox: Tuple[float, float, float, float] = (0, 0, 0, 0)
+        self.num_cols: int = 0
+        self.num_rows: int = 0
+        self.column_x_positions: List[float] = []
+        self.row_y_positions: List[float] = []
+
+    def initialize_grid(self, num_rows: int, num_cols: int):
+        """Initialize the table grid with the specified dimensions."""
+        self.num_rows = num_rows
+        self.num_cols = num_cols
+        self.rows = [[None for _ in range(num_cols)] for _ in range(num_rows)]
+    
+    def detect_column_spans(self, row_elements: List[TextElement], row_idx: int):
+        """Detect column spans in a row based on element widths and positions."""
+        if not row_elements:
+            return
+        
+        row_elements.sort(key=lambda e: e.x)
+        avg_col_width = np.mean([e.width for e in row_elements if e.width > 0])
+        
+        col_idx = 0
+        for element in row_elements:
+            while col_idx < self.num_cols and self.rows[row_idx][col_idx] is not None:
+                col_idx += 1
+            
+            if col_idx >= self.num_cols:
+                break
+                
+            potential_colspan = max(1, round(element.width / avg_col_width))
+            actual_colspan = min(potential_colspan, self.num_cols - col_idx)
+            
+            cell = TableCell(
+                text=element.text,
+                row=row_idx,
+                col=col_idx,
+                colspan=actual_colspan,
+                x=element.x,
+                y=element.y,
+                width=element.width,
+                height=element.height
+            )
+            
+            for span_idx in range(actual_colspan):
+                if col_idx + span_idx < self.num_cols:
+                    self.rows[row_idx][col_idx + span_idx] = cell
+            
+            element.table_cell = cell
+            col_idx += actual_colspan
+
+    def verify_column_spans(self):
+        """Verify and adjust column spans based on overall table structure."""
+        all_x_positions = []
+        for row in self.rows:
+            for cell in row:
+                if cell and cell.col == 0:
+                    all_x_positions.append(cell.x)
+        
+        if all_x_positions:
+            x_std = np.std(all_x_positions)
+            x_mean = np.mean(all_x_positions)
+            
+            for row_idx, row in enumerate(self.rows):
+                for col_idx, cell in enumerate(row):
+                    if cell and cell.col == col_idx:
+                        if abs(cell.x - x_mean) > x_std * 2:
+                            self._adjust_cell_span(row_idx, col_idx)
+
+    def _adjust_cell_span(self, row_idx: int, col_idx: int):
+        """Adjust cell span based on surrounding cells."""
+        cell = self.rows[row_idx][col_idx]
+        if not cell or cell.colspan == 1:
+            return
+            
+        adjacent_cols = []
+        if row_idx > 0:
+            adjacent_cols.extend(c.col for c in self.rows[row_idx - 1] if c and c.col == c.col)
+        if row_idx < len(self.rows) - 1:
+            adjacent_cols.extend(c.col for c in self.rows[row_idx + 1] if c and c.col == c.col)
+        
+        if adjacent_cols:
+            new_colspan = max(set(adjacent_cols), key=adjacent_cols.count) - col_idx
+            if new_colspan != cell.colspan:
+                for i in range(cell.colspan):
+                    if col_idx + i < self.num_cols:
+                        self.rows[row_idx][col_idx + i] = None
+                
+                cell.colspan = new_colspan
+                for i in range(new_colspan):
+                    if col_idx + i < self.num_cols:
+                        self.rows[row_idx][col_idx + i] = cell
+
+# ============= Academic OCR Processor =============
+
+class AcademicOCRProcessor:
+    def __init__(self):
+        self.text_config = {
+            'language': 'eng',
+            'psm': 3,
+            'oem': 3,
+            'tessedit_char_whitelist': 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}"\'-',
+            'preserve_interword_spaces': '1',
+            'textord_heavy_nr': '1',
+            'textord_force_make_prop_words': '1',
+            'edges_max_children_per_outline': '40'
+        }
+        
+        self.equation_config = {
+            'language': 'equ',
+            'psm': 6,
+            'oem': 3,
+            'tessedit_char_whitelist': '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-=/*()[]{}^∫∑∏√∆∇∂μσπλα∞θ',
+            'textord_equation_detect': '1',
+            'textord_heavy_nr': '1',
+            'textord_noise_sizelimit': '0.2'
+        }
+        
+        self.reference_config = {
+            'language': 'eng',
+            'psm': 6,
+            'oem': 3,
+            'tessedit_char_whitelist': 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}"\'-&',
+            'preserve_interword_spaces': '1',
+            'textord_heavy_nr': '1'
+        }
+
+    def _create_tesseract_config(self, config: Dict[str, str]) -> str:
+        return ' '.join([f'-c {k}={v}' for k, v in config.items()])
+
+    def preprocess_image(self, image: np.ndarray) -> np.ndarray:
+        if len(image.shape) == 3:
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        else:
+            gray = image.copy()
+        
+        binary = cv2.adaptiveThreshold(
+            gray,
+            255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY,
+            11,
+            2
+        )
+        
+        denoised = cv2.fastNlMeansDenoising(binary)
+        
+        angle = self._get_skew_angle(denoised)
+        if abs(angle) > 0.5:
+            denoised = self._rotate_image(denoised, angle)
+        
+        return denoised
+
+    def _get_skew_angle(self, image: np.ndarray) -> float:
+        coords = np.column_stack(np.where(image > 0))
+        angle = cv2.minAreaRect(coords)[-1]
+        if angle < -45:
+            angle = 90 + angle
+        return angle
+
+    def _rotate_image(self, image: np.ndarray, angle: float) -> np.ndarray:
+        (h, w) = image.shape
+        center = (w // 2, h // 2)
+        M = cv2.getRotationMatrix2D(center, angle, 1.0)
+        rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        return rotated
+
+    def detect_layout(self, image: np.ndarray) -> List[Dict]:
+        binary = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+        contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        
+        regions = []
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            if w * h > 100:
+                region_type = self._classify_region(image[y:y+h, x:x+w])
+                regions.append({
+                    'type': region_type,
+                    'bbox': (x, y, x+w, y+h)
+                })
+        
+        return self._merge_regions(regions)
+
+    def _classify_region(self, region: np.ndarray) -> str:
+        height, width = region.shape
+        aspect_ratio = width / height
+        density = np.sum(region > 0) / (width * height)
+        
+        math_symbols = re.findall(r'[+\-*/=(){}\[\]∫∑∏√]', pytesseract.image_to_string(region))
+        
+        if len(math_symbols) > 3:
+            return 'equation'
+        elif aspect_ratio > 3 and density < 0.2:
+            return 'reference'
+        else:
+            return 'text'
+
+    def process_page(self, image: np.ndarray, page_num: int) -> List[OCRElement]:
+        processed_image = self.preprocess_image(image)
+        regions = self.detect_layout(processed_image)
+        
+        elements = []
+        for region in regions:
+            x1, y1, x2, y2 = region['bbox']
+            region_image = processed_image[y1:y2, x1:x2]
+            
+            config = self.equation_config if region['type'] == 'equation' else \
+                    self.reference_config if region['type'] == 'reference' else \
+                    self.text_config
+            
+            ocr_data = pytesseract.image_to_data(
+                region_image,
+                config=self._create_tesseract_config(config),
+                output_type=pytesseract.Output.DICT
+            )
+            
+            for i, text in enumerate(ocr_data['text']):
+                if text.strip():
+                    confidence = float(ocr_data['conf'][i])
+                    if confidence > 0:
+                        bbox = (
+                            x1 + ocr_data['left'][i],
+                            y1 + ocr_data['top'][i],
+                            x1 + ocr_data['left'][i] + ocr_data['width'][i],
+                            y1 + ocr_data['top'][i] + ocr_data['height'][i]
+                        )
+                        
+                        elements.append(OCRElement(
+                            text=text,
+                            confidence=confidence,
+                            bbox=bbox,
+                            type=region['type'],
+                            page_num=page_num
+                        ))
+        
+        return elements
+
+# ============= Accessibility Document Processor =============
+
+class AccessibilityDocumentProcessor:
+    def __init__(
+        self, 
+        pdf_path: str,
+        ocr_processor: Optional[OCRProcessor] = None,
+        retry_handler: Optional[RetryHandler] = None
+    ):
+        self.pdf_path = pdf_path
+        self.doc = fitz.open(pdf_path)
+        self.text_elements: List[TextElement] = []
+        self.tables: List[TableStructure] = []
+        self.corrections: Dict[int, List[Dict]] = {}
+        self.heading_font_sizes: Dict[float, int] = {}
+        self.ocr_processor = ocr_processor or AcademicOCRProcessor()
+        self.retry_handler = retry_handler
+        self.logger = logging.getLogger(__name__)
+
+    def export_corrections(self, output_path: str) -> None:
+        """
+        Export corrections to a JSON file.
+        
+        Args:
+            output_path: Path where to save the corrections file
+        """
+        corrections_report = {
+            'document': self.pdf_path,
+            'timestamp': datetime.now().isoformat(),
+            'corrections': self.corrections
+        }
+        
+        try:
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(corrections_report, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Failed to export corrections: {str(e)}")
+            raise ProcessingError(f"Failed to export corrections: {str(e)}")
+
+    def verify_text_with_ocr(self) -> Dict[int, Dict]:
+        """Verify text content using OCR and return results."""
+        results = {}
+        try:
+            images = convert_from_path(self.pdf_path)
+            
+            for page_num, image in enumerate(images):
+                try:
+                    image_np = np.array(image)
+                    ocr_elements = self.ocr_processor.process_page(image_np, page_num)
+                    
+                    results[page_num] = {
+                        'status': 'success',
+                        'corrections': [],
+                        'confidence': np.mean([elem.confidence for elem in ocr_elements]) if ocr_elements else 0
+                    }
+                    
+                except Exception as e:
+                    self.logger.error(f"Error processing page {page_num}: {str(e)}")
+                    results[page_num] = {
+                        'status': 'failed',
+                        'error': str(e),
+                        'confidence': 0
+                    }
+        except Exception as e:
+            self.logger.error(f"Error in verify_text_with_ocr: {str(e)}")
+            raise
+            
+        return results
+
+    # ... rest of your existing methods ...
+    def extract_text_with_positions(self):
+        for page_num in range(len(self.doc)):
+            page = self.doc[page_num]
+            blocks = page.get_text("dict")["blocks"]
+            
+            for block in blocks:
+                if "lines" in block:
+                    for line in block["lines"]:
+                        for span in line["spans"]:
+                            element = TextElement(
+                                text=span["text"],
+                                x=span["bbox"][0],
+                                y=span["bbox"][1],
+                                width=span["bbox"][2] - span["bbox"][0],
+                                height=span["bbox"][3] - span["bbox"][1],
+                                font_size=span["size"],
+                                font_name=span["font"],
+                                is_bold="Bold" in span["font"],
+                                page_num=page_num
+                            )
+                            self.text_elements.append(element)
+
+    def detect_headings(self):
+        font_sizes = defaultdict(int)
+        for element in self.text_elements:
+            if element.is_bold and len(element.text.strip()) > 0:
+                font_sizes[element.font_size] += 1
+        
+        sorted_sizes = sorted(font_sizes.keys(), reverse=True)
+        
+        for i, size in enumerate(sorted_sizes[:6]):
+            self.heading_font_sizes[size] = i + 1
+            
+        for element in self.text_elements:
+            if element.is_bold and element.font_size in self.heading_font_sizes:
+                element.heading_level = self.heading_font_sizes[element.font_size]
+
+    def detect_tables(self):
+        for page_num in range(len(self.doc)):
+            page_elements = [te for te in self.text_elements if te.page_num == page_num]
+            rows = defaultdict(list)
+            for element in page_elements:
+                row_key = round(element.y / 5) * 5
+                rows[row_key].append(element)
+            
+            current_table = None
+            consecutive_row_count = 0
+            
+            for y, row_elements in sorted(rows.items()):
+                if len(row_elements) >= 2:
+                    row_elements.sort(key=lambda e: e.x)
+                    
+                    spaces = [row_elements[i+1].x - (row_elements[i].x + row_elements[i].width)
+                            for i in range(len(row_elements)-1)]
+                    
+                    is_table_row = (
+                        (spaces and max(spaces) - min(spaces) < 10) or
+                        any(e.width > np.mean([el.width for el in row_elements]) * 1.5
+                            for e in row_elements)
+                    )
+                    
+                    if is_table_row:
+                        if not current_table:
+                            current_table = TableStructure()
+                            consecutive_row_count = 0
+                        
+                        consecutive_row_count += 1
+                        current_table.rows.append(row_elements)
+                    elif current_table and consecutive_row_count >= 2:
+                        self._finalize_table(current_table)
+                        self.tables.append(current_table)
+                        current_table = None
+                    else:
+                        current_table = None
+                        consecutive_row_count = 0
+
+    def _finalize_table(self, table: TableStructure):
+        if not table.rows:
+            return
+            
+        max_cols = max(len(row) for row in table.rows)
+        table.initialize_grid(len(table.rows), max_cols)
+        
+        for row_idx, row_elements in enumerate(table.rows):
+            table.detect_column_spans(row_elements, row_idx)
+        
+        table.verify_column_spans()
+        
+        all_elements = [elem for row in table.rows for elem in row if elem]
+        if all_elements:
+            min_x = min(elem.x for elem in all_elements)
+            max_x = max(elem.x + elem.width for elem in all_elements)
+            min_y = min(elem.y for elem in all_elements)
+            max_y = max(elem.y + elem.height for elem in all_elements)
+            table.bbox = (min_x, min_y, max_x, max_y)
+
+    def analyze_reading_order(self):
+        for page_num in range(len(self.doc)):
+            page_elements = [te for te in self.text_elements if te.page_num == page_num]
+            reading_order = 0
+            
+            for level in range(1, 7):
+                headings = [te for te in page_elements if te.heading_level == level]
+                for heading in sorted(headings, key=lambda e: (e.y, e.x)):
+                    heading.reading_order = reading_order
+                    reading_order += 1
+            
+            for table in self.tables:
+                for row in table.rows:
+                    for cell in row:
+                        cell.reading_order = reading_order
+                        reading_order += 1
+            
+            remaining = [te for te in page_elements 
+                       if te.heading_level is None and te.table_cell is None]
+            
+            column_threshold = 50
+            columns = defaultdict(list)
+            
+            for element in remaining:
+                column_key = round(element.x / column_threshold) * column_threshold
+                columns[column_key].append(element)
+            
+            for x in sorted(columns.keys()):
+                column_elements = columns[x]
+                for element in sorted(column_elements, key=lambda e: e.y):
+                    element.reading_order = reading_order
+                    reading_order += 1
+
+    def _find_closest_text_element(self, ocr_element: OCRElement, page_num: int) -> Optional[TextElement]:
+        page_elements = [te for te in self.text_elements if te.page_num == page_num]
+        if not page_elements:
+            return None
+        
+        x1, y1, x2, y2 = ocr_element.bbox
+        center_x = (x1 + x2) / 2
+        center_y = (y1 + y2) / 2
+        
+        return min(page_elements,
+                  key=lambda e: ((e.x + e.width/2 - center_x) ** 2 +
+                                (e.y + e.height/2 - center_y) ** 2) ** 0.5)
+
+    def _add_correction(self, page_num: int, text_element: TextElement, ocr_element: OCRElement):
+        if page_num not in self.corrections:
+            self.corrections[page_num] = []
+        
+        self.corrections[page_num].append({
+            'original_text': text_element.text,
+            'suggested_text': ocr_element.text,
+            'confidence': ocr_element.confidence,
+            'type': ocr_element.type,
+            'position': {
+                'x': text_element.x,
+                'y': text_element.y,
+                'width': text_element.width,
+                'height': text_element.height
+            }
+        })
+
+    def export_accessibility_report(self, output_path: str):
+        report = {
+            'document_structure': {
+                'pages': len(self.doc),
+                'heading_hierarchy': self._analyze_heading_hierarchy(),
+                'tables': len(self.tables),
+                'reading_order': self._export_reading_order()
+            },
+            'corrections': self.corrections,
+            'tables': self._export_table_structures()
+        }
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2)
+
+    def _analyze_heading_hierarchy(self) -> Dict:
+        hierarchy = defaultdict(int)
+        previous_level = None
+        skipped_levels = []
+        
+        for element in sorted(self.text_elements, key=lambda e: e.reading_order):
+            if element.heading_level:
+                hierarchy[element.heading_level] += 1
+                
+                if previous_level and element.heading_level - previous_level > 1:
+                    skipped_levels.append(f"H{previous_level} to H{element.heading_level}")
+                
+                previous_level = element.heading_level
+        
+        return {
+            'heading_counts': dict(hierarchy),
+            'skipped_levels': skipped_levels
+        }
+
+    def _export_reading_order(self) -> List[Dict]:
+        return [{
+            'text': element.text,
+            'page': element.page_num,
+            'order': element.reading_order,
+            'type': 'heading' if element.heading_level else 'table_cell' if element.table_cell else 'content'
+        } for element in sorted(self.text_elements, key=lambda e: (e.page_num, e.reading_order))]
+
+    def _export_table_structures(self) -> List[Dict]:
+        return [{
+            'rows': table.num_rows,
+            'columns': table.num_cols,
+            'bbox': table.bbox,
+            'cells': [{
+                'text': cell.text,
+                'row': cell.row,
+                'col': cell.col,
+                'colspan': cell.colspan,
+                'rowspan': cell.rowspan,
+                'bbox': (cell.x, cell.y, cell.x + cell.width, cell.y + cell.height)
+            } for row in table.rows
+              for cell in row if cell and cell.col == cell.col]
+        } for table in self.tables]
+
+# ============= Batch Processor =============
+
+class BatchPDFProcessor:
+    def __init__(
+        self, 
+        input_dir: str, 
+        output_dir: str, 
+        max_workers: int = 4,
+        ocr_processor: Optional[OCRProcessor] = None,
+        retry_handler: Optional[RetryHandler] = None
+    ):
+        """
+        Initialize batch processor for PDF accessibility checking.
+        
+        Args:
+            input_dir: Directory containing PDF files
+            output_dir: Directory for output files and reports
+            max_workers: Maximum number of concurrent processes
+            ocr_processor: Optional OCR processor for text verification
+            retry_handler: Optional retry handler for error recovery
+        """
+        # Existing initialization code...
+        self.input_dir = Path(input_dir).resolve()
+        self.output_dir = Path(output_dir).resolve()
+        self.max_workers = max_workers
+        self.ocr_processor = ocr_processor
+        self.retry_handler = retry_handler
+        self.processing_stats: Dict[str, Dict] = {}
+        
+        # Create output directories
+        self.corrections_dir = self.output_dir / "corrections"
+        self.reports_dir = self.output_dir / "reports"
+        self.processed_dir = self.output_dir / "processed_pdfs"
+        self.logs_dir = self.output_dir / "logs"
+        self.ocr_dir = self.output_dir / "ocr_results"  # New directory for OCR
+        
+        for directory in [self.corrections_dir, self.reports_dir, 
+                         self.processed_dir, self.logs_dir, self.ocr_dir]:
+            directory.mkdir(parents=True, exist_ok=True)
+        
+        self.setup_logging()
+
+def process_single_pdf(self, pdf_path: Path) -> Dict:
+    """Process a single PDF file and return statistics."""
+    start_time = time.time()
+    stats = {
+        'filename': pdf_path.name,
+        'size_mb': pdf_path.stat().st_size / (1024 * 1024),
+        'status': 'failed',
+        'errors': [],
+        'warnings': [],
+        'stats': {},
+        'ocr_applied': False,
+        'ocr_stats': {}
+    }
+    
+    try:
+        logging.debug(f"Starting to process: {pdf_path}")
+        base_name = pdf_path.stem
+        
+        # Create output paths
+        corrections_path = self.corrections_dir / f"{base_name}_corrections.json"
+        report_path = self.reports_dir / f"{base_name}_report.json"
+        processed_path = self.processed_dir / f"{base_name}_processed.pdf"
+        
+        logging.debug(f"Will write corrections to: {corrections_path}")
+        logging.debug(f"Will write report to: {report_path}")
+        logging.debug(f"Will write processed PDF to: {processed_path}")
+        
+        # Check if file exists and can be opened
+        if not pdf_path.exists():
+            raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+            
+        # Try to open the PDF to verify it's valid
+        try:
+            doc = fitz.open(str(pdf_path))
+            if doc is None:
+                raise ValueError("Failed to open PDF document")
+            if len(doc) == 0:
+                raise ValueError("PDF document is empty")
+        except Exception as e:
+            raise ValueError(f"Invalid PDF document: {str(e)}")
+        
+        processor = AccessibilityDocumentProcessor(
+            str(pdf_path), 
+            ocr_processor=self.ocr_processor,
+            retry_handler=self.retry_handler
+        )
+        
+        # Process the PDF with validation at each step
+        processor.extract_text_with_positions()
+        if not processor.text_elements:
+            stats['warnings'].append("No text elements extracted")
+            
+        processor.detect_headings()
+        processor.detect_tables()
+        processor.analyze_reading_order()
+        
+        # OCR processing with validation
+        if self.ocr_processor:
+            try:
+                ocr_results = processor.verify_text_with_ocr()
+                if ocr_results is not None:
+                    stats['ocr_applied'] = True
+                    stats['ocr_stats'] = {
+                        'pages_processed': len(ocr_results),
+                        'successful_pages': sum(1 for page in ocr_results.values() 
+                                             if page.get('status') == 'success'),
+                        'failed_pages': sum(1 for page in ocr_results.values() 
+                                         if page.get('status') == 'failed'),
+                        'average_confidence': np.mean([
+                            page.get('confidence', 0) for page in ocr_results.values()
+                            if page.get('status') == 'success'
+                        ])
+                    }
+            except Exception as e:
+                stats['warnings'].append(f"OCR processing issue: {str(e)}")
+                logging.warning(f"OCR issue for {pdf_path.name}: {str(e)}")
+        
+        # Write reports with validation
+        if processor.doc is not None:
+            stats['stats'] = {
+                'num_pages': len(processor.doc),
+                'num_tables': len(processor.tables) if processor.tables is not None else 0,
+                'num_headings': sum(1 for elem in processor.text_elements 
+                                  if elem is not None and getattr(elem, 'heading_level', None) is not None),
+                'num_corrections': sum(len(corr) for corr in processor.corrections.values() if corr),
+                'processing_time': time.time() - start_time
+            }
+            
+            # Export reports with validation
+            try:
+                processor.export_accessibility_report(str(report_path))
+                if not report_path.exists():
+                    stats['warnings'].append("Failed to create accessibility report")
+            except Exception as e:
+                stats['warnings'].append(f"Failed to export report: {str(e)}")
+            
+            stats['status'] = 'success'
+            
+        else:
+            raise ValueError("Document processing failed: no valid document object")
+            
+    except Exception as e:
+        error_msg = f"Error processing {pdf_path.name}: {str(e)}"
+        logging.error(error_msg)
+        stats['status'] = 'failed'
+        stats['errors'].append(error_msg)
+        
+    return stats
+            
+def main():
+    # Use absolute paths
+    project_dir = Path("/Users/broderickschipp/accessibility_project")
+    input_dir = str(project_dir / "input")
+    output_dir = str(project_dir / "output")
+    
+    # Set up logging
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+    
+    logging.debug(f"Starting processing with:")
+    logging.debug(f"Input directory: {input_dir}")
+    logging.debug(f"Output directory: {output_dir}")
+    
+    try:
+        processor = BatchPDFProcessor(input_dir, output_dir)
+        
+        # Verify directories were created
+        for dir_name in ['corrections', 'reports', 'processed_pdfs', 'logs']:
+            dir_path = Path(output_dir) / dir_name
+            logging.debug(f"Checking if directory exists: {dir_path}")
+            if not dir_path.exists():
+                raise RuntimeError(f"Output directory was not created: {dir_path}")
+        
+        summary_df = processor.process_directory()
+        
+        print("\nProcessing Summary:")
+        print(f"Total files processed: {len(summary_df)}")
+        
+        if not summary_df.empty:
+            success_count = sum(summary_df['status'] == 'success')
+            failed_count = sum(summary_df['status'] == 'failed')
+            print(f"Successfully processed: {success_count}")
+            print(f"Failed: {failed_count}")
+            
+            # Print details about processed files
+            print("\nProcessed files:")
+            for idx, row in summary_df.iterrows():
+                print(f"  - {idx}: {row['status']}")
+                if row['errors']:
+                    print(f"    Errors: {row['errors']}")
+                
+            print(f"\nOutput files located in: {output_dir}")
+            
+            # List contents of output directories
+            print("\nOutput directory contents:")
+            for dir_name in ['corrections', 'reports', 'processed_pdfs', 'logs']:
+                dir_path = Path(output_dir) / dir_name
+                print(f"\n{dir_name}:")
+                if dir_path.exists():
+                    for file in dir_path.glob('*'):
+                        print(f"  - {file.name}")
+                else:
+                    print("  Directory not found!")
+        else:
+            print("\nNo files were processed.")
+            print(f"Input directory: {input_dir}")
+            print("Please ensure PDF files are present in the input directory")
+            
+    except Exception as e:
+        logging.error(f"Error in main process: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    main()
