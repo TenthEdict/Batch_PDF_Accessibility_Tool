@@ -1,0 +1,328 @@
+{
+  "document_structure": {
+    "pages": 3,
+    "heading_hierarchy": {
+      "heading_counts": {
+        "1": 1
+      },
+      "skipped_levels": []
+    },
+    "tables": 0,
+    "reading_order": [
+      {
+        "text": ",",
+        "page": 0,
+        "order": 0,
+        "type": "heading"
+      },
+      {
+        "text": "projects, space missions, national laboratories projects",
+        "page": 0,
+        "order": 1,
+        "type": "content"
+      },
+      {
+        "text": "analysis, and others face unique challenges as they leave the realm of pure engineering and ",
+        "page": 0,
+        "order": 2,
+        "type": "content"
+      },
+      {
+        "text": "become complex political and administrative systems.  Specifically, the array of stakeholders ",
+        "page": 0,
+        "order": 3,
+        "type": "content"
+      },
+      {
+        "text": "such as contractors, governments (local through national) bring cultural issues, political power ",
+        "page": 0,
+        "order": 4,
+        "type": "content"
+      },
+      {
+        "text": "and budget relationships that dwell and thrive in the world of the big, unmanageable, messy ",
+        "page": 0,
+        "order": 5,
+        "type": "content"
+      },
+      {
+        "text": "problems; i.e., BUMPs. ",
+        "page": 0,
+        "order": 6,
+        "type": "content"
+      },
+      {
+        "text": "Systems Engineering for part-time and returning students.  It addresses methodologies that ",
+        "page": 0,
+        "order": 7,
+        "type": "content"
+      },
+      {
+        "text": "develop solutions to the BUMPs in both economic and technological fashions.    Teaching ",
+        "page": 0,
+        "order": 8,
+        "type": "content"
+      },
+      {
+        "text": "systems engineering for large-scale engineering systems is challenging for many reasons.  One of ",
+        "page": 0,
+        "order": 9,
+        "type": "content"
+      },
+      {
+        "text": "the main challenges is the breadth of material to be addressed within one or two courses.  Other ",
+        "page": 0,
+        "order": 10,
+        "type": "content"
+      },
+      {
+        "text": "challenges result from how students learn about the transitions from the development of a ",
+        "page": 0,
+        "order": 11,
+        "type": "content"
+      },
+      {
+        "text": "conceptual framework to systems architecture through engineering design, mathematical analysis ",
+        "page": 0,
+        "order": 12,
+        "type": "content"
+      },
+      {
+        "text": "and eventual construction and delivery.  ",
+        "page": 0,
+        "order": 13,
+        "type": "content"
+      },
+      {
+        "text": "University responded to requests from our graduate students and our customers who hire those   ",
+        "page": 0,
+        "order": 14,
+        "type": "content"
+      },
+      {
+        "text": "Systems engineering for large-scale systems, such as energy facilities, development ",
+        "page": 0,
+        "order": 15,
+        "type": "content"
+      },
+      {
+        "text": "In this paper, we discuss a course that was developed as part of a Graduate Certificate in ",
+        "page": 0,
+        "order": 16,
+        "type": "content"
+      },
+      {
+        "text": "About 15 years ago the Department of Industrial Engineering at New Mexico State ",
+        "page": 0,
+        "order": 17,
+        "type": "content"
+      },
+      {
+        "text": "The Challenges and Opportunities of Teaching Systems Engineering ",
+        "page": 0,
+        "order": 18,
+        "type": "content"
+      },
+      {
+        "text": "for Large-Scale Engineering Systems ",
+        "page": 0,
+        "order": 19,
+        "type": "content"
+      },
+      {
+        "text": "Edward Pines and Dennis Engi ",
+        "page": 0,
+        "order": 20,
+        "type": "content"
+      },
+      {
+        "text": "New Mexico State University   ",
+        "page": 0,
+        "order": 21,
+        "type": "content"
+      },
+      {
+        "text": "governmental policy portfolio design and ",
+        "page": 0,
+        "order": 22,
+        "type": "content"
+      },
+      {
+        "text": "students.   There was an interest in large-scale systems engineering coursework without the need ",
+        "page": 1,
+        "order": 0,
+        "type": "content"
+      },
+      {
+        "text": "to commit to a graduate degree program.  In response, we developed a twelve-credit certificate ",
+        "page": 1,
+        "order": 1,
+        "type": "content"
+      },
+      {
+        "text": "program that employed less restrictive admissions requirements than our degree program.  Our ",
+        "page": 1,
+        "order": 2,
+        "type": "content"
+      },
+      {
+        "text": "thought was that access to current trends in systems engineering should not be limited by ",
+        "page": 1,
+        "order": 3,
+        "type": "content"
+      },
+      {
+        "text": "previous undergraduate performance\u2014our target was working professionals rather than ",
+        "page": 1,
+        "order": 4,
+        "type": "content"
+      },
+      {
+        "text": "traditional graduate students.  As part of developing this certificate, we recognized the need for a ",
+        "page": 1,
+        "order": 5,
+        "type": "content"
+      },
+      {
+        "text": "systems engineering course that would survey an array of tools students could use in their regular ",
+        "page": 1,
+        "order": 6,
+        "type": "content"
+      },
+      {
+        "text": "workday.  Such an array, when integrated to develop policy analysis and recommendations, can ",
+        "page": 1,
+        "order": 7,
+        "type": "content"
+      },
+      {
+        "text": "be thought of as a federation of tools. ",
+        "page": 1,
+        "order": 8,
+        "type": "content"
+      },
+      {
+        "text": "plans, and that addressed the applications of systems engineering to BUMPs.  The course was ",
+        "page": 1,
+        "order": 9,
+        "type": "content"
+      },
+      {
+        "text": "designed to extend beyond hardware and software design and embrace the challenges that large- ",
+        "page": 1,
+        "order": 10,
+        "type": "content"
+      },
+      {
+        "text": "scale, complex problems present to engineers, who are in general not prepared or educated to ",
+        "page": 1,
+        "order": 11,
+        "type": "content"
+      },
+      {
+        "text": "deal with.  BUMPs issues can appear to be deceptively easy to solve but often require multiple ",
+        "page": 1,
+        "order": 12,
+        "type": "content"
+      },
+      {
+        "text": "analyses and design strategies for resolution.  An organized approach of federated modeling tools ",
+        "page": 1,
+        "order": 13,
+        "type": "content"
+      },
+      {
+        "text": "can, not only be beneficial, but may be necessary to discover a satisfactory solution. ",
+        "page": 1,
+        "order": 14,
+        "type": "content"
+      },
+      {
+        "text": "employing two fundamentally different approaches to the issue teaching the resolution of ",
+        "page": 1,
+        "order": 15,
+        "type": "content"
+      },
+      {
+        "text": "BUMPs.  One approach relied heavily on the introduction of abstract concepts, the use of ",
+        "page": 1,
+        "order": 16,
+        "type": "content"
+      },
+      {
+        "text": "rigorous mathematical analyses and computer-based tools, and a class project wherein the ",
+        "page": 1,
+        "order": 17,
+        "type": "content"
+      },
+      {
+        "text": "students were asked to demonstrate their understanding of these concept and tools. The other ",
+        "page": 1,
+        "order": 18,
+        "type": "content"
+      },
+      {
+        "text": "approach focused more on managerial and project engineering uses of systems engineering ",
+        "page": 1,
+        "order": 19,
+        "type": "content"
+      },
+      {
+        "text": "strategies, concepts and tactics.  It was refocused to address a large group of engineering   ",
+        "page": 1,
+        "order": 20,
+        "type": "content"
+      },
+      {
+        "text": "Specifically, what was needed was a course that fit within the context of existing course ",
+        "page": 1,
+        "order": 21,
+        "type": "content"
+      },
+      {
+        "text": "In this paper we discuss our experiences teaching this course multiple times and ",
+        "page": 1,
+        "order": 22,
+        "type": "content"
+      },
+      {
+        "text": "management students who need familiarity with systems engineering concepts and the ",
+        "page": 2,
+        "order": 0,
+        "type": "content"
+      },
+      {
+        "text": "applications of systems engineering to BUMPs along with the managerial demands. ",
+        "page": 2,
+        "order": 1,
+        "type": "content"
+      },
+      {
+        "text": "strategies and technique to pose and resolve such problems.   And, when students learn of the ",
+        "page": 2,
+        "order": 2,
+        "type": "content"
+      },
+      {
+        "text": "benefits of a federation of systems engineering and operations research tools, we reinforce ",
+        "page": 2,
+        "order": 3,
+        "type": "content"
+      },
+      {
+        "text": "lifelong learning as they pursue additional training and education. ",
+        "page": 2,
+        "order": 4,
+        "type": "content"
+      },
+      {
+        "text": "Regardless of career and education focus, engineers can benefit from a survey of the ",
+        "page": 2,
+        "order": 5,
+        "type": "content"
+      }
+    ]
+  },
+  "corrections": {},
+  "tables": []
+}

@@ -1,0 +1,3 @@
+2024-12-08 06:03:32,163 - INFO - Loading configuration from /Users/broderickschipp/work/ePubs_AccProj/brodie_code/config.yaml
+2024-12-08 06:03:32,164 - INFO - Starting batch processing of 7 PDF files
+2024-12-08 06:03:32,982 - INFO - Batch processing complete. Reports saved to /Users/broderickschipp/work/ePubs_AccProj/brodie_code/output/reports

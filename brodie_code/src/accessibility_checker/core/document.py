@@ -337,6 +337,60 @@ class AccessibilityDocumentProcessor:
         except Exception as e:
             self.logger.error(f"Failed to export corrections: {str(e)}")
             raise ProcessingError(f"Failed to export corrections: {str(e)}")
+        
+    # In document.py, modify the AccessibilityDocumentProcessor class:
+
+    def _check_images(self, page: fitz.Page, page_num: int) -> None:
+        """Check images with proper error handling."""
+        try:
+            images = page.get_images(full=True)
+            for img_index, img in enumerate(images):
+                if not img or len(img) < 1:
+                    continue
+                    
+                xref = img[0]
+                if not xref:
+                    continue
+                    
+                # Rest of image processing...
+                
+        except AttributeError as e:
+            self.logger.warning(f"Page {page_num} has no image data: {str(e)}")
+        except Exception as e:
+            self.logger.error(f"Error processing images on page {page_num}: {str(e)}")
+
+    def verify_text_with_ocr(self) -> Dict[int, Dict]:
+        """Verify text content using OCR with error handling."""
+        results = {}
+        
+        try:
+            images = convert_from_path(self.pdf_path)
+            
+            for page_num, image in enumerate(images):
+                if image is None:
+                    continue
+                    
+                try:
+                    image_np = np.array(image)
+                    if image_np is None or image_np.size == 0:
+                        continue
+                        
+                    ocr_elements = self.ocr_processor.process_page(image_np, page_num)
+                    results[page_num] = {
+                        'status': 'success',
+                        'corrections': [],
+                        'confidence': np.mean([elem.confidence for elem in ocr_elements]) if ocr_elements else 0
+                    }
+                    
+                except Exception as e:
+                    self.logger.error(f"OCR error on page {page_num}: {str(e)}")
+                    results[page_num] = {'status': 'failed', 'error': str(e), 'confidence': 0}
+                    
+        except Exception as e:
+            self.logger.error(f"PDF conversion error: {str(e)}")
+            raise ProcessingError(f"Failed to convert PDF: {str(e)}")
+            
+        return results
 
     def verify_text_with_ocr(self) -> Dict[int, Dict]:
         """Verify text content using OCR and return results."""
@@ -378,54 +432,58 @@ class AccessibilityDocumentProcessor:
     def extract_text_with_positions(self):
         for page_num in range(len(self.doc)):
             page = self.doc[page_num]
-            blocks = page.get_text("dict")["blocks"]
+            text_dict = page.get_text("dict")
             
-            for block in blocks:
-                if "lines" in block:
-                    current_y = None
+            if not text_dict or "blocks" not in text_dict:
+                continue
+                
+            for block in text_dict["blocks"]:
+                if "lines" not in block:
+                    continue
                     
-                    for line in block["lines"]:
-                        spans = line.get("spans", [])
-                        if not spans:
+                for line in block["lines"]:
+                    if "spans" not in line:
+                        continue
+                        
+                    last_x = None
+                    
+                    for span in line.get("spans", []):
+                        if not span or "bbox" not in span:
                             continue
                             
-                        # Reset position tracking for new line
-                        last_x = None
-                        
-                        for span in spans:
-                            # Calculate spacing
-                            x0, y0, x1, y1 = span["bbox"]
-                            if last_x is not None:
-                                space_width = x0 - last_x
-                                # Add space if gap is large enough
-                                if space_width > span["size"] * 0.3:  # Adjust threshold as needed
-                                    text = " " + span["text"]
-                                else:
-                                    text = span["text"]
-                            else:
-                                text = span["text"]
+                        bbox = span["bbox"]
+                        if not bbox or len(bbox) != 4:
+                            continue
                             
-                            # Create text element
-                            element = TextElement(
-                                text=text,
-                                x=x0,
-                                y=y0,
-                                width=x1 - x0,
-                                height=y1 - y0,
-                                font_size=span["size"],
-                                font_name=span["font"],
-                                is_bold="Bold" in span["font"],
-                                page_num=page_num
-                            )
-                            self.text_elements.append(element)
-                            
-                            # Update tracking
-                            last_x = x1
+                        x0, y0, x1, y1 = bbox
+                        text = span.get("text", "").strip()
                         
-                        # Add line break if moving to new line
-                        if self.text_elements:
-                            self.text_elements[-1].text += " "      
-        
+                        if not text:
+                            continue
+                        
+                        # Add space based on x position
+                        if last_x is not None and x0 - last_x > span.get("size", 0) * 0.3:
+                            text = " " + text
+                        
+                        element = TextElement(
+                            text=text,
+                            x=x0,
+                            y=y0,
+                            width=x1 - x0,
+                            height=y1 - y0,
+                            font_size=span.get("size", 12),
+                            font_name=span.get("font", ""),
+                            is_bold="Bold" in span.get("font", ""),
+                            page_num=page_num
+                        )
+                        
+                        self.text_elements.append(element)
+                        last_x = x1
+                        
+                    # Add space after each line
+                    if self.text_elements:
+                        self.text_elements[-1].text += " "      
+            
     def detect_headings(self):
         font_sizes = defaultdict(int)
         for element in self.text_elements:
@@ -443,95 +501,267 @@ class AccessibilityDocumentProcessor:
 
     def detect_tables(self):
         for page_num in range(len(self.doc)):
-            page_elements = [te for te in self.text_elements if te.page_num == page_num]
+            # Filter out None elements and validate attributes
+            page_elements = [
+                te for te in self.text_elements 
+                if te and te.page_num == page_num 
+                and hasattr(te, 'x') and hasattr(te, 'y') 
+                and hasattr(te, 'width')
+            ]
+            
+            if not page_elements:
+                continue
+                
             rows = defaultdict(list)
             for element in page_elements:
-                row_key = round(element.y / 5) * 5
-                rows[row_key].append(element)
+                try:
+                    row_key = round(element.y / 5) * 5
+                    rows[row_key].append(element)
+                except (TypeError, AttributeError):
+                    continue
             
             current_table = None
             consecutive_row_count = 0
             
             for y, row_elements in sorted(rows.items()):
                 if len(row_elements) >= 2:
-                    row_elements.sort(key=lambda e: e.x)
-                    
-                    spaces = [row_elements[i+1].x - (row_elements[i].x + row_elements[i].width)
-                            for i in range(len(row_elements)-1)]
-                    
-                    is_table_row = (
-                        (spaces and max(spaces) - min(spaces) < 10) or
-                        any(e.width > np.mean([el.width for el in row_elements]) * 1.5
-                            for e in row_elements)
-                    )
-                    
-                    if is_table_row:
-                        if not current_table:
-                            current_table = TableStructure()
-                            consecutive_row_count = 0
+                    try:
+                        row_elements.sort(key=lambda e: e.x)
                         
-                        consecutive_row_count += 1
-                        current_table.rows.append(row_elements)
-                    elif current_table and consecutive_row_count >= 2:
-                        self._finalize_table(current_table)
-                        self.tables.append(current_table)
-                        current_table = None
-                    else:
-                        current_table = None
-                        consecutive_row_count = 0
+                        # Calculate spaces between elements with validation
+                        spaces = []
+                        for i in range(len(row_elements)-1):
+                            try:
+                                current = row_elements[i]
+                                next_elem = row_elements[i+1]
+                                if all(hasattr(current, attr) for attr in ['x', 'width']) and hasattr(next_elem, 'x'):
+                                    space = next_elem.x - (current.x + current.width)
+                                    spaces.append(space)
+                            except (AttributeError, TypeError):
+                                continue
+                        
+                        # Check if this is a table row
+                        is_table_row = False
+                        if spaces:
+                            space_range = max(spaces) - min(spaces)
+                            is_table_row = space_range < 10
+                        
+                        if not is_table_row and row_elements:
+                            # Check for wide elements
+                            try:
+                                mean_width = np.mean([el.width for el in row_elements if hasattr(el, 'width')])
+                                is_table_row = any(
+                                    hasattr(e, 'width') and e.width > mean_width * 1.5
+                                    for e in row_elements
+                                )
+                            except (AttributeError, TypeError):
+                                pass
+                        
+                        if is_table_row:
+                            if not current_table:
+                                current_table = TableStructure()
+                                consecutive_row_count = 0
+                            
+                            consecutive_row_count += 1
+                            current_table.rows.append(row_elements)
+                        elif current_table and consecutive_row_count >= 2:
+                            self._finalize_table(current_table)
+                            self.tables.append(current_table)
+                            current_table = None
+                        else:
+                            current_table = None
+                            consecutive_row_count = 0
+                            
+                    except Exception as e:
+                        self.logger.warning(f"Error processing row in table detection: {str(e)}")
+                        continue
 
     def _finalize_table(self, table: TableStructure):
-        if not table.rows:
+        """Finalize table structure with robust error handling."""
+        if not table or not table.rows:
             return
             
-        max_cols = max(len(row) for row in table.rows)
-        table.initialize_grid(len(table.rows), max_cols)
-        
-        for row_idx, row_elements in enumerate(table.rows):
-            table.detect_column_spans(row_elements, row_idx)
-        
-        table.verify_column_spans()
-        
-        all_elements = [elem for row in table.rows for elem in row if elem]
-        if all_elements:
-            min_x = min(elem.x for elem in all_elements)
-            max_x = max(elem.x + elem.width for elem in all_elements)
-            min_y = min(elem.y for elem in all_elements)
-            max_y = max(elem.y + elem.height for elem in all_elements)
-            table.bbox = (min_x, min_y, max_x, max_y)
+        try:
+            # Get valid rows (non-empty lists)
+            valid_rows = [row for row in table.rows if row and isinstance(row, list)]
+            if not valid_rows:
+                return
+                
+            # Calculate max columns from valid elements
+            max_cols = max((len(row) for row in valid_rows), default=0)
+            if max_cols == 0:
+                return
+                
+            table.initialize_grid(len(valid_rows), max_cols)
+            
+            # Process each row
+            for row_idx, row_elements in enumerate(valid_rows):
+                if row_elements:  # Only process non-empty rows
+                    self._process_row_elements(table, row_elements, row_idx)
+            
+            table.verify_column_spans()
+            
+            # Calculate bbox only from valid elements
+            self._calculate_table_bbox(table)
+                    
+        except Exception as e:
+            self.logger.error(f"Error finalizing table: {str(e)}")
+            return
 
+    def _process_row_elements(self, table: TableStructure, row_elements: List[TextElement], row_idx: int):
+        """Process elements in a table row with validation."""
+        try:
+            # Filter valid elements
+            valid_elements = [
+                elem for elem in row_elements 
+                if elem and all(hasattr(elem, attr) for attr in ['x', 'y', 'width', 'height'])
+            ]
+            
+            if not valid_elements:
+                return
+                
+            # Sort elements by x position
+            valid_elements.sort(key=lambda e: e.x)
+            
+            # Calculate average column width
+            widths = [elem.width for elem in valid_elements]
+            if not widths:
+                return
+            avg_col_width = sum(widths) / len(widths)
+            
+            # Process elements
+            col_idx = 0
+            for element in valid_elements:
+                try:
+                    # Find next available column
+                    while col_idx < table.num_cols and table.rows[row_idx][col_idx] is not None:
+                        col_idx += 1
+                    
+                    if col_idx >= table.num_cols:
+                        break
+                    
+                    # Calculate colspan
+                    potential_colspan = max(1, round(element.width / avg_col_width))
+                    actual_colspan = min(potential_colspan, table.num_cols - col_idx)
+                    
+                    # Create cell
+                    cell = TableCell(
+                        text=element.text,
+                        row=row_idx,
+                        col=col_idx,
+                        colspan=actual_colspan,
+                        x=element.x,
+                        y=element.y,
+                        width=element.width,
+                        height=element.height
+                    )
+                    
+                    # Assign cell to columns
+                    for span_idx in range(actual_colspan):
+                        if col_idx + span_idx < table.num_cols:
+                            table.rows[row_idx][col_idx + span_idx] = cell
+                    
+                    element.table_cell = cell
+                    col_idx += actual_colspan
+                    
+                except Exception as e:
+                    self.logger.warning(f"Error processing element in row {row_idx}: {str(e)}")
+                    continue
+                    
+        except Exception as e:
+            self.logger.warning(f"Error processing row {row_idx}: {str(e)}")
+
+    def _calculate_table_bbox(self, table: TableStructure):
+        """Calculate table bounding box from valid elements."""
+        try:
+            # Get all valid cells
+            valid_cells = []
+            for row in table.rows:
+                if not row:
+                    continue
+                for cell in row:
+                    if cell and all(hasattr(cell, attr) for attr in ['x', 'y', 'width', 'height']):
+                        valid_cells.append(cell)
+            
+            if not valid_cells:
+                return
+                
+            # Calculate bbox
+            min_x = min(cell.x for cell in valid_cells)
+            max_x = max(cell.x + cell.width for cell in valid_cells)
+            min_y = min(cell.y for cell in valid_cells)
+            max_y = max(cell.y + cell.height for cell in valid_cells)
+            
+            table.bbox = (min_x, min_y, max_x, max_y)
+            
+        except Exception as e:
+            self.logger.warning(f"Error calculating table bbox: {str(e)}")
+        
     def analyze_reading_order(self):
-        for page_num in range(len(self.doc)):
-            page_elements = [te for te in self.text_elements if te.page_num == page_num]
-            reading_order = 0
-            
-            for level in range(1, 7):
-                headings = [te for te in page_elements if te.heading_level == level]
-                for heading in sorted(headings, key=lambda e: (e.y, e.x)):
-                    heading.reading_order = reading_order
-                    reading_order += 1
-            
-            for table in self.tables:
-                for row in table.rows:
-                    for cell in row:
-                        cell.reading_order = reading_order
+        """Analyze and assign reading order to document elements with error handling."""
+        try:
+            for page_num in range(len(self.doc)):
+                # Get valid page elements with required attributes
+                page_elements = [
+                    te for te in self.text_elements 
+                    if te and te.page_num == page_num 
+                    and all(hasattr(te, attr) for attr in ['x', 'y', 'width', 'height'])
+                ]
+                
+                reading_order = 0
+                
+                # Process headings
+                for level in range(1, 7):
+                    headings = [te for te in page_elements if hasattr(te, 'heading_level') and te.heading_level == level]
+                    for heading in sorted(headings, key=lambda e: (e.y, e.x)):
+                        heading.reading_order = reading_order
                         reading_order += 1
-            
-            remaining = [te for te in page_elements 
-                    if te.heading_level is None and te.table_cell is None]
-            
-            column_threshold = 50
-            columns = defaultdict(list)
-            
-            for element in remaining:
-                column_key = round(element.x / column_threshold) * column_threshold
-                columns[column_key].append(element)
-            
-            for x in sorted(columns.keys()):
-                column_elements = columns[x]
-                for element in sorted(column_elements, key=lambda e: e.y):
-                    element.reading_order = reading_order
-                    reading_order += 1
+                
+                # Process tables
+                if self.tables:
+                    for table in self.tables:
+                        if table and table.rows:
+                            for row in table.rows:
+                                if row:
+                                    for cell in row:
+                                        if cell and hasattr(cell, 'reading_order'):
+                                            cell.reading_order = reading_order
+                                            reading_order += 1
+                
+                # Process remaining elements
+                remaining = [
+                    te for te in page_elements 
+                    if (not hasattr(te, 'heading_level') or te.heading_level is None)
+                    and (not hasattr(te, 'table_cell') or te.table_cell is None)
+                ]
+                
+                if remaining:
+                    # Group by columns
+                    column_threshold = 50
+                    columns = defaultdict(list)
+                    
+                    for element in remaining:
+                        try:
+                            column_key = round(element.x / column_threshold) * column_threshold
+                            columns[column_key].append(element)
+                        except (AttributeError, TypeError):
+                            continue
+                    
+                    # Process each column
+                    for x in sorted(columns.keys()):
+                        column_elements = columns[x]
+                        try:
+                            for element in sorted(column_elements, key=lambda e: e.y):
+                                if hasattr(element, 'reading_order'):
+                                    element.reading_order = reading_order
+                                    reading_order += 1
+                        except (AttributeError, TypeError) as e:
+                            self.logger.warning(f"Error sorting column elements: {str(e)}")
+                            continue
+                            
+        except Exception as e:
+            self.logger.error(f"Error in analyze_reading_order: {str(e)}")
+            raise
 
     def _find_closest_text_element(self, ocr_element: OCRElement, page_num: int) -> Optional[TextElement]:
         page_elements = [te for te in self.text_elements if te.page_num == page_num]

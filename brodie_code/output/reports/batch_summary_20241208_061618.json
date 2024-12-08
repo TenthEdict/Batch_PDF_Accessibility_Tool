@@ -1,0 +1,118 @@
+{
+  "1031_Exploring how Prize Challenges Complement an Organizations Innov.pdf": {
+    "filename": "1031_Exploring how Prize Challenges Complement an Organizations Innov.pdf",
+    "size_mb": 0.1831827163696289,
+    "status": "success",
+    "errors": [],
+    "warnings": [
+      "No headings detected"
+    ],
+    "stats": {
+      "num_pages": 9,
+      "num_tables": 6,
+      "num_headings": 0,
+      "num_corrections": 0,
+      "processing_time": 0.021956682205200195
+    },
+    "ocr_applied": false,
+    "ocr_stats": {}
+  },
+  "1023_Risk Management Decision Making for Security and Trust in Hardwar.pdf": {
+    "filename": "1023_Risk Management Decision Making for Security and Trust in Hardwar.pdf",
+    "size_mb": 0.3385581970214844,
+    "status": "success",
+    "errors": [],
+    "warnings": [],
+    "stats": {
+      "num_pages": 5,
+      "num_tables": 9,
+      "num_headings": 19,
+      "num_corrections": 0,
+      "processing_time": 0.03655123710632324
+    },
+    "ocr_applied": false,
+    "ocr_stats": {}
+  },
+  "1005_The Challenges and Opportunities of Teaching Systems Engineering.pdf": {
+    "filename": "1005_The Challenges and Opportunities of Teaching Systems Engineering.pdf",
+    "size_mb": 0.08459758758544922,
+    "status": "success",
+    "errors": [],
+    "warnings": [],
+    "stats": {
+      "num_pages": 3,
+      "num_tables": 0,
+      "num_headings": 1,
+      "num_corrections": 0,
+      "processing_time": 0.003409862518310547
+    },
+    "ocr_applied": false,
+    "ocr_stats": {}
+  },
+  "1008_Cost Analysis of eVTOL Configuration Design for an Air Ambulances.pdf": {
+    "filename": "1008_Cost Analysis of eVTOL Configuration Design for an Air Ambulances.pdf",
+    "size_mb": 0.6254482269287109,
+    "status": "success",
+    "errors": [],
+    "warnings": [],
+    "stats": {
+      "num_pages": 7,
+      "num_tables": 10,
+      "num_headings": 42,
+      "num_corrections": 0,
+      "processing_time": 0.028349876403808594
+    },
+    "ocr_applied": false,
+    "ocr_stats": {}
+  },
+  "1038_MAPPING OF THE INFORMATION FLOW OF THE VALLE OCCIDENTAL COFFEE RE.pdf": {
+    "filename": "1038_MAPPING OF THE INFORMATION FLOW OF THE VALLE OCCIDENTAL COFFEE RE.pdf",
+    "size_mb": 0.31578540802001953,
+    "status": "success",
+    "errors": [],
+    "warnings": [],
+    "stats": {
+      "num_pages": 9,
+      "num_tables": 11,
+      "num_headings": 40,
+      "num_corrections": 0,
+      "processing_time": 0.0411226749420166
+    },
+    "ocr_applied": false,
+    "ocr_stats": {}
+  },
+  "1013_Model-based fault analysis of communication between supervisors a.pdf": {
+    "filename": "1013_Model-based fault analysis of communication between supervisors a.pdf",
+    "size_mb": 0.2650175094604492,
+    "status": "success",
+    "errors": [],
+    "warnings": [
+      "No headings detected"
+    ],
+    "stats": {
+      "num_pages": 6,
+      "num_tables": 0,
+      "num_headings": 0,
+      "num_corrections": 0,
+      "processing_time": 0.03044605255126953
+    },
+    "ocr_applied": false,
+    "ocr_stats": {}
+  },
+  "1004_Propose of Architecture Design for Early Warning System with Spac.pdf": {
+    "filename": "1004_Propose of Architecture Design for Early Warning System with Spac.pdf",
+    "size_mb": 7.419384002685547,
+    "status": "success",
+    "errors": [],
+    "warnings": [],
+    "stats": {
+      "num_pages": 8,
+      "num_tables": 1,
+      "num_headings": 104,
+      "num_corrections": 0,
+      "processing_time": 0.40565991401672363
+    },
+    "ocr_applied": false,
+    "ocr_stats": {}
+  }
+}
