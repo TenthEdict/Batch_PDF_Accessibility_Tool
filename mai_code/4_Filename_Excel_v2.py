@@ -5,7 +5,7 @@ Date of Version: 12/09/2024
 
 Description: This program is step one of two in a series that will batch edit the metadata of pdfs.
 Specifically, this program creates a spreadsheet for metadata batch processing.
-The first columns is the 'File name', followed by 'Title', and fifteen "Author" columns. 
+The first column is the 'File name', followed by 'Title', and fifteen "Author" columns. 
 
 Important: The spreadsheet must be completed with the Title and Author information. 
 This can be done manually or transfer the relevant information from a separate, ready-made spreadsheet,
