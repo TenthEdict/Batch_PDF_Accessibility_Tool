@@ -3,668 +3,670 @@
     "pages": 5,
     "heading_hierarchy": {
       "heading_counts": {
-        "1": 19
+        "1": 2,
+        "2": 257,
+        "3": 31
       },
       "skipped_levels": []
     },
     "tables": 9,
     "reading_order": [
       {
-        "text": "\u2014Modern cyber-physical systems are enabled by ",
+        "text": "Risk Management Decision Making for Security and ",
         "page": 0,
         "order": 0,
         "type": "heading"
       },
       {
-        "text": "Abstract",
+        "text": "Trust in Hardware Supply Chains  ",
         "page": 0,
         "order": 1,
         "type": "heading"
       },
       {
-        "text": "electronic hardware and embedded systems. The security of these ",
+        "text": "repackaged to misrepresent their authenticity, can make their ",
         "page": 0,
         "order": 2,
         "type": "heading"
       },
       {
-        "text": "sub-components is a concern during the design and operational ",
+        "text": "way into the supply chain and can be created through a number ",
         "page": 0,
         "order": 3,
         "type": "heading"
       },
       {
-        "text": "phases of cyber-physical system life cycles. Compromised ",
+        "text": "If counterfeit electronic components are integrated into ",
         "page": 0,
         "order": 4,
         "type": "heading"
       },
       {
-        "text": "electronics can result in mission-critical failures, unauthorized ",
+        "text": "products, a number of consequences can materialize, including ",
         "page": 0,
         "order": 5,
         "type": "heading"
       },
       {
-        "text": "access, and other severe consequences. As systems become more ",
+        "text": "reduced system functionality and unauthorized access to ",
         "page": 0,
         "order": 6,
         "type": "heading"
       },
       {
-        "text": "complex and feature greater connectivity, system owners must ",
+        "text": "sensitive information. Companies face impacts in the form of ",
         "page": 0,
         "order": 7,
         "type": "heading"
       },
       {
-        "text": "make decisions regarding how to mitigate risks and ensure ",
+        "text": "lost profits, increased testing and repair costs, damaged ",
         "page": 0,
         "order": 8,
         "type": "heading"
       },
       {
-        "text": "resilience and trust. This paper provides an overview of research ",
+        "text": "reputation, products with decreased reliability, and legal ",
         "page": 0,
         "order": 9,
         "type": "heading"
       },
       {
-        "text": "efforts related to assessing and managing risks, resilience, and ",
+        "text": "liabilities [14]. Governments face even more serious issues, such ",
         "page": 0,
         "order": 10,
         "type": "heading"
       },
       {
-        "text": "trust with an emphasis on electronic hardware and embedded ",
+        "text": "as the possibility of reduced reliability and functionality of ",
         "page": 0,
         "order": 11,
         "type": "heading"
       },
       {
-        "text": "systems. The research takes a decision-oriented perspective, ",
+        "text": "mission-critical defense systems [15]. One estimate of the ",
         "page": 0,
         "order": 12,
         "type": "heading"
       },
       {
-        "text": "drawing from the perspectives of scenario planning and portfolio ",
+        "text": "monetary impact of counterfeits on the semiconductor industry ",
         "page": 0,
         "order": 13,
         "type": "heading"
       },
       {
-        "text": "analysis, and describes examples related to the risk-based ",
+        "text": "Many factors contribute to the abundance of counterfeits ",
         "page": 0,
         "order": 14,
         "type": "heading"
       },
       {
-        "text": "prioritization of cyber assets in large-scale systems. ",
+        "text": "within the supply chain, including the changing nature of the ",
         "page": 0,
         "order": 15,
         "type": "heading"
       },
       {
-        "text": "Keywords\u2014 system security, hardware assurance, security, risk, ",
+        "text": "supply chain itself. Outsourcing of the fabrication of electronic ",
         "page": 0,
         "order": 16,
         "type": "heading"
       },
       {
-        "text": "vulnerability, threats, mission assurance, cybersecurity, supply ",
+        "text": "components and the complex nature of the global electronics ",
         "page": 0,
         "order": 17,
         "type": "heading"
       },
       {
-        "text": "chain, decision making. ",
+        "text": "supply chain necessitates the authentication of components ",
         "page": 0,
         "order": 18,
         "type": "heading"
       },
       {
-        "text": "Risk Management Decision Making for Security and ",
-        "page": 0,
-        "order": 19,
-        "type": "content"
-      },
-      {
         "text": "The national and global infrastructure is increasingly ",
         "page": 0,
-        "order": 20,
-        "type": "content"
+        "order": 19,
+        "type": "heading"
       },
       {
-        "text": "dependent upon embedded electronic hardware components. ",
+        "text": "Obsolescence is another contributing factor, especially in ",
         "page": 0,
-        "order": 21,
-        "type": "content"
+        "order": 20,
+        "type": "heading"
       },
       {
         "text": "Whereas we used to be able to think of physical and cyber ",
         "page": 0,
+        "order": 21,
+        "type": "heading"
+      },
+      {
+        "text": "sectors such as defense and aviation where systems are in service ",
+        "page": 0,
         "order": 22,
-        "type": "content"
+        "type": "heading"
       },
       {
         "text": "systems as separate entities, we now must reframe our thinking ",
         "page": 0,
         "order": 23,
-        "type": "content"
-      },
-      {
-        "text": "in terms of cyber-physical systems. The U.S. National Institute ",
-        "page": 0,
-        "order": 24,
-        "type": "content"
-      },
-      {
-        "text": "of Standards and Technology [1] defines cyber-physical systems ",
-        "page": 0,
-        "order": 25,
-        "type": "content"
-      },
-      {
-        "text": "as \u201csmart systems that include engineered interacting networks ",
-        "page": 0,
-        "order": 26,
-        "type": "content"
-      },
-      {
-        "text": "of physical and computational components\u201d. Cyber-physical ",
-        "page": 0,
-        "order": 27,
-        "type": "content"
-      },
-      {
-        "text": "systems encompass a broad scope, sometimes conceptualized as ",
-        "page": 0,
-        "order": 28,
-        "type": "content"
-      },
-      {
-        "text": "having cyber, physical, and human dimensions [2]-[3]. ",
-        "page": 0,
-        "order": 29,
-        "type": "content"
-      },
-      {
-        "text": "As an example, modern vehicles contain hundreds of ",
-        "page": 0,
-        "order": 30,
-        "type": "content"
-      },
-      {
-        "text": "embedded sensors and control units, millions of lines of code, ",
-        "page": 0,
-        "order": 31,
-        "type": "content"
-      },
-      {
-        "text": "and Internet access [4]. While these hardware components and ",
-        "page": 0,
-        "order": 32,
-        "type": "content"
-      },
-      {
-        "text": "embedded systems add many useful functionalities, they also ",
-        "page": 0,
-        "order": 33,
-        "type": "content"
-      },
-      {
-        "text": "present vulnerabilities which can potentially allow malicious ",
-        "page": 0,
-        "order": 34,
-        "type": "content"
-      },
-      {
-        "text": "actors to steal and/or remotely access and control the vehicle [5]- ",
-        "page": 0,
-        "order": 35,
-        "type": "content"
-      },
-      {
-        "text": "[7]. Other applications related to healthcare, finance, defense, ",
-        "page": 0,
-        "order": 36,
-        "type": "content"
-      },
-      {
-        "text": "and critical infrastructure (e.g., the electric grid [8]-[9]) are ",
-        "page": 0,
-        "order": 37,
-        "type": "content"
-      },
-      {
-        "text": "similarly vulnerable, and necessitate the assessment of the ",
-        "page": 0,
-        "order": 38,
-        "type": "content"
-      },
-      {
-        "text": "security and trust of the embedded hardware which facilitate our ",
-        "page": 0,
-        "order": 39,
-        "type": "content"
-      },
-      {
-        "text": "daily lives [10]. ",
-        "page": 0,
-        "order": 40,
-        "type": "content"
-      },
-      {
-        "text": "The supply chains through which these components are ",
-        "page": 0,
-        "order": 41,
-        "type": "content"
-      },
-      {
-        "text": "procured and transported can be an entry point for untrusted and ",
-        "page": 0,
-        "order": 42,
-        "type": "content"
-      },
-      {
-        "text": "insecure electronics, making their way to the consumer. ",
-        "page": 0,
-        "order": 43,
-        "type": "content"
-      },
-      {
-        "text": "XXX-X-XXXX-XXXX-X/XX/$XX.00 \u00a920XX IEEE ",
-        "page": 0,
-        "order": 44,
-        "type": "content"
-      },
-      {
-        "text": "Zachary A. Collier ",
-        "page": 0,
-        "order": 45,
-        "type": "content"
-      },
-      {
-        "text": "Dept. of Management ",
-        "page": 0,
-        "order": 46,
-        "type": "content"
-      },
-      {
-        "text": "Radford University ",
-        "page": 0,
-        "order": 47,
-        "type": "content"
-      },
-      {
-        "text": "Radford, VA, USA ",
-        "page": 0,
-        "order": 48,
-        "type": "content"
-      },
-      {
-        "text": "zcollier@radford.edu  ",
-        "page": 0,
-        "order": 49,
-        "type": "content"
-      },
-      {
-        "text": "Trust in Hardware Supply Chains  ",
-        "page": 0,
-        "order": 50,
-        "type": "content"
-      },
-      {
-        "text": "I.",
-        "page": 0,
-        "order": 51,
-        "type": "content"
-      },
-      {
-        "text": " I",
-        "page": 0,
-        "order": 52,
-        "type": "content"
-      },
-      {
-        "text": "NTRODUCTION ",
-        "page": 0,
-        "order": 53,
-        "type": "content"
-      },
-      {
-        "text": "Thomas L. Polmateer ",
-        "page": 0,
-        "order": 54,
-        "type": "content"
-      },
-      {
-        "text": "Dept. of Engineering Systems and ",
-        "page": 0,
-        "order": 55,
-        "type": "content"
-      },
-      {
-        "text": "University of Virginia ",
-        "page": 0,
-        "order": 56,
-        "type": "content"
-      },
-      {
-        "text": "Charlottesville, VA, USA ",
-        "page": 0,
-        "order": 57,
-        "type": "content"
-      },
-      {
-        "text": "polmateer@virginia.edu ",
-        "page": 0,
-        "order": 58,
-        "type": "content"
-      },
-      {
-        "text": "Environment ",
-        "page": 0,
-        "order": 59,
-        "type": "content"
-      },
-      {
-        "text": "Counterfeit electronics, which may be relabeled, refurbished, or ",
-        "page": 0,
-        "order": 60,
-        "type": "content"
-      },
-      {
-        "text": "repackaged to misrepresent their authenticity, can make their ",
-        "page": 0,
-        "order": 61,
-        "type": "content"
-      },
-      {
-        "text": "way into the supply chain and can be created through a number ",
-        "page": 0,
-        "order": 62,
-        "type": "content"
-      },
-      {
-        "text": "of simple and advanced methods [11]-[13]. ",
-        "page": 0,
-        "order": 63,
-        "type": "content"
-      },
-      {
-        "text": "products, a number of consequences can materialize, including ",
-        "page": 0,
-        "order": 64,
-        "type": "content"
-      },
-      {
-        "text": "reduced system functionality and unauthorized access to ",
-        "page": 0,
-        "order": 65,
-        "type": "content"
-      },
-      {
-        "text": "sensitive information. Companies face impacts in the form of ",
-        "page": 0,
-        "order": 66,
-        "type": "content"
-      },
-      {
-        "text": "lost profits, increased testing and repair costs, damaged ",
-        "page": 0,
-        "order": 67,
-        "type": "content"
-      },
-      {
-        "text": "reputation, products with decreased reliability, and legal ",
-        "page": 0,
-        "order": 68,
-        "type": "content"
-      },
-      {
-        "text": "liabilities [14]. Governments face even more serious issues, such ",
-        "page": 0,
-        "order": 69,
-        "type": "content"
-      },
-      {
-        "text": "as the possibility of reduced reliability and functionality of ",
-        "page": 0,
-        "order": 70,
-        "type": "content"
-      },
-      {
-        "text": "mission-critical defense systems [15]. One estimate of the ",
-        "page": 0,
-        "order": 71,
-        "type": "content"
-      },
-      {
-        "text": "monetary impact of counterfeits on the semiconductor industry ",
-        "page": 0,
-        "order": 72,
-        "type": "content"
-      },
-      {
-        "text": "in the United States is as high as $200 billion [16]. ",
-        "page": 0,
-        "order": 73,
-        "type": "content"
-      },
-      {
-        "text": "within the supply chain, including the changing nature of the ",
-        "page": 0,
-        "order": 74,
-        "type": "content"
-      },
-      {
-        "text": "supply chain itself. Outsourcing of the fabrication of electronic ",
-        "page": 0,
-        "order": 75,
-        "type": "content"
-      },
-      {
-        "text": "components and the complex nature of the global electronics ",
-        "page": 0,
-        "order": 76,
-        "type": "content"
-      },
-      {
-        "text": "supply chain necessitates the authentication of components ",
-        "page": 0,
-        "order": 77,
-        "type": "content"
-      },
-      {
-        "text": "where the chain of custody may be unknown [17]-[19]. ",
-        "page": 0,
-        "order": 78,
-        "type": "content"
-      },
-      {
-        "text": "Obsolescence is another contributing factor, especially in ",
-        "page": 0,
-        "order": 79,
-        "type": "content"
-      },
-      {
-        "text": "sectors such as defense and aviation where systems are in service ",
-        "page": 0,
-        "order": 80,
-        "type": "content"
+        "type": "heading"
       },
       {
         "text": "for longer life spans than the components from which they are ",
         "page": 0,
-        "order": 81,
-        "type": "content"
+        "order": 24,
+        "type": "heading"
       },
       {
         "text": "comprised. The obsolescence caused through diminishing ",
         "page": 0,
-        "order": 82,
-        "type": "content"
+        "order": 25,
+        "type": "heading"
+      },
+      {
+        "text": "of Standards and Technology [1] defines cyber-physical systems ",
+        "page": 0,
+        "order": 26,
+        "type": "heading"
       },
       {
         "text": "manufacturing sources and material shortages (DMSMS) means ",
         "page": 0,
-        "order": 83,
-        "type": "content"
+        "order": 27,
+        "type": "heading"
+      },
+      {
+        "text": "as \u201csmart systems that include engineered interacting networks ",
+        "page": 0,
+        "order": 28,
+        "type": "heading"
       },
       {
         "text": "that components must sometimes be procured from untrusted ",
         "page": 0,
-        "order": 84,
-        "type": "content"
+        "order": 29,
+        "type": "heading"
+      },
+      {
+        "text": "of physical and computational components\u201d. Cyber-physical ",
+        "page": 0,
+        "order": 30,
+        "type": "heading"
       },
       {
         "text": "sources, opening the door for counterfeits [20]-[25]. Finally, ",
         "page": 0,
-        "order": 85,
-        "type": "content"
+        "order": 31,
+        "type": "heading"
+      },
+      {
+        "text": "systems encompass a broad scope, sometimes conceptualized as ",
+        "page": 0,
+        "order": 32,
+        "type": "heading"
       },
       {
         "text": "end-of-life considerations, including  electronic waste (e-waste) ",
         "page": 0,
-        "order": 86,
-        "type": "content"
+        "order": 33,
+        "type": "heading"
       },
       {
         "text": "disposal practices, contribute to the prevalence of counterfeits ",
         "page": 0,
-        "order": 87,
-        "type": "content"
+        "order": 34,
+        "type": "heading"
       },
       {
-        "text": "[26]. ",
+        "text": "As an example, modern vehicles contain hundreds of ",
+        "page": 0,
+        "order": 35,
+        "type": "heading"
+      },
+      {
+        "text": "embedded sensors and control units, millions of lines of code, ",
+        "page": 0,
+        "order": 36,
+        "type": "heading"
+      },
+      {
+        "text": "While ideally all electronics would be purchased from ",
+        "page": 0,
+        "order": 37,
+        "type": "heading"
+      },
+      {
+        "text": "and Internet access [4]. While these hardware components and ",
+        "page": 0,
+        "order": 38,
+        "type": "heading"
+      },
+      {
+        "text": "trusted suppliers, the reality of the modern global supply chain ",
+        "page": 0,
+        "order": 39,
+        "type": "heading"
+      },
+      {
+        "text": "embedded systems add many useful functionalities, they also ",
+        "page": 0,
+        "order": 40,
+        "type": "heading"
+      },
+      {
+        "text": "is that this is not always possible. Components with unknown ",
+        "page": 0,
+        "order": 41,
+        "type": "heading"
+      },
+      {
+        "text": "present vulnerabilities which can potentially allow malicious ",
+        "page": 0,
+        "order": 42,
+        "type": "heading"
+      },
+      {
+        "text": "supply chain histories require testing and authentication ",
+        "page": 0,
+        "order": 43,
+        "type": "heading"
+      },
+      {
+        "text": "actors to steal and/or remotely access and control the vehicle [5]- ",
+        "page": 0,
+        "order": 44,
+        "type": "heading"
+      },
+      {
+        "text": "techniques to ensure that the required levels of security and trust ",
+        "page": 0,
+        "order": 45,
+        "type": "heading"
+      },
+      {
+        "text": "are met. How to make risk-informed decisions under this ",
+        "page": 0,
+        "order": 46,
+        "type": "heading"
+      },
+      {
+        "text": "and critical infrastructure (e.g., the electric grid [8]-[9]) are ",
+        "page": 0,
+        "order": 47,
+        "type": "heading"
+      },
+      {
+        "text": "environment of uncertainty is a critical managerial task from a ",
+        "page": 0,
+        "order": 48,
+        "type": "heading"
+      },
+      {
+        "text": "similarly vulnerable, and necessitate the assessment of the ",
+        "page": 0,
+        "order": 49,
+        "type": "heading"
+      },
+      {
+        "text": "security and trust of the embedded hardware which facilitate our ",
+        "page": 0,
+        "order": 50,
+        "type": "heading"
+      },
+      {
+        "text": "In this paper, we describe research efforts at the system and ",
+        "page": 0,
+        "order": 51,
+        "type": "heading"
+      },
+      {
+        "text": "application level. We describe cyber-physical systems research ",
+        "page": 0,
+        "order": 52,
+        "type": "heading"
+      },
+      {
+        "text": "The supply chains through which these components are ",
+        "page": 0,
+        "order": 53,
+        "type": "heading"
+      },
+      {
+        "text": "procured and transported can be an entry point for untrusted and ",
+        "page": 0,
+        "order": 54,
+        "type": "heading"
+      },
+      {
+        "text": "open challenges. A comprehensive cyber-physical systems ",
+        "page": 0,
+        "order": 55,
+        "type": "heading"
+      },
+      {
+        "text": "security strategy is one which integrates analytics, modeling ",
+        "page": 0,
+        "order": 56,
+        "type": "heading"
+      },
+      {
+        "text": "Zachary A. Collier ",
+        "page": 0,
+        "order": 57,
+        "type": "heading"
+      },
+      {
+        "text": "Thomas L. Polmateer ",
+        "page": 0,
+        "order": 58,
+        "type": "heading"
+      },
+      {
+        "text": "James H. Lambert ",
+        "page": 0,
+        "order": 59,
+        "type": "heading"
+      },
+      {
+        "text": "Dept. of Management ",
+        "page": 0,
+        "order": 60,
+        "type": "heading"
+      },
+      {
+        "text": "Dept. of Engineering Systems and ",
+        "page": 0,
+        "order": 61,
+        "type": "heading"
+      },
+      {
+        "text": "Dept. of Engineering Systems and ",
+        "page": 0,
+        "order": 62,
+        "type": "heading"
+      },
+      {
+        "text": "Radford University ",
+        "page": 0,
+        "order": 63,
+        "type": "heading"
+      },
+      {
+        "text": "Environment ",
+        "page": 0,
+        "order": 64,
+        "type": "heading"
+      },
+      {
+        "text": "Environment ",
+        "page": 0,
+        "order": 65,
+        "type": "heading"
+      },
+      {
+        "text": "Radford, VA, USA ",
+        "page": 0,
+        "order": 66,
+        "type": "heading"
+      },
+      {
+        "text": "University of Virginia ",
+        "page": 0,
+        "order": 67,
+        "type": "heading"
+      },
+      {
+        "text": "University of Virginia ",
+        "page": 0,
+        "order": 68,
+        "type": "heading"
+      },
+      {
+        "text": "zcollier@radford.edu  ",
+        "page": 0,
+        "order": 69,
+        "type": "heading"
+      },
+      {
+        "text": "Charlottesville, VA, USA ",
+        "page": 0,
+        "order": 70,
+        "type": "heading"
+      },
+      {
+        "text": "Charlottesville, VA, USA ",
+        "page": 0,
+        "order": 71,
+        "type": "heading"
+      },
+      {
+        "text": "polmateer@virginia.edu ",
+        "page": 0,
+        "order": 72,
+        "type": "heading"
+      },
+      {
+        "text": "lambert@virginia.edu  ",
+        "page": 0,
+        "order": 73,
+        "type": "heading"
+      },
+      {
+        "text": "\u2014Modern cyber-physical systems are enabled by ",
+        "page": 0,
+        "order": 74,
+        "type": "heading"
+      },
+      {
+        "text": "electronic hardware and embedded systems. The security of these ",
+        "page": 0,
+        "order": 75,
+        "type": "heading"
+      },
+      {
+        "text": "sub-components is a concern during the design and operational ",
+        "page": 0,
+        "order": 76,
+        "type": "heading"
+      },
+      {
+        "text": "phases of cyber-physical system life cycles. Compromised ",
+        "page": 0,
+        "order": 77,
+        "type": "heading"
+      },
+      {
+        "text": "electronics can result in mission-critical failures, unauthorized ",
+        "page": 0,
+        "order": 78,
+        "type": "heading"
+      },
+      {
+        "text": "access, and other severe consequences. As systems become more ",
+        "page": 0,
+        "order": 79,
+        "type": "heading"
+      },
+      {
+        "text": "complex and feature greater connectivity, system owners must ",
+        "page": 0,
+        "order": 80,
+        "type": "heading"
+      },
+      {
+        "text": "make decisions regarding how to mitigate risks and ensure ",
+        "page": 0,
+        "order": 81,
+        "type": "heading"
+      },
+      {
+        "text": "resilience and trust. This paper provides an overview of research ",
+        "page": 0,
+        "order": 82,
+        "type": "heading"
+      },
+      {
+        "text": "efforts related to assessing and managing risks, resilience, and ",
+        "page": 0,
+        "order": 83,
+        "type": "heading"
+      },
+      {
+        "text": "trust with an emphasis on electronic hardware and embedded ",
+        "page": 0,
+        "order": 84,
+        "type": "heading"
+      },
+      {
+        "text": "systems. The research takes a decision-oriented perspective, ",
+        "page": 0,
+        "order": 85,
+        "type": "heading"
+      },
+      {
+        "text": "drawing from the perspectives of scenario planning and portfolio ",
+        "page": 0,
+        "order": 86,
+        "type": "heading"
+      },
+      {
+        "text": "analysis, and describes examples related to the risk-based ",
+        "page": 0,
+        "order": 87,
+        "type": "heading"
+      },
+      {
+        "text": "Abstract",
         "page": 0,
         "order": 88,
         "type": "content"
       },
       {
-        "text": "trusted suppliers, the reality of the modern global supply chain ",
+        "text": "prioritization of cyber assets in large-scale systems. ",
         "page": 0,
         "order": 89,
         "type": "content"
       },
       {
-        "text": "is that this is not always possible. Components with unknown ",
+        "text": "Keywords\u2014 system security, hardware assurance, security, risk, ",
         "page": 0,
         "order": 90,
         "type": "content"
       },
       {
-        "text": "supply chain histories require testing and authentication ",
+        "text": "vulnerability, threats, mission assurance, cybersecurity, supply ",
         "page": 0,
         "order": 91,
         "type": "content"
       },
       {
-        "text": "techniques to ensure that the required levels of security and trust ",
+        "text": "chain, decision making. ",
         "page": 0,
         "order": 92,
         "type": "content"
       },
       {
-        "text": "are met. How to make risk-informed decisions under this ",
+        "text": "dependent upon embedded electronic hardware components. ",
         "page": 0,
         "order": 93,
         "type": "content"
       },
       {
-        "text": "environment of uncertainty is a critical managerial task from a ",
+        "text": "in terms of cyber-physical systems. The U.S. National Institute ",
         "page": 0,
         "order": 94,
         "type": "content"
       },
       {
-        "text": "supply chain and risk management perspective. ",
+        "text": "having cyber, physical, and human dimensions [2]-[3]. ",
         "page": 0,
         "order": 95,
         "type": "content"
       },
       {
-        "text": "application level. We describe cyber-physical systems research ",
+        "text": "[7]. Other applications related to healthcare, finance, defense, ",
         "page": 0,
         "order": 96,
         "type": "content"
       },
       {
-        "text": "efforts in areas related to risk, resilience, and trust, as well as ",
+        "text": "daily lives [10]. ",
         "page": 0,
         "order": 97,
         "type": "content"
       },
       {
-        "text": "open challenges. A comprehensive cyber-physical systems ",
+        "text": "insecure electronics, making their way to the consumer. ",
         "page": 0,
         "order": 98,
         "type": "content"
       },
       {
-        "text": "security strategy is one which integrates analytics, modeling ",
+        "text": "XXX-X-XXXX-XXXX-X/XX/$XX.00 \u00a920XX IEEE ",
         "page": 0,
         "order": 99,
         "type": "content"
       },
       {
-        "text": "If counterfeit electronic components are integrated into ",
+        "text": "I.",
         "page": 0,
         "order": 100,
         "type": "content"
       },
       {
-        "text": "Many factors contribute to the abundance of counterfeits ",
+        "text": " I",
         "page": 0,
         "order": 101,
         "type": "content"
       },
       {
-        "text": "While ideally all electronics would be purchased from ",
+        "text": "NTRODUCTION ",
         "page": 0,
         "order": 102,
         "type": "content"
       },
       {
-        "text": "In this paper, we describe research efforts at the system and ",
+        "text": "Counterfeit electronics, which may be relabeled, refurbished, or ",
         "page": 0,
         "order": 103,
         "type": "content"
       },
       {
-        "text": "Dept. of Engineering Systems and ",
+        "text": "of simple and advanced methods [11]-[13]. ",
         "page": 0,
         "order": 104,
         "type": "content"
       },
       {
-        "text": "James H. Lambert ",
+        "text": "in the United States is as high as $200 billion [16]. ",
         "page": 0,
         "order": 105,
         "type": "content"
       },
       {
-        "text": "Environment ",
+        "text": "where the chain of custody may be unknown [17]-[19]. ",
         "page": 0,
         "order": 106,
         "type": "content"
       },
       {
-        "text": "University of Virginia ",
+        "text": "[26]. ",
         "page": 0,
         "order": 107,
         "type": "content"
       },
       {
-        "text": "Charlottesville, VA, USA ",
+        "text": "supply chain and risk management perspective. ",
         "page": 0,
         "order": 108,
         "type": "content"
       },
       {
-        "text": "lambert@virginia.edu  ",
+        "text": "efforts in areas related to risk, resilience, and trust, as well as ",
         "page": 0,
         "order": 109,
         "type": "content"
@@ -673,808 +675,808 @@
         "text": "methods, business processes, and technological advances across ",
         "page": 1,
         "order": 0,
-        "type": "content"
-      },
-      {
-        "text": "all levels of the system hierarchy and across the entire system ",
-        "page": 1,
-        "order": 1,
-        "type": "content"
-      },
-      {
-        "text": "life cycle. ",
-        "page": 1,
-        "order": 2,
-        "type": "content"
-      },
-      {
-        "text": "II.",
-        "page": 1,
-        "order": 3,
-        "type": "content"
-      },
-      {
-        "text": " E",
-        "page": 1,
-        "order": 4,
-        "type": "content"
-      },
-      {
-        "text": "XAMPLE",
-        "page": 1,
-        "order": 5,
-        "type": "content"
-      },
-      {
-        "text": "Vehicle-to-grid (V2G) technology, including the charging ",
-        "page": 1,
-        "order": 6,
-        "type": "content"
-      },
-      {
-        "text": "stations, electric vehicles, power and transportation networks, ",
-        "page": 1,
-        "order": 7,
-        "type": "content"
-      },
-      {
-        "text": "and control systems represent complex cyber-physical systems ",
-        "page": 1,
-        "order": 8,
-        "type": "content"
-      },
-      {
-        "text": "[27]-[30]. Connected vehicle systems and associated V2G ",
-        "page": 1,
-        "order": 9,
-        "type": "content"
-      },
-      {
-        "text": "infrastructure elements are increasingly subject to security ",
-        "page": 1,
-        "order": 10,
-        "type": "content"
-      },
-      {
-        "text": "threats, including security of embedded hardware devices [27]. ",
-        "page": 1,
-        "order": 11,
-        "type": "content"
-      },
-      {
-        "text": "V2G technology enables fleet-vehicle batteries to provide ",
-        "page": 1,
-        "order": 12,
-        "type": "content"
-      },
-      {
-        "text": "frequency regulation (distributed shock absorption on the scale ",
-        "page": 1,
-        "order": 13,
-        "type": "content"
-      },
-      {
-        "text": "of milliseconds to seconds) to the power grid when they would ",
-        "page": 1,
-        "order": 14,
-        "type": "content"
-      },
-      {
-        "text": "otherwise be on stand-by for logistics operations. Several- ",
-        "page": 1,
-        "order": 15,
-        "type": "content"
-      },
-      {
-        "text": "minute intervals of battery availability at specified power ",
-        "page": 1,
-        "order": 16,
-        "type": "content"
-      },
-      {
-        "text": "throughputs are reserved and sold ahead in an e-commerce ",
-        "page": 1,
-        "order": 17,
-        "type": "content"
-      },
-      {
-        "text": "market. In addition to frequency regulation, V2G technology ",
-        "page": 1,
-        "order": 18,
-        "type": "content"
-      },
-      {
-        "text": "can also provide demand charge management, reducing a ",
-        "page": 1,
-        "order": 19,
-        "type": "content"
-      },
-      {
-        "text": "customer\u2019s monthly demand charge (which can make up a ",
-        "page": 1,
-        "order": 20,
-        "type": "content"
-      },
-      {
-        "text": "significant portion of a site\u2019s electricity bill) by discharging an ",
-        "page": 1,
-        "order": 21,
-        "type": "content"
-      },
-      {
-        "text": "EV to partially power other assets, such as a building. ",
-        "page": 1,
-        "order": 22,
-        "type": "content"
-      },
-      {
-        "text": "There is an opportunity for IoT systems integration ",
-        "page": 1,
-        "order": 23,
-        "type": "content"
-      },
-      {
-        "text": "(including manufacturing) of advanced chargers, network ",
-        "page": 1,
-        "order": 24,
-        "type": "content"
-      },
-      {
-        "text": "communications, fleet vehicles, batteries, and the associated e- ",
-        "page": 1,
-        "order": 25,
-        "type": "content"
-      },
-      {
-        "text": "commerce transactions among power utilities and their ",
-        "page": 1,
-        "order": 26,
-        "type": "content"
-      },
-      {
-        "text": "industrial customers. A software system that enables ",
-        "page": 1,
-        "order": 27,
-        "type": "content"
-      },
-      {
-        "text": "interoperability between EVs, chargers, the grid, and other ",
-        "page": 1,
-        "order": 28,
-        "type": "content"
-      },
-      {
-        "text": "energy assets (solar, wind, etc.) is a critical component of V2G ",
-        "page": 1,
-        "order": 29,
-        "type": "content"
-      },
-      {
-        "text": "technology. Once these components are installed on a ",
-        "page": 1,
-        "order": 30,
-        "type": "content"
-      },
-      {
-        "text": "customer\u2019s site, an operations management system can ",
-        "page": 1,
-        "order": 31,
-        "type": "content"
-      },
-      {
-        "text": "continuously analyze and execute optimal V2G monetization ",
-        "page": 1,
-        "order": 32,
-        "type": "content"
-      },
-      {
-        "text": "opportunities available given a fleet\u2019s logistic operating ",
-        "page": 1,
-        "order": 33,
-        "type": "content"
-      },
-      {
-        "text": "schedule. ",
-        "page": 1,
-        "order": 34,
-        "type": "content"
-      },
-      {
-        "text": "The most important of these properties, and perhaps most ",
-        "page": 1,
-        "order": 35,
-        "type": "content"
-      },
-      {
-        "text": "worrying to industry, is the possibility of a cascading failure ",
-        "page": 1,
-        "order": 36,
-        "type": "content"
-      },
-      {
-        "text": "following an attack or failure of electronic hardware. Is has been ",
-        "page": 1,
-        "order": 37,
-        "type": "content"
-      },
-      {
-        "text": "shown for a simple coupled network model that cascading ",
-        "page": 1,
-        "order": 38,
-        "type": "content"
-      },
-      {
-        "text": "failure effects lead to a drastic decrease in the number of links ",
-        "page": 1,
-        "order": 39,
-        "type": "content"
-      },
-      {
-        "text": "and nodes that need to be removed from the network to break it ",
-        "page": 1,
-        "order": 40,
-        "type": "content"
-      },
-      {
-        "text": "down into individual components [31]-[32]. Ganin et al. have ",
-        "page": 1,
-        "order": 41,
-        "type": "content"
-      },
-      {
-        "text": "illustrated a similar effect for system recovery after failure [33]. ",
-        "page": 1,
-        "order": 42,
-        "type": "content"
-      },
-      {
-        "text": "Risk analysis has been historically focused on answering ",
-        "page": 1,
-        "order": 43,
-        "type": "content"
-      },
-      {
-        "text": "questions about what can go wrong, what is the likelihood of ",
-        "page": 1,
-        "order": 44,
-        "type": "content"
-      },
-      {
-        "text": "something going wrong, and what are the impacts in the case of ",
-        "page": 1,
-        "order": 45,
-        "type": "content"
-      },
-      {
-        "text": "the thing going wrong [34]. At the highest level of system ",
-        "page": 1,
-        "order": 46,
-        "type": "content"
-      },
-      {
-        "text": "abstraction, risks can be associated with embedded hardware in ",
-        "page": 1,
-        "order": 47,
-        "type": "content"
-      },
-      {
-        "text": "terms of technical, operational, and programmatic perspectives. ",
-        "page": 1,
-        "order": 48,
-        "type": "content"
-      },
-      {
-        "text": "Technical risks are related to the intended functionality of the ",
-        "page": 1,
-        "order": 49,
-        "type": "content"
-      },
-      {
-        "text": "system, whereas operational risks and programmatic risks are ",
-        "page": 1,
-        "order": 50,
-        "type": "content"
-      },
-      {
-        "text": "related to the achievement of business and program objectives, ",
-        "page": 1,
-        "order": 51,
-        "type": "content"
-      },
-      {
-        "text": "such as meeting cost and schedule benchmarks [35]. ",
-        "page": 1,
-        "order": 52,
-        "type": "content"
-      },
-      {
-        "text": "DiMase et al. described how supply chain risk management ",
-        "page": 1,
-        "order": 53,
-        "type": "content"
-      },
-      {
-        "text": "is only a segment of the larger and more complex issue of cyber- ",
-        "page": 1,
-        "order": 54,
-        "type": "content"
-      },
-      {
-        "text": "physical security [36]. They defined ten areas of concern, from ",
-        "page": 1,
-        "order": 55,
-        "type": "content"
-      },
-      {
-        "text": "software assurance to life cycle management, each with its own ",
-        "page": 1,
-        "order": 56,
-        "type": "content"
-      },
-      {
-        "text": "regulatory governing bodies and guidance documents. They ",
-        "page": 1,
-        "order": 57,
-        "type": "content"
-      },
-      {
-        "text": ":",
-        "page": 1,
-        "order": 58,
-        "type": "content"
-      },
-      {
-        "text": "E",
-        "page": 1,
-        "order": 59,
-        "type": "content"
-      },
-      {
-        "text": "LECTRONIC",
-        "page": 1,
-        "order": 60,
-        "type": "content"
-      },
-      {
-        "text": "III.",
-        "page": 1,
-        "order": 61,
-        "type": "content"
-      },
-      {
-        "text": " R",
-        "page": 1,
-        "order": 62,
-        "type": "content"
-      },
-      {
-        "text": "ISK",
-        "page": 1,
-        "order": 63,
-        "type": "content"
-      },
-      {
-        "text": "V",
-        "page": 1,
-        "order": 64,
-        "type": "content"
-      },
-      {
-        "text": "EHICLE",
-        "page": 1,
-        "order": 65,
-        "type": "content"
-      },
-      {
-        "text": ",",
-        "page": 1,
-        "order": 66,
-        "type": "content"
-      },
-      {
-        "text": "R",
-        "page": 1,
-        "order": 67,
-        "type": "content"
-      },
-      {
-        "text": "ESILIENCE",
-        "page": 1,
-        "order": 68,
-        "type": "content"
-      },
-      {
-        "text": "C",
-        "page": 1,
-        "order": 69,
-        "type": "content"
-      },
-      {
-        "text": "HARGING",
-        "page": 1,
-        "order": 70,
-        "type": "content"
-      },
-      {
-        "text": ",",
-        "page": 1,
-        "order": 71,
-        "type": "content"
-      },
-      {
-        "text": "T",
-        "page": 1,
-        "order": 72,
-        "type": "content"
-      },
-      {
-        "text": "AND",
-        "page": 1,
-        "order": 73,
-        "type": "content"
-      },
-      {
-        "text": "RUST ",
-        "page": 1,
-        "order": 74,
-        "type": "content"
-      },
-      {
-        "text": "S",
-        "page": 1,
-        "order": 75,
-        "type": "content"
-      },
-      {
-        "text": "TATIONS ",
-        "page": 1,
-        "order": 76,
-        "type": "content"
+        "type": "heading"
       },
       {
         "text": "described the need to take a systems view of the cyber physical ",
         "page": 1,
-        "order": 77,
-        "type": "content"
+        "order": 1,
+        "type": "heading"
+      },
+      {
+        "text": "all levels of the system hierarchy and across the entire system ",
+        "page": 1,
+        "order": 2,
+        "type": "heading"
       },
       {
         "text": "security challenge, including a view of how security ",
         "page": 1,
-        "order": 78,
-        "type": "content"
+        "order": 3,
+        "type": "heading"
       },
       {
         "text": "requirements flow down from operational, functional, and ",
         "page": 1,
-        "order": 79,
-        "type": "content"
+        "order": 4,
+        "type": "heading"
       },
       {
         "text": "architectural system levels. In particular, perspectives from ",
         "page": 1,
-        "order": 80,
-        "type": "content"
+        "order": 5,
+        "type": "heading"
       },
       {
         "text": "systems engineering and closely related disciplines such as risk ",
+        "page": 1,
+        "order": 6,
+        "type": "heading"
+      },
+      {
+        "text": "analysis and decision analysis are needed to synthesize and ",
+        "page": 1,
+        "order": 7,
+        "type": "heading"
+      },
+      {
+        "text": "Vehicle-to-grid (V2G) technology, including the charging ",
+        "page": 1,
+        "order": 8,
+        "type": "heading"
+      },
+      {
+        "text": "integrate information across areas of concern and guide ",
+        "page": 1,
+        "order": 9,
+        "type": "heading"
+      },
+      {
+        "text": "enterprise level decisions [36]. In addition, they mention ",
+        "page": 1,
+        "order": 10,
+        "type": "heading"
+      },
+      {
+        "text": "and control systems represent complex cyber-physical systems ",
+        "page": 1,
+        "order": 11,
+        "type": "heading"
+      },
+      {
+        "text": "multiple cross-cutting capabilities, such as decision analysis, ",
+        "page": 1,
+        "order": 12,
+        "type": "heading"
+      },
+      {
+        "text": "[27]-[30]. Connected vehicle systems and associated V2G ",
+        "page": 1,
+        "order": 13,
+        "type": "heading"
+      },
+      {
+        "text": "infrastructure elements are increasingly subject to security ",
+        "page": 1,
+        "order": 14,
+        "type": "heading"
+      },
+      {
+        "text": "how security is a transdisciplinary problem, requiring expertise ",
+        "page": 1,
+        "order": 15,
+        "type": "heading"
+      },
+      {
+        "text": "V2G technology enables fleet-vehicle batteries to provide ",
+        "page": 1,
+        "order": 16,
+        "type": "heading"
+      },
+      {
+        "text": "One of the major difficulties related to assessing the risks of ",
+        "page": 1,
+        "order": 17,
+        "type": "heading"
+      },
+      {
+        "text": "counterfeit electronics in the global supply chain has been the ",
+        "page": 1,
+        "order": 18,
+        "type": "heading"
+      },
+      {
+        "text": "otherwise be on stand-by for logistics operations. Several- ",
+        "page": 1,
+        "order": 19,
+        "type": "heading"
+      },
+      {
+        "text": "minute intervals of battery availability at specified power ",
+        "page": 1,
+        "order": 20,
+        "type": "heading"
+      },
+      {
+        "text": "Moreover, situations where there are low-likelihood and high- ",
+        "page": 1,
+        "order": 21,
+        "type": "heading"
+      },
+      {
+        "text": "throughputs are reserved and sold ahead in an e-commerce ",
+        "page": 1,
+        "order": 22,
+        "type": "heading"
+      },
+      {
+        "text": "consequence risks have been difficult for risk practitioners to ",
+        "page": 1,
+        "order": 23,
+        "type": "heading"
+      },
+      {
+        "text": "market. In addition to frequency regulation, V2G technology ",
+        "page": 1,
+        "order": 24,
+        "type": "heading"
+      },
+      {
+        "text": "contend with historically [38]-[40]. Furthermore, not all security ",
+        "page": 1,
+        "order": 25,
+        "type": "heading"
+      },
+      {
+        "text": "can also provide demand charge management, reducing a ",
+        "page": 1,
+        "order": 26,
+        "type": "heading"
+      },
+      {
+        "text": "requirements can be tested for complicated systems, meaning ",
+        "page": 1,
+        "order": 27,
+        "type": "heading"
+      },
+      {
+        "text": "These concerns have led to some researchers to describe ",
+        "page": 1,
+        "order": 28,
+        "type": "heading"
+      },
+      {
+        "text": "cyber resilience, where resilience is defined by The National ",
+        "page": 1,
+        "order": 29,
+        "type": "heading"
+      },
+      {
+        "text": "There is an opportunity for IoT systems integration ",
+        "page": 1,
+        "order": 30,
+        "type": "heading"
+      },
+      {
+        "text": "Academy of Science as \u201cthe ability to prepare and plan for, ",
+        "page": 1,
+        "order": 31,
+        "type": "heading"
+      },
+      {
+        "text": "(including manufacturing) of advanced chargers, network ",
+        "page": 1,
+        "order": 32,
+        "type": "heading"
+      },
+      {
+        "text": "absorb, recover from, or more successfully adapt to actual or ",
+        "page": 1,
+        "order": 33,
+        "type": "heading"
+      },
+      {
+        "text": "potential adverse events\u201d [42]. The National Research Council ",
+        "page": 1,
+        "order": 34,
+        "type": "heading"
+      },
+      {
+        "text": "commerce transactions among power utilities and their ",
+        "page": 1,
+        "order": 35,
+        "type": "heading"
+      },
+      {
+        "text": "describes a resilient system as \u201cone whose performance ",
+        "page": 1,
+        "order": 36,
+        "type": "heading"
+      },
+      {
+        "text": "industrial customers. A software system that enables ",
+        "page": 1,
+        "order": 37,
+        "type": "heading"
+      },
+      {
+        "text": "degrades gradually rather than catastrophically when its other ",
+        "page": 1,
+        "order": 38,
+        "type": "heading"
+      },
+      {
+        "text": "defensive mechanisms are insufficient to stem an attack. A ",
+        "page": 1,
+        "order": 39,
+        "type": "heading"
+      },
+      {
+        "text": "energy assets (solar, wind, etc.) is a critical component of V2G ",
+        "page": 1,
+        "order": 40,
+        "type": "heading"
+      },
+      {
+        "text": "resilient system will still continue to perform some of its ",
+        "page": 1,
+        "order": 41,
+        "type": "heading"
+      },
+      {
+        "text": "technology. Once these components are installed on a ",
+        "page": 1,
+        "order": 42,
+        "type": "heading"
+      },
+      {
+        "text": "intended functions, although perhaps more slowly or for fewer ",
+        "page": 1,
+        "order": 43,
+        "type": "heading"
+      },
+      {
+        "text": "customer\u2019s site, an operations management system can ",
+        "page": 1,
+        "order": 44,
+        "type": "heading"
+      },
+      {
+        "text": "people or with fewer applications. Features of resilient systems ",
+        "page": 1,
+        "order": 45,
+        "type": "heading"
+      },
+      {
+        "text": "continuously analyze and execute optimal V2G monetization ",
+        "page": 1,
+        "order": 46,
+        "type": "heading"
+      },
+      {
+        "text": "include redundancies and the absence of single points of failure\u201d ",
+        "page": 1,
+        "order": 47,
+        "type": "heading"
+      },
+      {
+        "text": "opportunities available given a fleet\u2019s logistic operating ",
+        "page": 1,
+        "order": 48,
+        "type": "heading"
+      },
+      {
+        "text": "The most important of these properties, and perhaps most ",
+        "page": 1,
+        "order": 49,
+        "type": "heading"
+      },
+      {
+        "text": "compromises on cyber resources. Cyber resiliency can be a ",
+        "page": 1,
+        "order": 50,
+        "type": "heading"
+      },
+      {
+        "text": "worrying to industry, is the possibility of a cascading failure ",
+        "page": 1,
+        "order": 51,
+        "type": "heading"
+      },
+      {
+        "text": "following an attack or failure of electronic hardware. Is has been ",
+        "page": 1,
+        "order": 52,
+        "type": "heading"
+      },
+      {
+        "text": "business function, an organization, or a cross-organizational ",
+        "page": 1,
+        "order": 53,
+        "type": "heading"
+      },
+      {
+        "text": "shown for a simple coupled network model that cascading ",
+        "page": 1,
+        "order": 54,
+        "type": "heading"
+      },
+      {
+        "text": "mission; the term can also be applied to an individual, ",
+        "page": 1,
+        "order": 55,
+        "type": "heading"
+      },
+      {
+        "text": "failure effects lead to a drastic decrease in the number of links ",
+        "page": 1,
+        "order": 56,
+        "type": "heading"
+      },
+      {
+        "text": "and nodes that need to be removed from the network to break it ",
+        "page": 1,
+        "order": 57,
+        "type": "heading"
+      },
+      {
+        "text": "supply chain resilience, which promotes the resilience paradigm ",
+        "page": 1,
+        "order": 58,
+        "type": "heading"
+      },
+      {
+        "text": "in terms of building adaptability and the ability to bounce back ",
+        "page": 1,
+        "order": 59,
+        "type": "heading"
+      },
+      {
+        "text": "Several frameworks for cyber resilience have been proposed ",
+        "page": 1,
+        "order": 60,
+        "type": "heading"
+      },
+      {
+        "text": "Risk analysis has been historically focused on answering ",
+        "page": 1,
+        "order": 61,
+        "type": "heading"
+      },
+      {
+        "text": "[46]-[49]. Bodeau and Graubert [49] described the field of cyber ",
+        "page": 1,
+        "order": 62,
+        "type": "heading"
+      },
+      {
+        "text": "questions about what can go wrong, what is the likelihood of ",
+        "page": 1,
+        "order": 63,
+        "type": "heading"
+      },
+      {
+        "text": "resiliency engineering as an interdisciplinary exercise founded ",
+        "page": 1,
+        "order": 64,
+        "type": "heading"
+      },
+      {
+        "text": "something going wrong, and what are the impacts in the case of ",
+        "page": 1,
+        "order": 65,
+        "type": "heading"
+      },
+      {
+        "text": "upon systems engineering, and drawing principles from allied ",
+        "page": 1,
+        "order": 66,
+        "type": "heading"
+      },
+      {
+        "text": "the thing going wrong [34]. At the highest level of system ",
+        "page": 1,
+        "order": 67,
+        "type": "heading"
+      },
+      {
+        "text": "a matrix-based approach for the development of cyber resilience ",
+        "page": 1,
+        "order": 68,
+        "type": "heading"
+      },
+      {
+        "text": "Technical risks are related to the intended functionality of the ",
+        "page": 1,
+        "order": 69,
+        "type": "heading"
+      },
+      {
+        "text": "metrics, based on the stages of the event management cycle ",
+        "page": 1,
+        "order": 70,
+        "type": "heading"
+      },
+      {
+        "text": "system, whereas operational risks and programmatic risks are ",
+        "page": 1,
+        "order": 71,
+        "type": "heading"
+      },
+      {
+        "text": "related to the achievement of business and program objectives, ",
+        "page": 1,
+        "order": 72,
+        "type": "heading"
+      },
+      {
+        "text": "resilience metrics development process was applied to industrial ",
+        "page": 1,
+        "order": 73,
+        "type": "heading"
+      },
+      {
+        "text": "is only a segment of the larger and more complex issue of cyber- ",
+        "page": 1,
+        "order": 74,
+        "type": "heading"
+      },
+      {
+        "text": "A final related concept is trust. Trust in the context of cyber ",
+        "page": 1,
+        "order": 75,
+        "type": "heading"
+      },
+      {
+        "text": "physical security [36]. They defined ten areas of concern, from ",
+        "page": 1,
+        "order": 76,
+        "type": "heading"
+      },
+      {
+        "text": "security has been defined in multiple ways, including the ",
+        "page": 1,
+        "order": 77,
+        "type": "heading"
+      },
+      {
+        "text": "software assurance to life cycle management, each with its own ",
+        "page": 1,
+        "order": 78,
+        "type": "heading"
+      },
+      {
+        "text": "\u201cqualified reliance on received information\u201d [52]. In the context ",
+        "page": 1,
+        "order": 79,
+        "type": "heading"
+      },
+      {
+        "text": "regulatory governing bodies and guidance documents. They ",
+        "page": 1,
+        "order": 80,
+        "type": "heading"
+      },
+      {
+        "text": "life cycle. ",
         "page": 1,
         "order": 81,
         "type": "content"
       },
       {
-        "text": "analysis and decision analysis are needed to synthesize and ",
+        "text": "II.",
         "page": 1,
         "order": 82,
         "type": "content"
       },
       {
-        "text": "integrate information across areas of concern and guide ",
+        "text": " E",
         "page": 1,
         "order": 83,
         "type": "content"
       },
       {
-        "text": "enterprise level decisions [36]. In addition, they mention ",
+        "text": "XAMPLE",
         "page": 1,
         "order": 84,
         "type": "content"
       },
       {
-        "text": "multiple cross-cutting capabilities, such as decision analysis, ",
+        "text": "stations, electric vehicles, power and transportation networks, ",
         "page": 1,
         "order": 85,
         "type": "content"
       },
       {
-        "text": "risk analysis, education and outreach, and training, highlighting ",
+        "text": "threats, including security of embedded hardware devices [27]. ",
         "page": 1,
         "order": 86,
         "type": "content"
       },
       {
-        "text": "how security is a transdisciplinary problem, requiring expertise ",
+        "text": "frequency regulation (distributed shock absorption on the scale ",
         "page": 1,
         "order": 87,
         "type": "content"
       },
       {
-        "text": "from an array of subject domains [36]-[37]. ",
+        "text": "of milliseconds to seconds) to the power grid when they would ",
         "page": 1,
         "order": 88,
         "type": "content"
       },
       {
-        "text": "counterfeit electronics in the global supply chain has been the ",
+        "text": "customer\u2019s monthly demand charge (which can make up a ",
         "page": 1,
         "order": 89,
         "type": "content"
       },
       {
-        "text": "lack of obtainable data regarding the prevalence of counterfeits. ",
+        "text": "significant portion of a site\u2019s electricity bill) by discharging an ",
         "page": 1,
         "order": 90,
         "type": "content"
       },
       {
-        "text": "Moreover, situations where there are low-likelihood and high- ",
+        "text": "EV to partially power other assets, such as a building. ",
         "page": 1,
         "order": 91,
         "type": "content"
       },
       {
-        "text": "consequence risks have been difficult for risk practitioners to ",
+        "text": "communications, fleet vehicles, batteries, and the associated e- ",
         "page": 1,
         "order": 92,
         "type": "content"
       },
       {
-        "text": "contend with historically [38]-[40]. Furthermore, not all security ",
+        "text": "interoperability between EVs, chargers, the grid, and other ",
         "page": 1,
         "order": 93,
         "type": "content"
       },
       {
-        "text": "requirements can be tested for complicated systems, meaning ",
+        "text": "schedule. ",
         "page": 1,
         "order": 94,
         "type": "content"
       },
       {
-        "text": "that there will always be some undetected risk [41]. ",
+        "text": "down into individual components [31]-[32]. Ganin et al. have ",
         "page": 1,
         "order": 95,
         "type": "content"
       },
       {
-        "text": "cyber resilience, where resilience is defined by The National ",
+        "text": "illustrated a similar effect for system recovery after failure [33]. ",
         "page": 1,
         "order": 96,
         "type": "content"
       },
       {
-        "text": "Academy of Science as \u201cthe ability to prepare and plan for, ",
+        "text": "abstraction, risks can be associated with embedded hardware in ",
         "page": 1,
         "order": 97,
         "type": "content"
       },
       {
-        "text": "absorb, recover from, or more successfully adapt to actual or ",
+        "text": "terms of technical, operational, and programmatic perspectives. ",
         "page": 1,
         "order": 98,
         "type": "content"
       },
       {
-        "text": "potential adverse events\u201d [42]. The National Research Council ",
+        "text": "such as meeting cost and schedule benchmarks [35]. ",
         "page": 1,
         "order": 99,
         "type": "content"
       },
       {
-        "text": "describes a resilient system as \u201cone whose performance ",
+        "text": "DiMase et al. described how supply chain risk management ",
         "page": 1,
         "order": 100,
         "type": "content"
       },
       {
-        "text": "degrades gradually rather than catastrophically when its other ",
+        "text": ":",
         "page": 1,
         "order": 101,
         "type": "content"
       },
       {
-        "text": "defensive mechanisms are insufficient to stem an attack. A ",
+        "text": "E",
         "page": 1,
         "order": 102,
         "type": "content"
       },
       {
-        "text": "resilient system will still continue to perform some of its ",
+        "text": "LECTRONIC",
         "page": 1,
         "order": 103,
         "type": "content"
       },
       {
-        "text": "intended functions, although perhaps more slowly or for fewer ",
+        "text": "III.",
         "page": 1,
         "order": 104,
         "type": "content"
       },
       {
-        "text": "people or with fewer applications. Features of resilient systems ",
+        "text": " R",
         "page": 1,
         "order": 105,
         "type": "content"
       },
       {
-        "text": "include redundancies and the absence of single points of failure\u201d ",
+        "text": "ISK",
         "page": 1,
         "order": 106,
         "type": "content"
       },
       {
-        "text": "[43]. With respect to cyber resilience, \u201ccyber resilience (or ",
+        "text": "V",
         "page": 1,
         "order": 107,
         "type": "content"
       },
       {
-        "text": "resiliency) is the ability to anticipate, withstand, recover from, ",
+        "text": "EHICLE",
         "page": 1,
         "order": 108,
         "type": "content"
       },
       {
-        "text": "and adapt to adverse conditions, stresses, attacks, or ",
+        "text": ",",
         "page": 1,
         "order": 109,
         "type": "content"
       },
       {
-        "text": "compromises on cyber resources. Cyber resiliency can be a ",
+        "text": "R",
         "page": 1,
         "order": 110,
         "type": "content"
       },
       {
-        "text": "capability of a system, a system-of-systems, a mission, a ",
+        "text": "ESILIENCE",
         "page": 1,
         "order": 111,
         "type": "content"
       },
       {
-        "text": "business function, an organization, or a cross-organizational ",
+        "text": "C",
         "page": 1,
         "order": 112,
         "type": "content"
       },
       {
-        "text": "mission; the term can also be applied to an individual, ",
+        "text": "HARGING",
         "page": 1,
         "order": 113,
         "type": "content"
       },
       {
-        "text": "household, group, region, or nation\u201d [44]. Sheffi [45] proposed ",
+        "text": ",",
         "page": 1,
         "order": 114,
         "type": "content"
       },
       {
-        "text": "supply chain resilience, which promotes the resilience paradigm ",
+        "text": "T",
         "page": 1,
         "order": 115,
         "type": "content"
       },
       {
-        "text": "in terms of building adaptability and the ability to bounce back ",
+        "text": "AND",
         "page": 1,
         "order": 116,
         "type": "content"
       },
       {
-        "text": "from disruptions and stressors. ",
+        "text": "RUST ",
         "page": 1,
         "order": 117,
         "type": "content"
       },
       {
-        "text": "[46]-[49]. Bodeau and Graubert [49] described the field of cyber ",
+        "text": "S",
         "page": 1,
         "order": 118,
         "type": "content"
       },
       {
-        "text": "resiliency engineering as an interdisciplinary exercise founded ",
+        "text": "TATIONS ",
         "page": 1,
         "order": 119,
         "type": "content"
       },
       {
-        "text": "upon systems engineering, and drawing principles from allied ",
+        "text": "risk analysis, education and outreach, and training, highlighting ",
         "page": 1,
         "order": 120,
         "type": "content"
       },
       {
-        "text": "topics including dependability, survivability, fault tolerance, ",
+        "text": "from an array of subject domains [36]-[37]. ",
         "page": 1,
         "order": 121,
         "type": "content"
       },
       {
-        "text": "contingency planning, and others. Linkov et al. [50] developed ",
+        "text": "lack of obtainable data regarding the prevalence of counterfeits. ",
         "page": 1,
         "order": 122,
         "type": "content"
       },
       {
-        "text": "a matrix-based approach for the development of cyber resilience ",
+        "text": "that there will always be some undetected risk [41]. ",
         "page": 1,
         "order": 123,
         "type": "content"
       },
       {
-        "text": "metrics, based on the stages of the event management cycle ",
+        "text": "[43]. With respect to cyber resilience, \u201ccyber resilience (or ",
         "page": 1,
         "order": 124,
         "type": "content"
       },
       {
-        "text": "(Plan/Prepare, Absorb, Recover, Adapt) and operational ",
+        "text": "resiliency) is the ability to anticipate, withstand, recover from, ",
         "page": 1,
         "order": 125,
         "type": "content"
       },
       {
-        "text": "domains (Physical, Information, Cognitive, Social). This ",
+        "text": "and adapt to adverse conditions, stresses, attacks, or ",
         "page": 1,
         "order": 126,
         "type": "content"
       },
       {
-        "text": "resilience metrics development process was applied to industrial ",
+        "text": "capability of a system, a system-of-systems, a mission, a ",
         "page": 1,
         "order": 127,
         "type": "content"
       },
       {
-        "text": "control systems [51]. ",
+        "text": "household, group, region, or nation\u201d [44]. Sheffi [45] proposed ",
         "page": 1,
         "order": 128,
         "type": "content"
       },
       {
-        "text": "security has been defined in multiple ways, including the ",
+        "text": "from disruptions and stressors. ",
         "page": 1,
         "order": 129,
         "type": "content"
       },
       {
-        "text": "\u201cqualified reliance on received information\u201d [52]. In the context ",
+        "text": "topics including dependability, survivability, fault tolerance, ",
         "page": 1,
         "order": 130,
         "type": "content"
       },
       {
-        "text": "One of the major difficulties related to assessing the risks of ",
+        "text": "contingency planning, and others. Linkov et al. [50] developed ",
         "page": 1,
         "order": 131,
         "type": "content"
       },
       {
-        "text": "These concerns have led to some researchers to describe ",
+        "text": "(Plan/Prepare, Absorb, Recover, Adapt) and operational ",
         "page": 1,
         "order": 132,
         "type": "content"
       },
       {
-        "text": "Several frameworks for cyber resilience have been proposed ",
+        "text": "domains (Physical, Information, Cognitive, Social). This ",
         "page": 1,
         "order": 133,
         "type": "content"
       },
       {
-        "text": "A final related concept is trust. Trust in the context of cyber ",
+        "text": "control systems [51]. ",
         "page": 1,
         "order": 134,
         "type": "content"
@@ -1483,844 +1485,790 @@
         "text": "of supply chains, the concept of trust is similar. Trust is ",
         "page": 2,
         "order": 0,
-        "type": "content"
-      },
-      {
-        "text": "conceptualized as a belief held by an actor in the supply chain, ",
-        "page": 2,
-        "order": 1,
-        "type": "content"
-      },
-      {
-        "text": "that another actor will act consistently and do what they say that ",
-        "page": 2,
-        "order": 2,
-        "type": "content"
-      },
-      {
-        "text": "they will do [53]. Trust is related to reciprocity between parties, ",
-        "page": 2,
-        "order": 3,
-        "type": "content"
-      },
-      {
-        "text": "the alignment of purposes, consequences for breaking trust, and ",
-        "page": 2,
-        "order": 4,
-        "type": "content"
-      },
-      {
-        "text": "transparency of information shared between parties [54]. Mayer ",
-        "page": 2,
-        "order": 5,
-        "type": "content"
-      },
-      {
-        "text": "et al. [55] summarizes trust as \u201cthe willingness of a party to be ",
-        "page": 2,
-        "order": 6,
-        "type": "content"
-      },
-      {
-        "text": "vulnerable to the actions of another party based on the ",
-        "page": 2,
-        "order": 7,
-        "type": "content"
-      },
-      {
-        "text": "expectation that the other will perform a particular action ",
-        "page": 2,
-        "order": 8,
-        "type": "content"
-      },
-      {
-        "text": "important to the trustor, irrespective of the ability to monitor or ",
-        "page": 2,
-        "order": 9,
-        "type": "content"
-      },
-      {
-        "text": "control that other party.\u201d ",
-        "page": 2,
-        "order": 10,
-        "type": "content"
-      },
-      {
-        "text": "IV.",
-        "page": 2,
-        "order": 11,
-        "type": "content"
-      },
-      {
-        "text": " R",
-        "page": 2,
-        "order": 12,
-        "type": "content"
-      },
-      {
-        "text": "Increasingly, hardware supply chains have been evolving ",
-        "page": 2,
-        "order": 13,
-        "type": "content"
-      },
-      {
-        "text": "toward supply webs, moving away from linear procurement and ",
-        "page": 2,
-        "order": 14,
-        "type": "content"
-      },
-      {
-        "text": "toward ecosystems that have been characterized as \u201cdynamic, ",
-        "page": 2,
-        "order": 15,
-        "type": "content"
-      },
-      {
-        "text": "hyper-connected, and collaborative\u201d [56]. Managing risks ",
-        "page": 2,
-        "order": 16,
-        "type": "content"
-      },
-      {
-        "text": "within these complex supply chains is a top industrial priority ",
-        "page": 2,
-        "order": 17,
-        "type": "content"
-      },
-      {
-        "text": "and focuses mainly on avoidance and mitigation of ",
-        "page": 2,
-        "order": 18,
-        "type": "content"
-      },
-      {
-        "text": "consequences associated with disruption events, as well as ",
-        "page": 2,
-        "order": 19,
-        "type": "content"
-      },
-      {
-        "text": "balancing expected losses with risk management costs [57]-[59]. ",
-        "page": 2,
-        "order": 20,
-        "type": "content"
-      },
-      {
-        "text": "Teng, Thekdi, and Lambert [60]-[61] described program risk as ",
-        "page": 2,
-        "order": 21,
-        "type": "content"
-      },
-      {
-        "text": "the process of answering the questions: ",
-        "page": 2,
-        "order": 22,
-        "type": "content"
-      },
-      {
-        "text": "Fig. 1.",
-        "page": 2,
-        "order": 23,
-        "type": "content"
-      },
-      {
-        "text": " Prioritizatoin of cyber-physical assets across multiple disruptive ",
-        "page": 2,
-        "order": 24,
-        "type": "content"
-      },
-      {
-        "text": "scenarios of emergent and future conditions to support decision making. ",
-        "page": 2,
-        "order": 25,
-        "type": "content"
-      },
-      {
-        "text": "Security and risk management need to go beyond the system ",
-        "page": 2,
-        "order": 26,
-        "type": "content"
-      },
-      {
-        "text": "boundary, looking toward the wider system of business ",
-        "page": 2,
-        "order": 27,
-        "type": "content"
-      },
-      {
-        "text": "processes and logistics networks, deriving relevant decision ",
-        "page": 2,
-        "order": 28,
-        "type": "content"
-      },
-      {
-        "text": "making parameters related to the broader hardware supply chain ",
-        "page": 2,
-        "order": 29,
-        "type": "content"
-      },
-      {
-        "text": "including specific resilience-enhancing initiatives and their ",
-        "page": 2,
-        "order": 30,
-        "type": "content"
-      },
-      {
-        "text": "relevant benefits, costs, and time constraints. Research is needed ",
-        "page": 2,
-        "order": 31,
-        "type": "content"
-      },
-      {
-        "text": "on methods, metrics, and testbeds for risk analysis of IOT ",
-        "page": 2,
-        "order": 32,
-        "type": "content"
-      },
-      {
-        "text": "devices and logistics systems, with the goal to develop risk ",
-        "page": 2,
-        "order": 33,
-        "type": "content"
-      },
-      {
-        "text": "analysis methods and decision making approaches along with ",
-        "page": 2,
-        "order": 34,
-        "type": "content"
-      },
-      {
-        "text": "-B",
-        "page": 2,
-        "order": 35,
-        "type": "content"
-      },
-      {
-        "text": "D",
-        "page": 2,
-        "order": 36,
-        "type": "content"
-      },
-      {
-        "text": "ISK",
-        "page": 2,
-        "order": 37,
-        "type": "content"
-      },
-      {
-        "text": "ASED",
-        "page": 2,
-        "order": 38,
-        "type": "content"
-      },
-      {
-        "text": "what are the scope of risks to be addressed; ",
-        "page": 2,
-        "order": 39,
-        "type": "content"
-      },
-      {
-        "text": "\u2022 ",
-        "page": 2,
-        "order": 40,
-        "type": "content"
-      },
-      {
-        "text": "what are the allocations of resources across time, ",
-        "page": 2,
-        "order": 41,
-        "type": "content"
-      },
-      {
-        "text": "\u2022 ",
-        "page": 2,
-        "order": 42,
-        "type": "content"
-      },
-      {
-        "text": "geography, topics; ",
-        "page": 2,
-        "order": 43,
-        "type": "content"
-      },
-      {
-        "text": "and how do we monitor the efficacy of risk ",
-        "page": 2,
-        "order": 44,
-        "type": "content"
-      },
-      {
-        "text": "\u2022 ",
-        "page": 2,
-        "order": 45,
-        "type": "content"
-      },
-      {
-        "text": "management into the future.  ",
-        "page": 2,
-        "order": 46,
-        "type": "content"
-      },
-      {
-        "text": "M",
-        "page": 2,
-        "order": 47,
-        "type": "content"
-      },
-      {
-        "text": "ECISION",
-        "page": 2,
-        "order": 48,
-        "type": "content"
-      },
-      {
-        "text": "AKING IN",
-        "page": 2,
-        "order": 49,
-        "type": "content"
-      },
-      {
-        "text": "S",
-        "page": 2,
-        "order": 50,
-        "type": "content"
-      },
-      {
-        "text": "C",
-        "page": 2,
-        "order": 51,
-        "type": "content"
-      },
-      {
-        "text": "UPPLY",
-        "page": 2,
-        "order": 52,
-        "type": "content"
-      },
-      {
-        "text": "C",
-        "page": 2,
-        "order": 53,
-        "type": "content"
-      },
-      {
-        "text": "YBER",
-        "page": 2,
-        "order": 54,
-        "type": "content"
-      },
-      {
-        "text": "HAINS ",
-        "page": 2,
-        "order": 55,
-        "type": "content"
-      },
-      {
-        "text": "-P",
-        "page": 2,
-        "order": 56,
-        "type": "content"
-      },
-      {
-        "text": "HYSICAL ",
-        "page": 2,
-        "order": 57,
-        "type": "content"
+        "type": "heading"
       },
       {
         "text": "relevant economic indicators for hardware networks and supply ",
         "page": 2,
-        "order": 58,
-        "type": "content"
+        "order": 1,
+        "type": "heading"
       },
       {
-        "text": "chains [51]. ",
+        "text": "conceptualized as a belief held by an actor in the supply chain, ",
         "page": 2,
-        "order": 59,
-        "type": "content"
+        "order": 2,
+        "type": "heading"
+      },
+      {
+        "text": "that another actor will act consistently and do what they say that ",
+        "page": 2,
+        "order": 3,
+        "type": "heading"
+      },
+      {
+        "text": "Principles and methods of scenario building can be ",
+        "page": 2,
+        "order": 4,
+        "type": "heading"
+      },
+      {
+        "text": "they will do [53]. Trust is related to reciprocity between parties, ",
+        "page": 2,
+        "order": 5,
+        "type": "heading"
       },
       {
         "text": "leveraged, considering emergent and future conditions ",
         "page": 2,
-        "order": 60,
-        "type": "content"
+        "order": 6,
+        "type": "heading"
       },
       {
-        "text": "involving environment, regulation, technology innovation, ",
+        "text": "the alignment of purposes, consequences for breaking trust, and ",
         "page": 2,
-        "order": 61,
-        "type": "content"
+        "order": 7,
+        "type": "heading"
+      },
+      {
+        "text": "transparency of information shared between parties [54]. Mayer ",
+        "page": 2,
+        "order": 8,
+        "type": "heading"
       },
       {
         "text": "markets and economics, population and workforce behaviors, ",
         "page": 2,
-        "order": 62,
-        "type": "content"
+        "order": 9,
+        "type": "heading"
       },
       {
         "text": "and other factors, both individually and in combination as ",
         "page": 2,
-        "order": 63,
-        "type": "content"
+        "order": 10,
+        "type": "heading"
+      },
+      {
+        "text": "vulnerable to the actions of another party based on the ",
+        "page": 2,
+        "order": 11,
+        "type": "heading"
       },
       {
         "text": "scenarios, as demonstrated in [62]-[64]. For each of several risk ",
         "page": 2,
-        "order": 64,
-        "type": "content"
+        "order": 12,
+        "type": "heading"
+      },
+      {
+        "text": "expectation that the other will perform a particular action ",
+        "page": 2,
+        "order": 13,
+        "type": "heading"
       },
       {
         "text": "scenarios of emergent conditions, a comprehensive risk analysis ",
         "page": 2,
-        "order": 65,
-        "type": "content"
+        "order": 14,
+        "type": "heading"
+      },
+      {
+        "text": "important to the trustor, irrespective of the ability to monitor or ",
+        "page": 2,
+        "order": 15,
+        "type": "heading"
       },
       {
         "text": "methodology would elicit from experts the increases or ",
         "page": 2,
-        "order": 66,
-        "type": "content"
+        "order": 16,
+        "type": "heading"
+      },
+      {
+        "text": "control that other party.\u201d ",
+        "page": 2,
+        "order": 17,
+        "type": "heading"
       },
       {
         "text": "decreases in importance of criteria to rank IOT devices and ",
         "page": 2,
-        "order": 67,
-        "type": "content"
+        "order": 18,
+        "type": "heading"
       },
       {
         "text": "systems of concern. With assessments of each device relative to ",
         "page": 2,
-        "order": 68,
-        "type": "content"
+        "order": 19,
+        "type": "heading"
       },
       {
-        "text": "threat, vulnerability, and consequence criteria, the system ",
+        "text": "-B",
         "page": 2,
-        "order": 69,
-        "type": "content"
+        "order": 20,
+        "type": "heading"
+      },
+      {
+        "text": "-P",
+        "page": 2,
+        "order": 21,
+        "type": "heading"
       },
       {
         "text": "analyst or manager would be able to study the sensitivity of ",
         "page": 2,
-        "order": 70,
-        "type": "content"
+        "order": 22,
+        "type": "heading"
+      },
+      {
+        "text": "Increasingly, hardware supply chains have been evolving ",
+        "page": 2,
+        "order": 23,
+        "type": "heading"
       },
       {
         "text": "device criticality rankings to the scenarios, supportive of ",
         "page": 2,
-        "order": 71,
-        "type": "content"
+        "order": 24,
+        "type": "heading"
       },
       {
-        "text": "continuous adaptation and improvement toward industry aims. ",
+        "text": "toward supply webs, moving away from linear procurement and ",
         "page": 2,
-        "order": 72,
-        "type": "content"
+        "order": 25,
+        "type": "heading"
+      },
+      {
+        "text": "toward ecosystems that have been characterized as \u201cdynamic, ",
+        "page": 2,
+        "order": 26,
+        "type": "heading"
+      },
+      {
+        "text": "The analysis would assist to determine what scenarios or ",
+        "page": 2,
+        "order": 27,
+        "type": "heading"
+      },
+      {
+        "text": "hyper-connected, and collaborative\u201d [56]. Managing risks ",
+        "page": 2,
+        "order": 28,
+        "type": "heading"
       },
       {
         "text": "combinations of risk scenarios are influential for critical ",
         "page": 2,
-        "order": 73,
-        "type": "content"
+        "order": 29,
+        "type": "heading"
+      },
+      {
+        "text": "within these complex supply chains is a top industrial priority ",
+        "page": 2,
+        "order": 30,
+        "type": "heading"
       },
       {
         "text": "embedded hardware components in a large-scale system. With ",
         "page": 2,
-        "order": 74,
-        "type": "content"
+        "order": 31,
+        "type": "heading"
       },
       {
-        "text": "this risk-based information, governments, scientific experts, ",
+        "text": "and focuses mainly on avoidance and mitigation of ",
         "page": 2,
-        "order": 75,
-        "type": "content"
+        "order": 32,
+        "type": "heading"
+      },
+      {
+        "text": "consequences associated with disruption events, as well as ",
+        "page": 2,
+        "order": 33,
+        "type": "heading"
       },
       {
         "text": "policy-makers and various other stakeholders can make ",
         "page": 2,
-        "order": 76,
-        "type": "content"
+        "order": 34,
+        "type": "heading"
       },
       {
         "text": "evidence-based strategic decisions leading to robust adaptive ",
         "page": 2,
-        "order": 77,
-        "type": "content"
+        "order": 35,
+        "type": "heading"
+      },
+      {
+        "text": "Teng, Thekdi, and Lambert [60]-[61] described program risk as ",
+        "page": 2,
+        "order": 36,
+        "type": "heading"
       },
       {
         "text": "management of cyber security within complex interconnected ",
+        "page": 2,
+        "order": 37,
+        "type": "heading"
+      },
+      {
+        "text": "what are the scope of risks to be addressed; ",
+        "page": 2,
+        "order": 38,
+        "type": "heading"
+      },
+      {
+        "text": "An open area of research related to decision making is that ",
+        "page": 2,
+        "order": 39,
+        "type": "heading"
+      },
+      {
+        "text": "what are the allocations of resources across time, ",
+        "page": 2,
+        "order": 40,
+        "type": "heading"
+      },
+      {
+        "text": "geography, topics; ",
+        "page": 2,
+        "order": 41,
+        "type": "heading"
+      },
+      {
+        "text": "technical metrics for security of hardware components against a ",
+        "page": 2,
+        "order": 42,
+        "type": "heading"
+      },
+      {
+        "text": "and how do we monitor the efficacy of risk ",
+        "page": 2,
+        "order": 43,
+        "type": "heading"
+      },
+      {
+        "text": "assessing the performance of testing laboratories including ",
+        "page": 2,
+        "order": 44,
+        "type": "heading"
+      },
+      {
+        "text": "unified framework for metric development across the various ",
+        "page": 2,
+        "order": 45,
+        "type": "heading"
+      },
+      {
+        "text": "The risks posed by counterfeit electronics are numerous, and ",
+        "page": 2,
+        "order": 46,
+        "type": "heading"
+      },
+      {
+        "text": "there exist a large number of potential risk mitigation measures ",
+        "page": 2,
+        "order": 47,
+        "type": "heading"
+      },
+      {
+        "text": "which one can implement for a given system or across the ",
+        "page": 2,
+        "order": 48,
+        "type": "heading"
+      },
+      {
+        "text": "The ",
+        "page": 2,
+        "order": 49,
+        "type": "heading"
+      },
+      {
+        "text": "task ",
+        "page": 2,
+        "order": 50,
+        "type": "heading"
+      },
+      {
+        "text": "of ",
+        "page": 2,
+        "order": 51,
+        "type": "heading"
+      },
+      {
+        "text": "identifying ",
+        "page": 2,
+        "order": 52,
+        "type": "heading"
+      },
+      {
+        "text": "what ",
+        "page": 2,
+        "order": 53,
+        "type": "heading"
+      },
+      {
+        "text": "specific ",
+        "page": 2,
+        "order": 54,
+        "type": "heading"
+      },
+      {
+        "text": "countermeasures are used to reduce risk of counterfeit hardware ",
+        "page": 2,
+        "order": 55,
+        "type": "heading"
+      },
+      {
+        "text": "is complicated by the many potential options available. While ",
+        "page": 2,
+        "order": 56,
+        "type": "heading"
+      },
+      {
+        "text": "one can take a \u201cdefense in depth\u201d approach and implement many ",
+        "page": 2,
+        "order": 57,
+        "type": "heading"
+      },
+      {
+        "text": "safeguards, the question remains as to which ones in particular ",
+        "page": 2,
+        "order": 58,
+        "type": "heading"
+      },
+      {
+        "text": "Each mitigation has associated with it a certain effectiveness in ",
+        "page": 2,
+        "order": 59,
+        "type": "heading"
+      },
+      {
+        "text": "mitigating risks, but also comes at a cost. Moreover, mitigations ",
+        "page": 2,
+        "order": 60,
+        "type": "heading"
+      },
+      {
+        "text": "can be implemented in combination with one another. These ",
+        "page": 2,
+        "order": 61,
+        "type": "heading"
+      },
+      {
+        "text": "decisions must balance the inputs and concerns from upper ",
+        "page": 2,
+        "order": 62,
+        "type": "heading"
+      },
+      {
+        "text": "Security and risk management need to go beyond the system ",
+        "page": 2,
+        "order": 63,
+        "type": "heading"
+      },
+      {
+        "text": "management and organizational department such as supply ",
+        "page": 2,
+        "order": 64,
+        "type": "heading"
+      },
+      {
+        "text": "boundary, looking toward the wider system of business ",
+        "page": 2,
+        "order": 65,
+        "type": "heading"
+      },
+      {
+        "text": "processes and logistics networks, deriving relevant decision ",
+        "page": 2,
+        "order": 66,
+        "type": "heading"
+      },
+      {
+        "text": "making parameters related to the broader hardware supply chain ",
+        "page": 2,
+        "order": 67,
+        "type": "heading"
+      },
+      {
+        "text": "The resulting question is that for a given level of risk ",
+        "page": 2,
+        "order": 68,
+        "type": "heading"
+      },
+      {
+        "text": "including specific resilience-enhancing initiatives and their ",
+        "page": 2,
+        "order": 69,
+        "type": "heading"
+      },
+      {
+        "text": "reduction and a certain budget, what is the optimal investment ",
+        "page": 2,
+        "order": 70,
+        "type": "heading"
+      },
+      {
+        "text": "relevant benefits, costs, and time constraints. Research is needed ",
+        "page": 2,
+        "order": 71,
+        "type": "heading"
+      },
+      {
+        "text": "strategy, in the form of combinations of mitigations, to ",
+        "page": 2,
+        "order": 72,
+        "type": "heading"
+      },
+      {
+        "text": "on methods, metrics, and testbeds for risk analysis of IOT ",
+        "page": 2,
+        "order": 73,
+        "type": "heading"
+      },
+      {
+        "text": "implement? ",
+        "page": 2,
+        "order": 74,
+        "type": "heading"
+      },
+      {
+        "text": "devices and logistics systems, with the goal to develop risk ",
+        "page": 2,
+        "order": 75,
+        "type": "heading"
+      },
+      {
+        "text": "analysis methods and decision making approaches along with ",
+        "page": 2,
+        "order": 76,
+        "type": "heading"
+      },
+      {
+        "text": "In particular, risk can be decomposed into two components \u2013 ",
+        "page": 2,
+        "order": 77,
+        "type": "heading"
+      },
+      {
+        "text": "et al. [55] summarizes trust as \u201cthe willingness of a party to be ",
         "page": 2,
         "order": 78,
         "type": "content"
       },
       {
-        "text": "systems and balance benefits, costs, and risks. ",
+        "text": "IV.",
         "page": 2,
         "order": 79,
         "type": "content"
       },
       {
-        "text": "of metrics for security. Rostami et al. [65] proposed several ",
+        "text": " R",
         "page": 2,
         "order": 80,
         "type": "content"
       },
       {
-        "text": "technical metrics for security of hardware components against a ",
+        "text": "balancing expected losses with risk management costs [57]-[59]. ",
         "page": 2,
         "order": 81,
         "type": "content"
       },
       {
-        "text": "variety of attacks. Hagen et al. [66] propose four metrics for ",
+        "text": "the process of answering the questions: ",
         "page": 2,
         "order": 82,
         "type": "content"
       },
       {
-        "text": "assessing the performance of testing laboratories including ",
+        "text": "Fig. 1.",
         "page": 2,
         "order": 83,
         "type": "content"
       },
       {
-        "text": "effectiveness, efficiency, capacity, and capability. However, a ",
+        "text": " Prioritizatoin of cyber-physical assets across multiple disruptive ",
         "page": 2,
         "order": 84,
         "type": "content"
       },
       {
-        "text": "unified framework for metric development across the various ",
+        "text": "scenarios of emergent and future conditions to support decision making. ",
         "page": 2,
         "order": 85,
         "type": "content"
       },
       {
-        "text": "levels of system hierarchy and abstraction has not been ",
+        "text": "D",
         "page": 2,
         "order": 86,
         "type": "content"
       },
       {
-        "text": "developed. ",
+        "text": "ISK",
         "page": 2,
         "order": 87,
         "type": "content"
       },
       {
-        "text": "V.",
+        "text": "ASED",
         "page": 2,
         "order": 88,
         "type": "content"
       },
       {
-        "text": "there exist a large number of potential risk mitigation measures ",
+        "text": "\u2022 ",
         "page": 2,
         "order": 89,
         "type": "content"
       },
       {
-        "text": "which one can implement for a given system or across the ",
+        "text": "\u2022 ",
         "page": 2,
         "order": 90,
         "type": "content"
       },
       {
-        "text": "enterprise. ",
+        "text": "\u2022 ",
         "page": 2,
         "order": 91,
         "type": "content"
       },
       {
-        "text": "countermeasures are used to reduce risk of counterfeit hardware ",
+        "text": "management into the future.  ",
         "page": 2,
         "order": 92,
         "type": "content"
       },
       {
-        "text": "is complicated by the many potential options available. While ",
+        "text": "M",
         "page": 2,
         "order": 93,
         "type": "content"
       },
       {
-        "text": "one can take a \u201cdefense in depth\u201d approach and implement many ",
+        "text": "ECISION",
         "page": 2,
         "order": 94,
         "type": "content"
       },
       {
-        "text": "safeguards, the question remains as to which ones in particular ",
+        "text": "AKING IN",
         "page": 2,
         "order": 95,
         "type": "content"
       },
       {
-        "text": "accrue the most security and trust benefits at the lowest cost. ",
+        "text": "S",
         "page": 2,
         "order": 96,
         "type": "content"
       },
       {
-        "text": "Each mitigation has associated with it a certain effectiveness in ",
+        "text": "C",
         "page": 2,
         "order": 97,
         "type": "content"
       },
       {
-        "text": "mitigating risks, but also comes at a cost. Moreover, mitigations ",
+        "text": "UPPLY",
         "page": 2,
         "order": 98,
         "type": "content"
       },
       {
-        "text": "can be implemented in combination with one another. These ",
+        "text": "C",
         "page": 2,
         "order": 99,
         "type": "content"
       },
       {
-        "text": "decisions must balance the inputs and concerns from upper ",
+        "text": "YBER",
         "page": 2,
         "order": 100,
         "type": "content"
       },
       {
-        "text": "management and organizational department such as supply ",
+        "text": "HAINS ",
         "page": 2,
         "order": 101,
         "type": "content"
       },
       {
-        "text": "chain management, finance, and IT. ",
+        "text": "HYSICAL ",
         "page": 2,
         "order": 102,
         "type": "content"
       },
       {
-        "text": "reduction and a certain budget, what is the optimal investment ",
+        "text": "chains [51]. ",
         "page": 2,
         "order": 103,
         "type": "content"
       },
       {
-        "text": "strategy, in the form of combinations of mitigations, to ",
+        "text": "involving environment, regulation, technology innovation, ",
         "page": 2,
         "order": 104,
         "type": "content"
       },
       {
-        "text": "implement? ",
+        "text": "threat, vulnerability, and consequence criteria, the system ",
         "page": 2,
         "order": 105,
         "type": "content"
       },
       {
-        "text": "In particular, risk can be decomposed into two components \u2013 ",
+        "text": "continuous adaptation and improvement toward industry aims. ",
         "page": 2,
         "order": 106,
         "type": "content"
       },
       {
-        "text": "systematic and idiosyncratic (also called specific, or ",
+        "text": "this risk-based information, governments, scientific experts, ",
         "page": 2,
         "order": 107,
         "type": "content"
       },
       {
-        "text": "Principles and methods of scenario building can be ",
+        "text": "systems and balance benefits, costs, and risks. ",
         "page": 2,
         "order": 108,
         "type": "content"
       },
       {
-        "text": "The analysis would assist to determine what scenarios or ",
+        "text": "of metrics for security. Rostami et al. [65] proposed several ",
         "page": 2,
         "order": 109,
         "type": "content"
       },
       {
-        "text": "An open area of research related to decision making is that ",
+        "text": "variety of attacks. Hagen et al. [66] propose four metrics for ",
         "page": 2,
         "order": 110,
         "type": "content"
       },
       {
-        "text": " R",
+        "text": "effectiveness, efficiency, capacity, and capability. However, a ",
         "page": 2,
         "order": 111,
         "type": "content"
       },
       {
-        "text": "ESOURCE",
+        "text": "levels of system hierarchy and abstraction has not been ",
         "page": 2,
         "order": 112,
         "type": "content"
       },
       {
-        "text": "The risks posed by counterfeit electronics are numerous, and ",
+        "text": "developed. ",
         "page": 2,
         "order": 113,
         "type": "content"
       },
       {
-        "text": "The ",
+        "text": "V.",
         "page": 2,
         "order": 114,
         "type": "content"
       },
       {
-        "text": "The resulting question is that for a given level of risk ",
+        "text": "enterprise. ",
         "page": 2,
         "order": 115,
         "type": "content"
       },
       {
-        "text": "The risk reduction benefits of diversification are well known. ",
+        "text": "accrue the most security and trust benefits at the lowest cost. ",
         "page": 2,
         "order": 116,
         "type": "content"
       },
       {
-        "text": "A",
+        "text": "chain management, finance, and IT. ",
         "page": 2,
         "order": 117,
         "type": "content"
       },
       {
-        "text": "LLOCATION TO",
+        "text": "systematic and idiosyncratic (also called specific, or ",
         "page": 2,
         "order": 118,
         "type": "content"
       },
       {
-        "text": "M",
+        "text": " R",
         "page": 2,
         "order": 119,
         "type": "content"
       },
       {
-        "text": "task ",
+        "text": "ESOURCE",
         "page": 2,
         "order": 120,
         "type": "content"
       },
       {
-        "text": "P",
+        "text": "The risk reduction benefits of diversification are well known. ",
         "page": 2,
         "order": 121,
         "type": "content"
       },
       {
-        "text": "ORTFOLIOS OF",
+        "text": "A",
         "page": 2,
         "order": 122,
         "type": "content"
       },
       {
-        "text": "EASURES ",
+        "text": "LLOCATION TO",
         "page": 2,
         "order": 123,
         "type": "content"
       },
       {
-        "text": "of ",
+        "text": "M",
         "page": 2,
         "order": 124,
         "type": "content"
       },
       {
-        "text": "identifying ",
+        "text": "P",
         "page": 2,
         "order": 125,
         "type": "content"
       },
       {
-        "text": "S",
+        "text": "ORTFOLIOS OF",
         "page": 2,
         "order": 126,
         "type": "content"
       },
       {
-        "text": "ECURITY ",
+        "text": "EASURES ",
         "page": 2,
         "order": 127,
         "type": "content"
       },
       {
-        "text": "what ",
+        "text": "S",
         "page": 2,
         "order": 128,
         "type": "content"
       },
       {
-        "text": "specific ",
+        "text": "ECURITY ",
         "page": 2,
         "order": 129,
-        "type": "content"
-      },
-      {
-        "text": "nonsystematic) risk. Through a well-diversified portfolio, much ",
-        "page": 3,
-        "order": 0,
         "type": "content"
       },
       {
         "text": "of the idiosyncratic risk can be reduced [67-68]. For example, ",
         "page": 3,
         "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "retention areas, levees, etc. They found that diversification of ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "flood risk management infrastructure in an area reduced the ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
+        "type": "heading"
       },
       {
         "text": "losses associated with floods. ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "require portfolio tools which can support cost-effective decision ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "making through the development of a portfolio tool which aids ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "the risk management investment decision process. Namely, ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "methods and tools are needed which address the optimal \u201cmix\u201d ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "of risk reduction countermeasures given several user-defined ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "inputs related to cost and target risk. The goal is for users to ",
         "page": 3,
         "order": 0,
         "type": "table_cell"
@@ -2356,25 +2304,7 @@
         "type": "table_cell"
       },
       {
-        "text": "As electronic hardware and embedded systems become more ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
         "text": "lives, methodologies which provide risk-, resilience-, and trust- ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "based insights into the system life cycle will become more ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "operating environment. While much research has been done on ",
         "page": 3,
         "order": 0,
         "type": "table_cell"
@@ -2386,67 +2316,7 @@
         "type": "table_cell"
       },
       {
-        "text": "with considerations related to business processes and human ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
         "text": "factors. ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "training of the current and future workforce to address these ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "dynamic security issues. Training for the current enterprise ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "professionals, and includes management and horizontally ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "educational ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "curricula, ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "hands-on ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "experiential ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "learning ",
-        "page": 3,
-        "order": 0,
-        "type": "table_cell"
-      },
-      {
-        "text": "environments, and training opportunities that meet the needs of ",
         "page": 3,
         "order": 0,
         "type": "table_cell"
@@ -3280,405 +3150,537 @@
         "type": "table_cell"
       },
       {
-        "text": "Zhou et al. [69] applied a portfolio approach to flood risk ",
-        "page": 3,
-        "order": 1,
-        "type": "content"
-      },
-      {
         "text": "management infrastructure. Instead of each asset being a ",
         "page": 3,
-        "order": 2,
-        "type": "content"
+        "order": 1,
+        "type": "heading"
       },
       {
         "text": "financial security (e.g., a stock), they modeled the returns from ",
         "page": 3,
-        "order": 3,
-        "type": "content"
+        "order": 2,
+        "type": "heading"
       },
       {
         "text": "the implementation of various infrastructure assets such as ",
         "page": 3,
+        "order": 3,
+        "type": "heading"
+      },
+      {
+        "text": "retention areas, levees, etc. They found that diversification of ",
+        "page": 3,
         "order": 4,
-        "type": "content"
+        "type": "heading"
+      },
+      {
+        "text": "flood risk management infrastructure in an area reduced the ",
+        "page": 3,
+        "order": 5,
+        "type": "heading"
       },
       {
         "text": "In the same way, supply chain managers and risk managers ",
         "page": 3,
-        "order": 5,
-        "type": "content"
+        "order": 6,
+        "type": "heading"
       },
       {
-        "text": "investigate how to \u201cbuy down\u201d the risk to acceptable levels. ",
+        "text": "require portfolio tools which can support cost-effective decision ",
         "page": 3,
-        "order": 6,
-        "type": "content"
+        "order": 7,
+        "type": "heading"
+      },
+      {
+        "text": "making through the development of a portfolio tool which aids ",
+        "page": 3,
+        "order": 8,
+        "type": "heading"
+      },
+      {
+        "text": "the risk management investment decision process. Namely, ",
+        "page": 3,
+        "order": 9,
+        "type": "heading"
+      },
+      {
+        "text": "methods and tools are needed which address the optimal \u201cmix\u201d ",
+        "page": 3,
+        "order": 10,
+        "type": "heading"
+      },
+      {
+        "text": "of risk reduction countermeasures given several user-defined ",
+        "page": 3,
+        "order": 11,
+        "type": "heading"
+      },
+      {
+        "text": "inputs related to cost and target risk. The goal is for users to ",
+        "page": 3,
+        "order": 12,
+        "type": "heading"
+      },
+      {
+        "text": "As electronic hardware and embedded systems become more ",
+        "page": 3,
+        "order": 13,
+        "type": "heading"
       },
       {
         "text": "prevalent within the systems on which we depend in our daily ",
         "page": 3,
-        "order": 7,
-        "type": "content"
+        "order": 14,
+        "type": "heading"
+      },
+      {
+        "text": "based insights into the system life cycle will become more ",
+        "page": 3,
+        "order": 15,
+        "type": "heading"
       },
       {
         "text": "important to the organizations tasked with maintaining a secure ",
         "page": 3,
-        "order": 8,
-        "type": "content"
+        "order": 16,
+        "type": "heading"
+      },
+      {
+        "text": "operating environment. While much research has been done on ",
+        "page": 3,
+        "order": 17,
+        "type": "heading"
       },
       {
         "text": "and system level is required which integrates the technical risks ",
         "page": 3,
-        "order": 9,
-        "type": "content"
+        "order": 18,
+        "type": "heading"
+      },
+      {
+        "text": "with considerations related to business processes and human ",
+        "page": 3,
+        "order": 19,
+        "type": "heading"
       },
       {
         "text": "Another need faced by industry and government is the ",
         "page": 3,
-        "order": 10,
-        "type": "content"
+        "order": 20,
+        "type": "heading"
+      },
+      {
+        "text": "training of the current and future workforce to address these ",
+        "page": 3,
+        "order": 21,
+        "type": "heading"
+      },
+      {
+        "text": "dynamic security issues. Training for the current enterprise ",
+        "page": 3,
+        "order": 22,
+        "type": "heading"
       },
       {
         "text": "workforce ",
         "page": 3,
-        "order": 11,
-        "type": "content"
-      },
-      {
-        "text": "integrated personnel such as contractors. In terms of training the ",
-        "page": 3,
-        "order": 12,
-        "type": "content"
-      },
-      {
-        "text": "next ",
-        "page": 3,
-        "order": 13,
-        "type": "content"
-      },
-      {
-        "text": "generation ",
-        "page": 3,
-        "order": 14,
-        "type": "content"
-      },
-      {
-        "text": "This work was supported in part by the National Science Foundation under ",
-        "page": 3,
-        "order": 15,
-        "type": "content"
-      },
-      {
-        "text": "Grant 1916760 \u201cPhase I IUCRC University of Virginia: Center for Hardware ",
-        "page": 3,
-        "order": 16,
-        "type": "content"
-      },
-      {
-        "text": "and Embedded System Security and Trust (CHEST)\u201d. ",
-        "page": 3,
-        "order": 17,
-        "type": "content"
-      },
-      {
-        "text": "cyber-physical systems: volume 1, overview. NIST Special Publication ",
-        "page": 3,
-        "order": 18,
-        "type": "content"
-      },
-      {
-        "text": "1500-201. ",
-        "page": 3,
-        "order": 19,
-        "type": "content"
-      },
-      {
-        "text": "(2015). Cyber-physical-social system in intelligent transportation. ",
-        "page": 3,
-        "order": 20,
-        "type": "content"
-      },
-      {
-        "text": "(2013). Context-aware service composition in cyber physical human ",
-        "page": 3,
-        "order": 21,
-        "type": "content"
-      },
-      {
-        "text": "DOT and Industry Have Efforts Under Way, but DOT Needs to Define ",
-        "page": 3,
-        "order": 22,
-        "type": "content"
-      },
-      {
-        "text": "Its Role in Responding to a Real-World Attack. GAO-16-350, U.S. ",
-        "page": 3,
         "order": 23,
-        "type": "content"
-      },
-      {
-        "text": "Government Accountability Office, Washington, DC. ",
-        "page": 3,
-        "order": 24,
-        "type": "content"
+        "type": "heading"
       },
       {
         "text": "includes ",
         "page": 3,
-        "order": 25,
-        "type": "content"
+        "order": 24,
+        "type": "heading"
       },
       {
         "text": "personnel ",
         "page": 3,
-        "order": 26,
-        "type": "content"
-      },
-      {
-        "text": "workforce, ",
-        "page": 3,
-        "order": 27,
-        "type": "content"
-      },
-      {
-        "text": "CKNOWLEDGEMENTS ",
-        "page": 3,
-        "order": 28,
-        "type": "content"
-      },
-      {
-        "text": "EFERENCES ",
-        "page": 3,
-        "order": 29,
-        "type": "content"
-      },
-      {
-        "text": "W",
-        "page": 3,
-        "order": 30,
-        "type": "content"
+        "order": 25,
+        "type": "heading"
       },
       {
         "text": "beyond ",
         "page": 3,
-        "order": 31,
-        "type": "content"
-      },
-      {
-        "text": "institutions ",
-        "page": 3,
-        "order": 32,
-        "type": "content"
-      },
-      {
-        "text": "ORK ",
-        "page": 3,
-        "order": 33,
-        "type": "content"
+        "order": 26,
+        "type": "heading"
       },
       {
         "text": "traditional ",
         "page": 3,
+        "order": 27,
+        "type": "heading"
+      },
+      {
+        "text": "IT ",
+        "page": 3,
+        "order": 28,
+        "type": "heading"
+      },
+      {
+        "text": "professionals, and includes management and horizontally ",
+        "page": 3,
+        "order": 29,
+        "type": "heading"
+      },
+      {
+        "text": "integrated personnel such as contractors. In terms of training the ",
+        "page": 3,
+        "order": 30,
+        "type": "heading"
+      },
+      {
+        "text": "next ",
+        "page": 3,
+        "order": 31,
+        "type": "heading"
+      },
+      {
+        "text": "generation ",
+        "page": 3,
+        "order": 32,
+        "type": "heading"
+      },
+      {
+        "text": "workforce, ",
+        "page": 3,
+        "order": 33,
+        "type": "heading"
+      },
+      {
+        "text": "institutions ",
+        "page": 3,
         "order": 34,
-        "type": "content"
+        "type": "heading"
       },
       {
         "text": "must ",
         "page": 3,
         "order": 35,
-        "type": "content"
+        "type": "heading"
       },
       {
         "text": "provide ",
         "page": 3,
         "order": 36,
-        "type": "content"
+        "type": "heading"
       },
       {
-        "text": "[16]",
+        "text": "educational ",
         "page": 3,
         "order": 37,
-        "type": "content"
+        "type": "heading"
       },
       {
-        "text": "IT ",
+        "text": "curricula, ",
         "page": 3,
         "order": 38,
-        "type": "content"
+        "type": "heading"
       },
       {
-        "text": "[26]",
+        "text": "hands-on ",
         "page": 3,
         "order": 39,
-        "type": "content"
+        "type": "heading"
       },
       {
-        "text": "Hacking: An Experimental Analysis of the SAE J1939 Standard.",
+        "text": "experiential ",
         "page": 3,
         "order": 40,
-        "type": "content"
+        "type": "heading"
       },
       {
-        "text": "2015/07/hackers-remotely-kill-jeep-highway ",
+        "text": "learning ",
         "page": 3,
         "order": 41,
-        "type": "content"
+        "type": "heading"
       },
       {
-        "text": "13\u201327. ",
+        "text": "environments, and training opportunities that meet the needs of ",
         "page": 3,
         "order": 42,
-        "type": "content"
+        "type": "heading"
       },
       {
-        "text": "(2014). Counterfeit Integrated Circuits: A Rising Threat in the Global ",
+        "text": "nonsystematic) risk. Through a well-diversified portfolio, much ",
         "page": 3,
         "order": 43,
         "type": "content"
       },
       {
-        "text": "1228. ",
+        "text": "Zhou et al. [69] applied a portfolio approach to flood risk ",
         "page": 3,
         "order": 44,
         "type": "content"
       },
       {
-        "text": "1511-1522. ",
+        "text": "investigate how to \u201cbuy down\u201d the risk to acceptable levels. ",
         "page": 3,
         "order": 45,
         "type": "content"
       },
       {
-        "text": "consumers confront a rising tide of counterfeit electronics.",
+        "text": "This work was supported in part by the National Science Foundation under ",
         "page": 3,
         "order": 46,
         "type": "content"
       },
       {
-        "text": "Office, Washington, DC. ",
+        "text": "Grant 1916760 \u201cPhase I IUCRC University of Virginia: Center for Hardware ",
         "page": 3,
         "order": 47,
         "type": "content"
       },
       {
-        "text": " Wood, G. (2016). Costly counterfeit electronic components in the supply ",
+        "text": "and Embedded System Security and Trust (CHEST)\u201d. ",
         "page": 3,
         "order": 48,
         "type": "content"
       },
       {
-        "text": "safety-concern ",
+        "text": "cyber-physical systems: volume 1, overview. NIST Special Publication ",
         "page": 3,
         "order": 49,
         "type": "content"
       },
       {
-        "text": "Traceability and risk analysis strategies for addressing counterfeit ",
+        "text": "1500-201. ",
         "page": 3,
         "order": 50,
         "type": "content"
       },
       {
-        "text": "1834-1843. ",
+        "text": "(2015). Cyber-physical-social system in intelligent transportation. ",
         "page": 3,
         "order": 51,
         "type": "content"
       },
       {
-        "text": "012095. ",
+        "text": "(2013). Context-aware service composition in cyber physical human ",
         "page": 3,
         "order": 52,
         "type": "content"
       },
       {
-        "text": "part procurement lifetimes to enable the management of DMSMS ",
+        "text": "DOT and Industry Have Efforts Under Way, but DOT Needs to Define ",
         "page": 3,
         "order": 53,
         "type": "content"
       },
       {
-        "text": "Engineering Management,",
+        "text": "Its Role in Responding to a Real-World Attack. GAO-16-350, U.S. ",
         "page": 3,
         "order": 54,
         "type": "content"
       },
       {
-        "text": " Coalition for American Electronics Recycling. (2016). Unregulated E- ",
+        "text": "Government Accountability Office, Washington, DC. ",
         "page": 3,
         "order": 55,
         "type": "content"
       },
       {
-        "text": "Waste Exports Fuel Counterfeit Electronics that Undermine US National ",
+        "text": "CKNOWLEDGEMENTS ",
         "page": 3,
         "order": 56,
         "type": "content"
       },
       {
-        "text": "(5), 37-46. ",
+        "text": "EFERENCES ",
         "page": 3,
         "order": 57,
         "type": "content"
       },
       {
-        "text": "doi: 10.1007/s42524-019-0032-5. ",
+        "text": "W",
         "page": 3,
         "order": 58,
         "type": "content"
       },
       {
-        "text": "https://www.wired.com/ ",
+        "text": "ORK ",
         "page": 3,
         "order": 59,
         "type": "content"
       },
       {
-        "text": ".",
+        "text": "[16]",
         "page": 3,
         "order": 60,
         "type": "content"
       },
       {
-        "text": "http://blog.ihs.com/costly- ",
+        "text": "[26]",
         "page": 3,
         "order": 61,
         "type": "content"
       },
       {
-        "text": "(10), ",
+        "text": "Hacking: An Experimental Analysis of the SAE J1939 Standard.",
         "page": 3,
         "order": 62,
         "type": "content"
       },
       {
-        "text": "22",
+        "text": "2015/07/hackers-remotely-kill-jeep-highway ",
         "page": 3,
         "order": 63,
         "type": "content"
       },
       {
-        "text": "IEEE ",
+        "text": "13\u201327. ",
         "page": 3,
         "order": 64,
         "type": "content"
       },
       {
-        "text": "(10), ",
+        "text": "(2014). Counterfeit Integrated Circuits: A Rising Threat in the Global ",
         "page": 3,
         "order": 65,
         "type": "content"
       },
       {
-        "text": "36",
+        "text": "1228. ",
         "page": 3,
         "order": 66,
         "type": "content"
       },
       {
-        "text": "through ",
+        "text": "1511-1522. ",
         "page": 3,
         "order": 67,
+        "type": "content"
+      },
+      {
+        "text": "consumers confront a rising tide of counterfeit electronics.",
+        "page": 3,
+        "order": 68,
+        "type": "content"
+      },
+      {
+        "text": "Office, Washington, DC. ",
+        "page": 3,
+        "order": 69,
+        "type": "content"
+      },
+      {
+        "text": " Wood, G. (2016). Costly counterfeit electronic components in the supply ",
+        "page": 3,
+        "order": 70,
+        "type": "content"
+      },
+      {
+        "text": "safety-concern ",
+        "page": 3,
+        "order": 71,
+        "type": "content"
+      },
+      {
+        "text": "Traceability and risk analysis strategies for addressing counterfeit ",
+        "page": 3,
+        "order": 72,
+        "type": "content"
+      },
+      {
+        "text": "1834-1843. ",
+        "page": 3,
+        "order": 73,
+        "type": "content"
+      },
+      {
+        "text": "012095. ",
+        "page": 3,
+        "order": 74,
+        "type": "content"
+      },
+      {
+        "text": "part procurement lifetimes to enable the management of DMSMS ",
+        "page": 3,
+        "order": 75,
+        "type": "content"
+      },
+      {
+        "text": "Engineering Management,",
+        "page": 3,
+        "order": 76,
+        "type": "content"
+      },
+      {
+        "text": " Coalition for American Electronics Recycling. (2016). Unregulated E- ",
+        "page": 3,
+        "order": 77,
+        "type": "content"
+      },
+      {
+        "text": "Waste Exports Fuel Counterfeit Electronics that Undermine US National ",
+        "page": 3,
+        "order": 78,
+        "type": "content"
+      },
+      {
+        "text": "(5), 37-46. ",
+        "page": 3,
+        "order": 79,
+        "type": "content"
+      },
+      {
+        "text": "doi: 10.1007/s42524-019-0032-5. ",
+        "page": 3,
+        "order": 80,
+        "type": "content"
+      },
+      {
+        "text": "https://www.wired.com/ ",
+        "page": 3,
+        "order": 81,
+        "type": "content"
+      },
+      {
+        "text": ".",
+        "page": 3,
+        "order": 82,
+        "type": "content"
+      },
+      {
+        "text": "http://blog.ihs.com/costly- ",
+        "page": 3,
+        "order": 83,
+        "type": "content"
+      },
+      {
+        "text": "(10), ",
+        "page": 3,
+        "order": 84,
+        "type": "content"
+      },
+      {
+        "text": "22",
+        "page": 3,
+        "order": 85,
+        "type": "content"
+      },
+      {
+        "text": "IEEE ",
+        "page": 3,
+        "order": 86,
+        "type": "content"
+      },
+      {
+        "text": "(10), ",
+        "page": 3,
+        "order": 87,
+        "type": "content"
+      },
+      {
+        "text": "36",
+        "page": 3,
+        "order": 88,
+        "type": "content"
+      },
+      {
+        "text": "through ",
+        "page": 3,
+        "order": 89,
         "type": "content"
       },
       {

@@ -3,8 +3,7 @@
     "pages": 9,
     "heading_hierarchy": {
       "heading_counts": {
-        "1": 3,
-        "2": 37
+        "1": 3
       },
       "skipped_levels": []
     },
@@ -29,583 +28,583 @@
         "type": "heading"
       },
       {
-        "text": "INTRODUCTION  ",
-        "page": 0,
-        "order": 3,
-        "type": "heading"
-      },
-      {
-        "text": "LITERATURE REVIEW  ",
-        "page": 0,
-        "order": 4,
-        "type": "heading"
-      },
-      {
-        "text": "System of systems (SoS)  ",
-        "page": 0,
-        "order": 5,
-        "type": "heading"
-      },
-      {
         "text": "Farming and disaster response systems have in common ",
         "page": 0,
-        "order": 6,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "that they exist within and in response to dynamic and ",
         "page": 0,
-        "order": 7,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "uncontrollable physical environments. Systems Theory ",
         "page": 0,
-        "order": 8,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "understands environment as all the variables that affect the ",
         "page": 0,
-        "order": 9,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "system\u2019s state (Ackoff, 1971) and a characteristic of many ",
         "page": 0,
-        "order": 10,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "contemporary environments is uncertainty (Emery & Trist, ",
         "page": 0,
-        "order": 11,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "1965). In the case of farming systems, farmers have always ",
         "page": 0,
-        "order": 12,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "had to deal with uncertainty from weather conditions and ",
         "page": 0,
-        "order": 13,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "disease outbreaks, but farming environments have become ",
         "page": 0,
-        "order": 14,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "increasingly complex and turbulent due to evolving societal ",
         "page": 0,
-        "order": 15,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "and economic factors (Milestad, Dedieu, Darnhofer, & Bellon, ",
         "page": 0,
-        "order": 16,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "2012). Something similar occurs in disaster response systems, ",
         "page": 0,
-        "order": 17,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "where the uncertainty in the environment is manifested not ",
         "page": 0,
-        "order": 18,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "only through the expected disruption caused by the disaster ",
         "page": 0,
-        "order": 19,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "but also through the challenges in the interaction between ",
         "page": 0,
-        "order": 20,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "organizations seeking to respond to the incident (Comfort, ",
         "page": 0,
-        "order": 21,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "Sungu, Johnson, & Dunn, 2001). ",
         "page": 0,
-        "order": 22,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "One of the main challenges involves communication, as ",
         "page": 0,
-        "order": 23,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "it is known that the dynamic uncertainty of environments ",
         "page": 0,
-        "order": 24,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "contributes to the complexity of communications within ",
         "page": 0,
-        "order": 25,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "organizations (Caldwell, 2008). However, it is precisely the ",
         "page": 0,
-        "order": 26,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "effective exchange of information between organizations with ",
         "page": 0,
-        "order": 27,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "central responsibilities in disaster management that improves a ",
         "page": 0,
-        "order": 28,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "region\u2019s capacity to reduce disaster risk (Comfort, Ko, & ",
         "page": 0,
-        "order": 29,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "Zagorecki, 2004). Moreover, research in disaster management ",
         "page": 0,
-        "order": 30,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "has demonstrated that identifying the key nodes through which ",
         "page": 0,
-        "order": 31,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "core information is exchanged is also crucial in improving ",
         "page": 0,
-        "order": 32,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "interorganizational capacity for decision making (Comfort, ",
         "page": 0,
-        "order": 33,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "Ko, & Zagorecki, 2004). This confirms that knowing more ",
         "page": 0,
-        "order": 34,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "about a system\u2019s composition, dynamics and interactions has ",
         "page": 0,
-        "order": 35,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "practical benefits, to the point of saving lives and livelihood. ",
         "page": 0,
-        "order": 36,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "In recent years, research in farming systems has become ",
         "page": 0,
-        "order": 37,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "more focused on studying how institutions, people and ",
         "page": 0,
-        "order": 38,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "farming systems are fundamentally able to cope with change ",
         "page": 0,
-        "order": 39,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "(Milestad, Dedieu, Darnhofer, & Bellon, 2012).  This is what ",
         "page": 0,
-        "order": 40,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "is known as the adaptive approach, where the interest is not ",
         "page": 0,
-        "order": 41,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "solely on farm productivity and yield maximization but in the ",
         "page": 0,
-        "order": 42,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "farm\u2019s capacity to respond to challenges, such as disasters, as ",
         "page": 0,
-        "order": 43,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "they arise (Milestad, Dedieu, Darnhofer, & Bellon, 2012). ",
         "page": 0,
-        "order": 44,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "Uncertainty is a characteristic of many of the contemporary environments that our systems inhabit. In the ",
         "page": 0,
-        "order": 45,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "case of farming systems, uncertainty has always been present in the form of unpredictable weather ",
         "page": 0,
-        "order": 46,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "conditions, disease outbreaks and evolving societal and economic factors. Uncertainty poses a challenge for ",
         "page": 0,
-        "order": 47,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "communication and information alignment, which is especially important for a farming system responding ",
         "page": 0,
-        "order": 48,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "to disasters. A first step towards finding solutions for problems of information alignment in systems is ",
         "page": 0,
-        "order": 49,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "mapping and identifying information links in them. The goal of this research is to map the information flow ",
         "page": 0,
-        "order": 50,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "and feedback dynamics of the Valle Occidental coffee region in Costa Rica through a qualitative system-of- ",
         "page": 0,
-        "order": 51,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "systems ",
         "page": 0,
-        "order": 52,
+        "order": 49,
+        "type": "content"
+      },
+      {
+        "text": "INTRODUCTION  ",
+        "page": 0,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "Tecnol\u00f3gico de Costa Rica \u2013 Purdue University  ",
         "page": 0,
-        "order": 53,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "study ",
         "page": 0,
-        "order": 54,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "Irene Campos Valle ",
         "page": 0,
-        "order": 55,
+        "order": 53,
         "type": "content"
       },
       {
         "text": "of ",
         "page": 0,
-        "order": 56,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "could not be studied as isolated units, but as members of a ",
         "page": 0,
-        "order": 57,
+        "order": 55,
         "type": "content"
       },
       {
         "text": "system ",
         "page": 0,
-        "order": 58,
+        "order": 56,
         "type": "content"
       },
       {
         "text": "components like soil, climatic conditions and infrastructure ",
         "page": 0,
-        "order": 59,
+        "order": 57,
         "type": "content"
       },
       {
         "text": "and subjective components like perceptions, values and ",
         "page": 0,
-        "order": 60,
+        "order": 58,
         "type": "content"
       },
       {
         "text": "preferences (Darnhofer, Gibbon, & Dedieu, 2012). These ",
         "page": 0,
-        "order": 61,
+        "order": 59,
         "type": "content"
       },
       {
         "text": "farming systems were, at the same time, embedded in larger ",
         "page": 0,
-        "order": 62,
+        "order": 60,
         "type": "content"
       },
       {
         "text": "systems that provided context and meaning for decisions made ",
         "page": 0,
-        "order": 63,
+        "order": 61,
         "type": "content"
       },
       {
         "text": "within the farming system (Darnhofer, Gibbon, & Dedieu, ",
         "page": 0,
-        "order": 64,
+        "order": 62,
         "type": "content"
       },
       {
         "text": "2012). This would mean that interactions would not only ",
         "page": 0,
-        "order": 65,
+        "order": 63,
         "type": "content"
       },
       {
         "text": "occur at the same level, for example between two neighboring ",
         "page": 0,
-        "order": 66,
+        "order": 64,
         "type": "content"
       },
       {
         "text": "farms: but also, across levels, between farm clusters and ",
         "page": 0,
-        "order": 67,
+        "order": 65,
         "type": "content"
       },
       {
         "text": "national government organizations or between regional ",
         "page": 0,
-        "order": 68,
+        "order": 66,
         "type": "content"
       },
       {
         "text": "organizations and individual farms. The complexity of this ",
         "page": 0,
-        "order": 69,
+        "order": 67,
         "type": "content"
       },
       {
         "text": "composition ",
         "page": 0,
-        "order": 70,
+        "order": 68,
         "type": "content"
       },
       {
         "text": "coordination challenging for a farming system responding to ",
         "page": 0,
-        "order": 71,
+        "order": 69,
         "type": "content"
       },
       {
         "text": "environmental uncertainty, including natural disasters. ",
         "page": 0,
-        "order": 72,
+        "order": 70,
         "type": "content"
       },
       {
         "text": "information sharing in uncertainty through the mapping of ",
         "page": 0,
-        "order": 73,
+        "order": 71,
         "type": "content"
       },
       {
         "text": "information flow and feedback dynamics that are in place in ",
         "page": 0,
-        "order": 74,
+        "order": 72,
         "type": "content"
       },
       {
         "text": "the coffee producing industry of the Valle Occidental region in ",
         "page": 0,
-        "order": 75,
+        "order": 73,
         "type": "content"
       },
       {
         "text": "Costa Rica. Comprised mostly of small family farms, which in ",
         "page": 0,
-        "order": 76,
+        "order": 74,
         "type": "content"
       },
       {
         "text": "some cases are grouped in cooperatives, this coffee producing ",
         "page": 0,
-        "order": 77,
+        "order": 75,
         "type": "content"
       },
       {
         "text": "industry is an example of a highly collaborative system-of- ",
         "page": 0,
-        "order": 78,
+        "order": 76,
         "type": "content"
       },
       {
         "text": "systems (SoS: see Literature Review below), with a long ",
         "page": 0,
-        "order": 79,
+        "order": 77,
         "type": "content"
       },
       {
         "text": "history of information coordination and expertise sharing ",
         "page": 0,
-        "order": 80,
+        "order": 78,
         "type": "content"
       },
       {
         "text": "between the private and public sectors. Despite this, little ",
         "page": 0,
-        "order": 81,
+        "order": 79,
         "type": "content"
       },
       {
         "text": "attention has been paid to the way this coordination occurs at ",
         "page": 0,
-        "order": 82,
+        "order": 80,
         "type": "content"
       },
       {
         "text": "different levels within the system-of-systems, for example, at ",
         "page": 0,
-        "order": 83,
+        "order": 81,
         "type": "content"
       },
       {
         "text": "an individual micro-farm level or at a farming region level like ",
         "page": 0,
-        "order": 84,
+        "order": 82,
         "type": "content"
       },
       {
         "text": "that of Valle Occidental. Questions about what type of ",
         "page": 0,
-        "order": 85,
+        "order": 83,
         "type": "content"
       },
       {
         "text": "information is relevant and what timescales would be needed ",
         "page": 0,
-        "order": 86,
+        "order": 84,
         "type": "content"
       },
       {
         "text": "for the information to remain relevant at these different units ",
         "page": 0,
-        "order": 87,
+        "order": 85,
         "type": "content"
       },
       {
         "text": "of analysis remain to be answered. A system-of-systems ",
         "page": 0,
-        "order": 88,
+        "order": 86,
         "type": "content"
       },
       {
         "text": "approach, thus, becomes an appropriate tool to identify the ",
         "page": 0,
-        "order": 89,
+        "order": 87,
         "type": "content"
       },
       {
         "text": "interactions at various levels that would enhance information ",
         "page": 0,
-        "order": 90,
+        "order": 88,
         "type": "content"
       },
       {
         "text": "sharing in the wake of a disaster.  ",
         "page": 0,
-        "order": 91,
+        "order": 89,
+        "type": "content"
+      },
+      {
+        "text": "System of systems (SoS)  ",
+        "page": 0,
+        "order": 90,
         "type": "content"
       },
       {
         "text": "this ",
         "page": 0,
-        "order": 92,
+        "order": 91,
         "type": "content"
       },
       {
         "text": "This shift was the result of the recognition that farms ",
         "page": 0,
-        "order": 93,
+        "order": 92,
         "type": "content"
       },
       {
         "text": "comprised ",
         "page": 0,
-        "order": 94,
+        "order": 93,
         "type": "content"
       },
       {
         "text": "The aim of this paper is to approach the problem of ",
         "page": 0,
-        "order": 95,
+        "order": 94,
         "type": "content"
       },
       {
         "text": "farming ",
         "page": 0,
-        "order": 96,
+        "order": 95,
         "type": "content"
       },
       {
         "text": "of ",
         "page": 0,
-        "order": 97,
+        "order": 96,
         "type": "content"
       },
       {
         "text": "makes ",
         "page": 0,
-        "order": 98,
+        "order": 97,
         "type": "content"
       },
       {
         "text": "information ",
+        "page": 0,
+        "order": 98,
+        "type": "content"
+      },
+      {
+        "text": "LITERATURE REVIEW  ",
         "page": 0,
         "order": 99,
         "type": "content"
@@ -653,763 +652,763 @@
         "type": "content"
       },
       {
-        "text": " Managerial independence of systems:",
-        "page": 1,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": " Evolutionary development:",
-        "page": 1,
-        "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": " Emergent behavior:",
-        "page": 1,
-        "order": 2,
-        "type": "heading"
-      },
-      {
-        "text": " Geographic distribution:",
-        "page": 1,
-        "order": 3,
-        "type": "heading"
-      },
-      {
-        "text": " Heterogeneity:",
-        "page": 1,
-        "order": 4,
-        "type": "heading"
-      },
-      {
-        "text": " Network of networks:",
-        "page": 1,
-        "order": 5,
-        "type": "heading"
-      },
-      {
-        "text": " Inter-disciplinary understanding",
-        "page": 1,
-        "order": 6,
-        "type": "heading"
-      },
-      {
-        "text": " Operational independence of systems:",
-        "page": 1,
-        "order": 7,
-        "type": "heading"
-      },
-      {
         "text": "The notion of a system of systems is not new; there have ",
         "page": 1,
-        "order": 8,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "been numerous examples of systems comprised of multiple, ",
         "page": 1,
-        "order": 9,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "independently operated systems that interact with each other, ",
         "page": 1,
-        "order": 10,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "such as national transportation systems or the Internet ",
         "page": 1,
-        "order": 11,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "(DeLaurentis, 2005). Early efforts in system-of-systems ",
         "page": 1,
-        "order": 12,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "research were devoted to giving a definition to these known ",
         "page": 1,
-        "order": 13,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "examples of systems.",
         "page": 1,
-        "order": 14,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "by Maier, who defined a system-of-systems (SoS) as an ",
         "page": 1,
-        "order": 15,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "assemblage of components which individually may be ",
         "page": 1,
-        "order": 16,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "regarded as systems and that have two key characteristics: ",
         "page": 1,
-        "order": 17,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "operational and managerial independence (Maier, 1998). Once ",
         "page": 1,
-        "order": 18,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "this was recognized, research in system-of-systems began to ",
         "page": 1,
-        "order": 19,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "focus on devising appropriate taxonomies, lexicons and ",
         "page": 1,
-        "order": 20,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "methods that would help resolve system-of-systems problems. ",
         "page": 1,
-        "order": 21,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "In the attempt to establish such taxonomies, Maier ",
         "page": 1,
-        "order": 22,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "proposes three other traits that are important to differentiate a ",
         "page": 1,
-        "order": 23,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "system-of-systems from other types of systems: geographical ",
         "page": 1,
-        "order": 24,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "distribution, ",
         "page": 1,
-        "order": 25,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "development (Maier, 1996). Sage and Cuppan agree with ",
         "page": 1,
-        "order": 26,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "these five characteristics and declare that for an SoS to be ",
         "page": 1,
-        "order": 27,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "considered as such, all, or most of them, must be present ",
         "page": 1,
-        "order": 28,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "(2001). Of these five, Meier argues that the crucial properties ",
         "page": 1,
-        "order": 29,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "of a system of systems are that the components can and do ",
         "page": 1,
-        "order": 30,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "operate independently. The reason for this is that a number of ",
         "page": 1,
-        "order": 31,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "relevant and emerging systems do not count on centralized ",
         "page": 1,
-        "order": 32,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "management for their development and operations. These ",
         "page": 1,
-        "order": 33,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "systems are often naturally occurring, organically emerging ",
         "page": 1,
-        "order": 34,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "and geographically distributed, and what makes them unique ",
         "page": 1,
-        "order": 35,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "is their collaborative nature rather than guided structure. Such ",
         "page": 1,
-        "order": 36,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "emergent ",
         "page": 1,
-        "order": 37,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "\u201ccollaborative systems\u201d (Maier, 1998). It is important to note ",
         "page": 1,
-        "order": 38,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "that in some literature a system-of-systems without a directed ",
         "page": 1,
-        "order": 39,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "structure and centralized management is given the term ",
         "page": 1,
-        "order": 40,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "Federation of Systems (FOS) (Krygiel, 1999)",
         "page": 1,
-        "order": 41,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "these five principles, in their study of applications of SoS for a ",
         "page": 1,
-        "order": 42,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "healthcare system, Boustany and Caldwell expand on three ",
         "page": 1,
-        "order": 43,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "additional traits: heterogeneity, network of networks and inter- ",
         "page": 1,
-        "order": 44,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "disciplinary nature (2007). ",
         "page": 1,
-        "order": 45,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "One aspect that is shared among most definitions, which ",
         "page": 1,
-        "order": 46,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "is tightly linked to emergent behavior, is the notion that the ",
         "page": 1,
-        "order": 47,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "purpose of the system-of-systems is not necessarily the ",
         "page": 1,
-        "order": 48,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "purpose of the individual systems that compose it. An SoS ",
         "page": 1,
-        "order": 49,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "carries out a purpose of its own, separate from those of the ",
         "page": 1,
-        "order": 50,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "individual systems but achievable through the relationships ",
         "page": 1,
-        "order": 51,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "between the constituent systems (Krygiel, 1999). The ",
         "page": 1,
-        "order": 52,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "individual systems are operated for their own purposes rather ",
         "page": 1,
-        "order": 53,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "than those of the bigger SoS and they can achieve these ",
         "page": 1,
-        "order": 54,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "independent purposes even if detached from the overall ",
         "page": 1,
-        "order": 55,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "system (Sage & Cuppan, 2001). At the same time, they ",
         "page": 1,
-        "order": 56,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "function to resolve issues of the bigger system that would be ",
         "page": 1,
-        "order": 57,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "unachievable by the constituent systems acting independently ",
         "page": 1,
-        "order": 58,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "(Sage & Cuppan, 2001). ",
         "page": 1,
-        "order": 59,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "Despite ",
         "page": 1,
-        "order": 60,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "characterization, research has converged into accepting and ",
         "page": 1,
-        "order": 61,
+        "order": 53,
         "type": "content"
       },
       {
         "text": "expanding Maier\u2019s principles for studying SoS (DeLaurentis, ",
         "page": 1,
-        "order": 62,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "2008). Given this precedent, eight characteristics of a system- ",
         "page": 1,
-        "order": 63,
+        "order": 55,
         "type": "content"
       },
       {
         "text": "of-systems are considered in this paper. ",
         "page": 1,
-        "order": 64,
+        "order": 56,
         "type": "content"
       },
       {
         "text": "1.",
         "page": 1,
-        "order": 65,
+        "order": 57,
+        "type": "content"
+      },
+      {
+        "text": " Operational independence of systems:",
+        "page": 1,
+        "order": 58,
         "type": "content"
       },
       {
         "text": "system-of-systems ",
         "page": 1,
-        "order": 66,
+        "order": 59,
         "type": "content"
       },
       {
         "text": "emergent ",
         "page": 1,
-        "order": 67,
+        "order": 60,
         "type": "content"
       },
       {
         "text": "and ",
         "page": 1,
-        "order": 68,
+        "order": 61,
         "type": "content"
       },
       {
         "text": "distributed ",
         "page": 1,
-        "order": 69,
+        "order": 62,
         "type": "content"
       },
       {
         "text": "the ",
         "page": 1,
-        "order": 70,
+        "order": 63,
         "type": "content"
       },
       {
         "text": " One of those definitions was proposed ",
         "page": 1,
-        "order": 71,
+        "order": 64,
         "type": "content"
       },
       {
         "text": "behavior, ",
         "page": 1,
-        "order": 72,
+        "order": 65,
         "type": "content"
       },
       {
         "text": "systems ",
         "page": 1,
-        "order": 73,
+        "order": 66,
         "type": "content"
       },
       {
         "text": "differences ",
         "page": 1,
-        "order": 74,
+        "order": 67,
         "type": "content"
       },
       {
         "text": "is ",
         "page": 1,
-        "order": 75,
+        "order": 68,
         "type": "content"
       },
       {
         "text": "and ",
         "page": 1,
-        "order": 76,
+        "order": 69,
         "type": "content"
       },
       {
         "text": "are ",
         "page": 1,
-        "order": 77,
+        "order": 70,
         "type": "content"
       },
       {
         "text": ".",
         "page": 1,
-        "order": 78,
+        "order": 71,
         "type": "content"
       },
       {
         "text": "in ",
         "page": 1,
-        "order": 79,
+        "order": 72,
         "type": "content"
       },
       {
         "text": "terminology ",
         "page": 1,
-        "order": 80,
+        "order": 73,
         "type": "content"
       },
       {
         "text": "disassembled ",
         "page": 1,
-        "order": 81,
+        "order": 74,
         "type": "content"
       },
       {
         "text": "evolutionary ",
         "page": 1,
-        "order": 82,
+        "order": 75,
         "type": "content"
       },
       {
         "text": "also ",
         "page": 1,
-        "order": 83,
+        "order": 76,
         "type": "content"
       },
       {
         "text": "called ",
         "page": 1,
-        "order": 84,
+        "order": 77,
         "type": "content"
       },
       {
         "text": "In addition to ",
         "page": 1,
-        "order": 85,
+        "order": 78,
         "type": "content"
       },
       {
         "text": "and ",
         "page": 1,
-        "order": 86,
+        "order": 79,
         "type": "content"
       },
       {
         "text": "If the ",
         "page": 1,
-        "order": 87,
+        "order": 80,
         "type": "content"
       },
       {
         "text": "into ",
         "page": 1,
-        "order": 88,
+        "order": 81,
         "type": "content"
       },
       {
         "text": "(Boustany & Caldwell, 2007; Maier, 1996; Krygiel, 1999)   ",
         "page": 1,
-        "order": 89,
+        "order": 82,
         "type": "content"
       },
       {
         "text": "towards a better understanding of a system-of-systems. Other ",
         "page": 1,
-        "order": 90,
+        "order": 83,
         "type": "content"
       },
       {
         "text": "advances were made in the field to further classify a system- ",
         "page": 1,
-        "order": 91,
+        "order": 84,
         "type": "content"
       },
       {
         "text": "of-systems according to the nature of control in it, whether it ",
         "page": 1,
-        "order": 92,
+        "order": 85,
         "type": "content"
       },
       {
         "text": "be directed, virtual, collaborative, or acknowledged. (Maier, ",
         "page": 1,
-        "order": 93,
+        "order": 86,
         "type": "content"
       },
       {
         "text": "1996; Dahmann & Baldwin, 2008). These other classifications ",
         "page": 1,
-        "order": 94,
+        "order": 87,
         "type": "content"
       },
       {
         "text": "are outside the scope of this paper but serve to illustrate the ",
         "page": 1,
-        "order": 95,
+        "order": 88,
         "type": "content"
       },
       {
         "text": "efforts made in the field to better study system-of-systems ",
         "page": 1,
-        "order": 96,
+        "order": 89,
         "type": "content"
       },
       {
         "text": "problems.  ",
         "page": 1,
-        "order": 97,
+        "order": 90,
         "type": "content"
       },
       {
         "text": "DeLaurentis proposed a lexicon to frame the SoS taxonomy ",
         "page": 1,
-        "order": 98,
+        "order": 91,
         "type": "content"
       },
       {
         "text": "(DeLaurentis, 2005). His lexicon is made up of two ",
         "page": 1,
-        "order": 99,
+        "order": 92,
         "type": "content"
       },
       {
         "text": "components: categories of systems and levels of organization. ",
         "page": 1,
-        "order": 100,
+        "order": 93,
         "type": "content"
       },
       {
         "text": "The categories highlight the heterogenous mix of engineered ",
         "page": 1,
-        "order": 101,
+        "order": 94,
         "type": "content"
       },
       {
         "text": "and sentient systems (composed of thinking and evolving ",
         "page": 1,
-        "order": 102,
+        "order": 95,
         "type": "content"
       },
       {
         "text": "agents), while the levels indicate hierarchy within the system- ",
         "page": 1,
-        "order": 103,
+        "order": 96,
         "type": "content"
       },
       {
         "text": "of-systems (DeLaurentis & Callaway, 2004).  This is also ",
         "page": 1,
-        "order": 104,
+        "order": 97,
         "type": "content"
       },
       {
         "text": "known as the ROPE model.  ",
         "page": 1,
-        "order": 105,
+        "order": 98,
         "type": "content"
       },
       {
         "text": "its ",
         "page": 1,
-        "order": 106,
+        "order": 99,
         "type": "content"
       },
       {
         "text": "component systems the component systems must be ",
         "page": 1,
-        "order": 107,
+        "order": 100,
         "type": "content"
       },
       {
         "text": "able to usefully operate independently. ",
         "page": 1,
-        "order": 108,
+        "order": 101,
         "type": "content"
       },
       {
         "text": "2.",
         "page": 1,
-        "order": 109,
+        "order": 102,
+        "type": "content"
+      },
+      {
+        "text": " Managerial independence of systems:",
+        "page": 1,
+        "order": 103,
         "type": "content"
       },
       {
         "text": "systems do operate independently. ",
         "page": 1,
-        "order": 110,
+        "order": 104,
         "type": "content"
       },
       {
         "text": "3.",
         "page": 1,
-        "order": 111,
+        "order": 105,
+        "type": "content"
+      },
+      {
+        "text": " Evolutionary development:",
+        "page": 1,
+        "order": 106,
         "type": "content"
       },
       {
         "text": "removed, and modified over time. ",
         "page": 1,
-        "order": 112,
+        "order": 107,
         "type": "content"
       },
       {
         "text": "4.",
         "page": 1,
-        "order": 113,
+        "order": 108,
+        "type": "content"
+      },
+      {
+        "text": " Emergent behavior:",
+        "page": 1,
+        "order": 109,
         "type": "content"
       },
       {
         "text": "and carries out purposes that do not reside in any ",
         "page": 1,
-        "order": 114,
+        "order": 110,
         "type": "content"
       },
       {
         "text": "component system. These behaviors are emergent ",
         "page": 1,
-        "order": 115,
+        "order": 111,
         "type": "content"
       },
       {
         "text": "properties of the entire system-of-systems and cannot ",
         "page": 1,
-        "order": 116,
+        "order": 112,
         "type": "content"
       },
       {
         "text": "be localized to any component system. The principal ",
         "page": 1,
-        "order": 117,
+        "order": 113,
         "type": "content"
       },
       {
         "text": "purposes of the systems-of-systems are fulfilled by ",
         "page": 1,
-        "order": 118,
+        "order": 114,
         "type": "content"
       },
       {
         "text": "these behaviors. ",
         "page": 1,
-        "order": 119,
+        "order": 115,
         "type": "content"
       },
       {
         "text": "5.",
         "page": 1,
-        "order": 120,
+        "order": 116,
+        "type": "content"
+      },
+      {
+        "text": " Geographic distribution:",
+        "page": 1,
+        "order": 117,
         "type": "content"
       },
       {
         "text": "distributed on a large geographic scale. ",
         "page": 1,
-        "order": 121,
+        "order": 118,
         "type": "content"
       },
       {
         "text": "6.",
         "page": 1,
-        "order": 122,
+        "order": 119,
+        "type": "content"
+      },
+      {
+        "text": " Heterogeneity:",
+        "page": 1,
+        "order": 120,
         "type": "content"
       },
       {
         "text": "systems are different in nature. ",
         "page": 1,
-        "order": 123,
+        "order": 121,
         "type": "content"
       },
       {
         "text": "7.",
         "page": 1,
-        "order": 124,
+        "order": 122,
+        "type": "content"
+      },
+      {
+        "text": " Network of networks:",
+        "page": 1,
+        "order": 123,
         "type": "content"
       },
       {
         "text": "smaller networks are found in the system. ",
         "page": 1,
-        "order": 125,
+        "order": 124,
         "type": "content"
       },
       {
         "text": "8.",
+        "page": 1,
+        "order": 125,
+        "type": "content"
+      },
+      {
+        "text": " Inter-disciplinary understanding",
         "page": 1,
         "order": 126,
         "type": "content"
@@ -1484,676 +1483,676 @@
         "text": "Table 1. Categories and levels of SoS operations (from ",
         "page": 2,
         "order": 0,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "DeLaurentis, 2005) ",
         "page": 2,
         "order": 1,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "Category ",
         "page": 2,
         "order": 2,
-        "type": "heading"
-      },
-      {
-        "text": "Description ",
-        "page": 2,
-        "order": 3,
-        "type": "heading"
-      },
-      {
-        "text": "Level ",
-        "page": 2,
-        "order": 4,
-        "type": "heading"
-      },
-      {
-        "text": "Description ",
-        "page": 2,
-        "order": 5,
-        "type": "heading"
-      },
-      {
-        "text": "The coffee industry in Costa Rica  ",
-        "page": 2,
-        "order": 6,
-        "type": "heading"
-      },
-      {
-        "text": "Information alignment  ",
-        "page": 2,
-        "order": 7,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "Resources ",
         "page": 2,
-        "order": 8,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "Operations ",
         "page": 2,
-        "order": 9,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "Policies ",
         "page": 2,
-        "order": 10,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "Economics ",
         "page": 2,
-        "order": 11,
+        "order": 6,
+        "type": "content"
+      },
+      {
+        "text": "Level ",
+        "page": 2,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "Alpha (\u03b1) ",
         "page": 2,
-        "order": 12,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "Beta (\u03b2) ",
         "page": 2,
-        "order": 13,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "Gamma (\u03b3) ",
         "page": 2,
-        "order": 14,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "Delta (\u03b4) ",
         "page": 2,
-        "order": 15,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "An advantage of DeLaurentis\u2019 lexicon is the fact that by ",
         "page": 2,
-        "order": 16,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "using Greek letters, it avoids confusion when establishing ",
         "page": 2,
-        "order": 17,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "hierarchy, as the letters indicate the position within the overall ",
         "page": 2,
-        "order": 18,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "system. In other words, the smallest component systems of the ",
         "page": 2,
-        "order": 19,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "SoS would be at the Alpha (\u03b1)",
         "page": 2,
-        "order": 20,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "small systems would create the next \u201csystem-of-systems\u201d at ",
         "page": 2,
-        "order": 21,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "the Beta (\u03b2) level and this would continue. This is another ",
         "page": 2,
-        "order": 22,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "advantage of this model: the possibility to accommodate the ",
         "page": 2,
-        "order": 23,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "lexicon to the size of the system-of-systems in study. ",
         "page": 2,
-        "order": 24,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "This lexicon has been applied to system-of-system ",
         "page": 2,
-        "order": 25,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "problems in the areas of healthcare (Boustany & Caldwell, ",
         "page": 2,
-        "order": 26,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "2007) and transportation (DeLaurentis & Callaway, 2004) ",
         "page": 2,
-        "order": 27,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "demonstrating ",
         "page": 2,
-        "order": 28,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "representing the SoS across a range of environmental, ",
         "page": 2,
-        "order": 29,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "organizational, social and technological contexts.  ",
         "page": 2,
-        "order": 30,
+        "order": 26,
+        "type": "content"
+      },
+      {
+        "text": "Information alignment  ",
+        "page": 2,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "Alignment has been defined as the proper position or ",
         "page": 2,
-        "order": 31,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "adjustment of resources in relation to each other (Palmer, ",
         "page": 2,
-        "order": 32,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "2007). Often this has been framed within the context of ",
         "page": 2,
-        "order": 33,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "organizations, specifically in terms of performance, process, ",
         "page": 2,
-        "order": 34,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "scheduling, ",
         "page": 2,
-        "order": 35,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "organizational structure. When considered in terms of system ",
         "page": 2,
-        "order": 36,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "dynamics, some perspectives point out that alignment is a ",
         "page": 2,
-        "order": 37,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "design characteristic of a system, whereas others argue that it ",
         "page": 2,
-        "order": 38,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "is a dynamic condition of a system (Caldwell, 2013). In other ",
         "page": 2,
-        "order": 39,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "words, according to the latter view, alignment is not a static ",
         "page": 2,
-        "order": 40,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "\u201chow-it-should-be\u201d attribute of a system but rather an ",
         "page": 2,
-        "order": 41,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "evolving \u201chow-it-is\u201d condition of a system. ",
         "page": 2,
-        "order": 42,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "Of the types of alignment mentioned before, information ",
         "page": 2,
-        "order": 43,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "alignment is said to be essential to knowledge of the system\u2019s ",
         "page": 2,
-        "order": 44,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "state. The reason for this is that information alignment spans ",
         "page": 2,
-        "order": 45,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "all areas of operation and decision making within the system, ",
         "page": 2,
-        "order": 46,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "offering a representation of the system\u2019s condition (Palmer & ",
         "page": 2,
-        "order": 47,
+        "order": 44,
+        "type": "content"
+      },
+      {
+        "text": "Description ",
+        "page": 2,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "The physical entities that give physical ",
         "page": 2,
-        "order": 48,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "manifestation to the system-of-systems ",
         "page": 2,
-        "order": 49,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "The application of policies/procedures to ",
         "page": 2,
-        "order": 50,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "direct the activity of physical entities ",
         "page": 2,
-        "order": 51,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "The external forcing functions that impact ",
         "page": 2,
-        "order": 52,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "the physical and nonphysical entities ",
         "page": 2,
-        "order": 53,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "The nonphysical, sentient systems that ",
         "page": 2,
-        "order": 54,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "give a \u201cliving system\u201d character to the ",
         "page": 2,
-        "order": 55,
+        "order": 53,
         "type": "content"
       },
       {
         "text": "operation of the physical entities in a ",
         "page": 2,
-        "order": 56,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "market economy ",
         "page": 2,
-        "order": 57,
+        "order": 55,
+        "type": "content"
+      },
+      {
+        "text": "Description ",
+        "page": 2,
+        "order": 56,
         "type": "content"
       },
       {
         "text": "Base level of entities in each category, ",
         "page": 2,
-        "order": 58,
+        "order": 57,
         "type": "content"
       },
       {
         "text": "further decomposition will not take place ",
         "page": 2,
-        "order": 59,
+        "order": 58,
         "type": "content"
       },
       {
         "text": "Collections of \u03b1-level systems (across ",
         "page": 2,
-        "order": 60,
+        "order": 59,
         "type": "content"
       },
       {
         "text": "categories), organized in a network ",
         "page": 2,
-        "order": 61,
+        "order": 60,
         "type": "content"
       },
       {
         "text": "Collections of \u03b2-level systems (across ",
         "page": 2,
-        "order": 62,
+        "order": 61,
         "type": "content"
       },
       {
         "text": "categories), organized in a network ",
         "page": 2,
-        "order": 63,
+        "order": 62,
         "type": "content"
       },
       {
         "text": "Collections of \u03b3-level systems (across ",
         "page": 2,
-        "order": 64,
+        "order": 63,
         "type": "content"
       },
       {
         "text": "categories), organized in a network   ",
         "page": 2,
-        "order": 65,
+        "order": 64,
         "type": "content"
       },
       {
         "text": "its ",
         "page": 2,
-        "order": 66,
+        "order": 65,
         "type": "content"
       },
       {
         "text": "and ",
+        "page": 2,
+        "order": 66,
+        "type": "content"
+      },
+      {
+        "text": "information ",
         "page": 2,
         "order": 67,
         "type": "content"
       },
       {
-        "text": "information ",
+        "text": " level, the network of those ",
         "page": 2,
         "order": 68,
         "type": "content"
       },
       {
-        "text": " level, the network of those ",
+        "text": "adaptability ",
         "page": 2,
         "order": 69,
         "type": "content"
       },
       {
-        "text": "adaptability ",
+        "text": "and ",
         "page": 2,
         "order": 70,
         "type": "content"
       },
       {
-        "text": "and ",
+        "text": "effectiveness ",
         "page": 2,
         "order": 71,
         "type": "content"
       },
       {
-        "text": "effectiveness ",
+        "text": "adjustment ",
         "page": 2,
         "order": 72,
         "type": "content"
       },
       {
-        "text": "adjustment ",
+        "text": "across ",
         "page": 2,
         "order": 73,
         "type": "content"
       },
       {
-        "text": "across ",
+        "text": "Caldwell, 2009). If the definition of alignment presented ",
         "page": 2,
         "order": 74,
         "type": "content"
       },
       {
-        "text": "Caldwell, 2009). If the definition of alignment presented ",
+        "text": "previously is considered, then information alignment would be ",
         "page": 2,
         "order": 75,
         "type": "content"
       },
       {
-        "text": "previously is considered, then information alignment would be ",
+        "text": "the way to know whether the state of the system is that of ",
         "page": 2,
         "order": 76,
         "type": "content"
       },
       {
-        "text": "the way to know whether the state of the system is that of ",
+        "text": "alignment in other dimensions as well. ",
         "page": 2,
         "order": 77,
         "type": "content"
       },
       {
-        "text": "alignment in other dimensions as well. ",
+        "text": "system can be inaccurately perceived, and decisions made ",
         "page": 2,
         "order": 78,
         "type": "content"
       },
       {
-        "text": "system can be inaccurately perceived, and decisions made ",
+        "text": "under these conditions can leave the system vulnerable to ",
         "page": 2,
         "order": 79,
         "type": "content"
       },
       {
-        "text": "under these conditions can leave the system vulnerable to ",
+        "text": "errors that may evolve into adverse events (Palmer, 2007). In ",
         "page": 2,
         "order": 80,
         "type": "content"
       },
       {
-        "text": "errors that may evolve into adverse events (Palmer, 2007). In ",
+        "text": "the case of teams in distributed settings, like those working in ",
         "page": 2,
         "order": 81,
         "type": "content"
       },
       {
-        "text": "the case of teams in distributed settings, like those working in ",
+        "text": "disaster response, poor decision-making and failures in ",
         "page": 2,
         "order": 82,
         "type": "content"
       },
       {
-        "text": "disaster response, poor decision-making and failures in ",
+        "text": "information flow can be minimized by proper information ",
         "page": 2,
         "order": 83,
         "type": "content"
       },
       {
-        "text": "information flow can be minimized by proper information ",
+        "text": "alignment and coordination (Caldwell, Palmer, & Cuevas, ",
         "page": 2,
         "order": 84,
         "type": "content"
       },
       {
-        "text": "alignment and coordination (Caldwell, Palmer, & Cuevas, ",
+        "text": "2013). The cost of information misalignment in critical, life- ",
         "page": 2,
         "order": 85,
         "type": "content"
       },
       {
-        "text": "2013). The cost of information misalignment in critical, life- ",
+        "text": "or-death settings, like emergency response are high at a ",
         "page": 2,
         "order": 86,
         "type": "content"
       },
       {
-        "text": "or-death settings, like emergency response are high at a ",
+        "text": "societal level (Caldwell, 2013). Studies of breakdowns in ",
         "page": 2,
         "order": 87,
         "type": "content"
       },
       {
-        "text": "societal level (Caldwell, 2013). Studies of breakdowns in ",
+        "text": "emergency response coordination have shown failures to ",
         "page": 2,
         "order": 88,
         "type": "content"
       },
       {
-        "text": "emergency response coordination have shown failures to ",
+        "text": "anticipate and update the effect of changing conditions on the ",
         "page": 2,
         "order": 89,
         "type": "content"
       },
       {
-        "text": "anticipate and update the effect of changing conditions on the ",
+        "text": "availability, robustness, or sustainability of information ",
         "page": 2,
         "order": 90,
         "type": "content"
       },
       {
-        "text": "availability, robustness, or sustainability of information ",
+        "text": "services (Caldwell, 2013). ",
         "page": 2,
         "order": 91,
         "type": "content"
       },
       {
-        "text": "services (Caldwell, 2013). ",
+        "text": "misalignment can be solved is through an effective mapping of ",
         "page": 2,
         "order": 92,
         "type": "content"
       },
       {
-        "text": "misalignment can be solved is through an effective mapping of ",
+        "text": "the information flow dynamics of a system. Research in ",
         "page": 2,
         "order": 93,
         "type": "content"
       },
       {
-        "text": "the information flow dynamics of a system. Research in ",
+        "text": "information ",
         "page": 2,
         "order": 94,
         "type": "content"
       },
       {
-        "text": "information ",
+        "text": "demonstrated that, unless the communication system is ",
         "page": 2,
         "order": 95,
         "type": "content"
       },
       {
-        "text": "demonstrated that, unless the communication system is ",
+        "text": "physically destroyed, information is accumulated and shared ",
         "page": 2,
         "order": 96,
         "type": "content"
       },
       {
-        "text": "physically destroyed, information is accumulated and shared ",
+        "text": "through a \u201csmall-world\u201d network (Comfort, Ko, & Zagorecki, ",
         "page": 2,
         "order": 97,
         "type": "content"
       },
       {
-        "text": "through a \u201csmall-world\u201d network (Comfort, Ko, & Zagorecki, ",
+        "text": "2004). A \u201csmall-world\u201d network is one in which there is a ",
         "page": 2,
         "order": 98,
         "type": "content"
       },
       {
-        "text": "2004). A \u201csmall-world\u201d network is one in which there is a ",
+        "text": "small average distance between nodes and at the same time ",
         "page": 2,
         "order": 99,
         "type": "content"
       },
       {
-        "text": "small average distance between nodes and at the same time ",
+        "text": "high clustering between them. An example that is often used ",
         "page": 2,
         "order": 100,
         "type": "content"
       },
       {
-        "text": "high clustering between them. An example that is often used ",
+        "text": "to ",
         "page": 2,
         "order": 101,
         "type": "content"
       },
       {
-        "text": "to ",
+        "text": "interpersonal friendships in a community, where people seek ",
         "page": 2,
         "order": 102,
         "type": "content"
       },
       {
-        "text": "interpersonal friendships in a community, where people seek ",
+        "text": "to make connections intentionally, creating clusters of friends, ",
         "page": 2,
         "order": 103,
         "type": "content"
       },
       {
-        "text": "to make connections intentionally, creating clusters of friends, ",
+        "text": "while at the same time each person is only five or six people ",
         "page": 2,
         "order": 104,
         "type": "content"
       },
       {
-        "text": "while at the same time each person is only five or six people ",
+        "text": "away from anyone else (Telesford, Joyce, Hayasaka, Burdette, ",
         "page": 2,
         "order": 105,
         "type": "content"
       },
       {
-        "text": "away from anyone else (Telesford, Joyce, Hayasaka, Burdette, ",
+        "text": "& Laurienti, 2011). Research points out that identifying these ",
         "page": 2,
         "order": 106,
         "type": "content"
       },
       {
-        "text": "& Laurienti, 2011). Research points out that identifying these ",
+        "text": "networks among organizations in regions exposed to disaster ",
         "page": 2,
         "order": 107,
         "type": "content"
       },
       {
-        "text": "networks among organizations in regions exposed to disaster ",
+        "text": "risk would represent a critical advance to improving capacity ",
         "page": 2,
         "order": 108,
         "type": "content"
       },
       {
-        "text": "risk would represent a critical advance to improving capacity ",
+        "text": "in ",
         "page": 2,
         "order": 109,
         "type": "content"
       },
       {
-        "text": "in ",
+        "text": "for ",
         "page": 2,
         "order": 110,
         "type": "content"
       },
       {
-        "text": "for ",
+        "text": "management (Comfort, Ko, & Zagorecki, 2004).  ",
         "page": 2,
         "order": 111,
         "type": "content"
       },
       {
-        "text": "management (Comfort, Ko, & Zagorecki, 2004).  ",
+        "text": "The coffee industry in Costa Rica  ",
         "page": 2,
         "order": 112,
         "type": "content"
@@ -2369,331 +2368,331 @@
         "type": "content"
       },
       {
-        "text": "ANALYSIS  ",
-        "page": 3,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": "Complexity of the coffee production farming system  ",
-        "page": 3,
-        "order": 1,
-        "type": "heading"
-      },
-      {
         "text": "Since the beginning of the twentieth century, there was ",
         "page": 3,
-        "order": 2,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "interest from Costa Rican governments to protect and promote ",
         "page": 3,
-        "order": 3,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "coffee production through government action (Canet, 1993). ",
         "page": 3,
-        "order": 4,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "Government intervention in the industry saw its peak in 1961 ",
         "page": 3,
-        "order": 5,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "with the promotion of a national \u201cCoffee Law\u201d, aimed at ",
         "page": 3,
-        "order": 6,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "regulating the economic relations between coffee producers, ",
         "page": 3,
-        "order": 7,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "millers, roasters, and exporters. By 1985, the Costa Rica ",
         "page": 3,
-        "order": 8,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "Institute of Coffee (ICAFE) was designated as the office in ",
         "page": 3,
-        "order": 9,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "charge of this task (Canet, 1993). The law defines coffee ",
         "page": 3,
-        "order": 10,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "producers as those who have the rights and obligations to ",
         "page": 3,
-        "order": 11,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "profit from a coffee plantation and millers as those who, ",
         "page": 3,
-        "order": 12,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "owning a mill, would receive, process, and sell beans (Ley ",
         "page": 3,
-        "order": 13,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "2762: R\u00e9gimen Relaciones de Productores, Beneficiadores y ",
         "page": 3,
-        "order": 14,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "Exportadores Caf\u00e9, 2011). The idea behind the law was to ",
         "page": 3,
-        "order": 15,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "guarantee fair relations between all actors in the chain. The ",
         "page": 3,
-        "order": 16,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "ICAFE was to accomplish this through price regulation, ",
         "page": 3,
-        "order": 17,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "control and registration of producers, millers and yields, ",
         "page": 3,
-        "order": 18,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "promotion of the industry, and technology transfer. To ",
         "page": 3,
-        "order": 19,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "perform these operations the ICAFE delegated activities to ",
         "page": 3,
-        "order": 20,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "each of its eight regional offices (ICAFE, 2015).  ",
         "page": 3,
-        "order": 21,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "The Valle Occidental region is the second largest coffee ",
         "page": 3,
-        "order": 22,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "growing region in Costa Rica both in size and net exports ",
         "page": 3,
-        "order": 23,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "(ICAFE, 2019). According to the Ministry of Agriculture ",
         "page": 3,
-        "order": 24,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "(MAG), this is a region characterized by a high degree of land ",
         "page": 3,
-        "order": 25,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "distribution and a relatively small average farm size (MAG, ",
         "page": 3,
-        "order": 26,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "2015). The environmental conditions of Valle Occidental also ",
         "page": 3,
-        "order": 27,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "make it suitable for agricultural practices, especially coffee: ",
         "page": 3,
-        "order": 28,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "altitudes are appropriate, soils are highly fertile due to their ",
         "page": 3,
-        "order": 29,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "volcanic origin; temperatures are stable all year round and ",
         "page": 3,
-        "order": 30,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "seasons are well defined. Coffee production is in part ",
         "page": 3,
-        "order": 31,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "responsible for the high-income distribution and social ",
         "page": 3,
-        "order": 32,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "equality of the region (ICAFE, 2015). ",
         "page": 3,
-        "order": 33,
+        "order": 31,
+        "type": "content"
+      },
+      {
+        "text": "Complexity of the coffee production farming system  ",
+        "page": 3,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "The general stability of the Valle Occidental region ",
         "page": 3,
-        "order": 34,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "mentioned in the previous section does not account for ",
         "page": 3,
-        "order": 35,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "variations in environmental conditions between farms. Natural ",
         "page": 3,
-        "order": 36,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "factors such as precipitation, altitude, and soil acidity can ",
         "page": 3,
-        "order": 37,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "change considerably over short distances, which is why coffee ",
         "page": 3,
-        "order": 38,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "from this region is considered specialty coffee; in a way, each ",
         "page": 3,
-        "order": 39,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "farm produces its own variety of coffee (Sol\u00eds, 2020). The ",
         "page": 3,
-        "order": 40,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "altitude range in the region goes from 800 meters to 1400 ",
         "page": 3,
-        "order": 41,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "meters above sea level and differences in acidity can be of up ",
         "page": 3,
-        "order": 42,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "to one pH. Other coffee regions in Costa Rica, like Tarrazu, do ",
         "page": 3,
-        "order": 43,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "not present this degree of variation (ICAFE, 2011). ",
         "page": 3,
-        "order": 44,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "Environmental differences pose a challenge to the specificity ",
         "page": 3,
-        "order": 45,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "of the information that is collected, analyzed, and distributed ",
         "page": 3,
-        "order": 46,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "to farmers. ",
         "page": 3,
-        "order": 47,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "The Costa Rican coffee producing industry in the Valle ",
         "page": 3,
-        "order": 48,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "Occidental region is comprised of small \u201cmicro-farms\u201d of ",
         "page": 3,
-        "order": 49,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "about 3 hectares each (Rojas M., 2020). Farms are ",
         "page": 3,
-        "order": 50,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "independently owned and operated. Some producers sell the ",
         "page": 3,
-        "order": 51,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "fruit to cooperatives or private mills; others have their own ",
         "page": 3,
-        "order": 52,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "micro-mills and process the fruit themselves to later sell to ",
         "page": 3,
-        "order": 53,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "roasters both in Costa Rica and abroad. Others also roast their ",
+        "page": 3,
+        "order": 53,
+        "type": "content"
+      },
+      {
+        "text": "ANALYSIS  ",
         "page": 3,
         "order": 54,
         "type": "content"
@@ -3020,316 +3019,316 @@
         "text": "SoS Lexicon and ROPE model for the Valle Occidental ",
         "page": 4,
         "order": 0,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "coffee region  ",
         "page": 4,
         "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": " Operational independence of systems:",
-        "page": 4,
-        "order": 2,
-        "type": "heading"
-      },
-      {
-        "text": " Managerial independence of systems:",
-        "page": 4,
-        "order": 3,
-        "type": "heading"
-      },
-      {
-        "text": " Evolutionary development:",
-        "page": 4,
-        "order": 4,
-        "type": "heading"
-      },
-      {
-        "text": " Emergent behavior:",
-        "page": 4,
-        "order": 5,
-        "type": "heading"
-      },
-      {
-        "text": " Geographic distribution:",
-        "page": 4,
-        "order": 6,
-        "type": "heading"
-      },
-      {
-        "text": " Heterogeneity:",
-        "page": 4,
-        "order": 7,
-        "type": "heading"
-      },
-      {
-        "text": " Network of networks:",
-        "page": 4,
-        "order": 8,
-        "type": "heading"
-      },
-      {
-        "text": " Inter-disciplinary understanding:",
-        "page": 4,
-        "order": 9,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "The role that government institutions play in the coffee ",
         "page": 4,
-        "order": 10,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "producing system raises questions about the nature of the ",
         "page": 4,
-        "order": 11,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "system. Are these institutions part of the system themselves or ",
         "page": 4,
-        "order": 12,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "are they only interacting with it? When they interact, do they ",
         "page": 4,
-        "order": 13,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "do it directly with individual farmers or through ICAFE? ",
         "page": 4,
-        "order": 14,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "Furthermore, how does the fact that micro-farms are in ",
         "page": 4,
-        "order": 15,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "themselves systems with inputs, outputs, operations, and ",
         "page": 4,
-        "order": 16,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "interactions affect the delimitation of the system? The answers ",
         "page": 4,
-        "order": 17,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "lie in the distinction between the purpose of individual micro- ",
         "page": 4,
-        "order": 18,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "farms, which is to grow coffee for livelihood, and the purpose ",
         "page": 4,
-        "order": 19,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "of the coffee region which is to ensure the conditions for ",
         "page": 4,
-        "order": 20,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "coffee production. Nonetheless, both are part of the overall ",
         "page": 4,
-        "order": 21,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "coffee producing system. From this observation, it can be ",
         "page": 4,
-        "order": 22,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "stated that the coffee growing industry in the Valle Occidental ",
         "page": 4,
-        "order": 23,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "region qualifies as a system-of-systems that obeys the ",
         "page": 4,
-        "order": 24,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "fundamental guidelines to be called as such: ",
         "page": 4,
-        "order": 25,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "1.",
         "page": 4,
-        "order": 26,
+        "order": 18,
+        "type": "content"
+      },
+      {
+        "text": " Operational independence of systems:",
+        "page": 4,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "farm can perform its main purpose of cultivating and ",
         "page": 4,
-        "order": 27,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "harvesting coffee beans without the intervention of ",
         "page": 4,
-        "order": 28,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "other components of the system. ",
         "page": 4,
-        "order": 29,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "2.",
         "page": 4,
-        "order": 30,
+        "order": 23,
+        "type": "content"
+      },
+      {
+        "text": " Managerial independence of systems:",
+        "page": 4,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "farm is managed independently according to the will ",
         "page": 4,
-        "order": 31,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "and capabilities of its owner. ",
         "page": 4,
-        "order": 32,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "3.",
         "page": 4,
-        "order": 33,
+        "order": 27,
+        "type": "content"
+      },
+      {
+        "text": " Evolutionary development:",
+        "page": 4,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "subsystems have seen changes in its functions over ",
         "page": 4,
-        "order": 34,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "time; for example, more producers milling and even ",
         "page": 4,
-        "order": 35,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "roasting their fruit instead of selling to mills or farms ",
         "page": 4,
-        "order": 36,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "diversifying through touristic coffee tours. ",
         "page": 4,
-        "order": 37,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "4.",
         "page": 4,
-        "order": 38,
+        "order": 33,
+        "type": "content"
+      },
+      {
+        "text": " Emergent behavior:",
+        "page": 4,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "production system transcends the properties and ",
         "page": 4,
-        "order": 39,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "capabilities of each of the sub-systems. ",
         "page": 4,
-        "order": 40,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "5.",
         "page": 4,
-        "order": 41,
+        "order": 37,
+        "type": "content"
+      },
+      {
+        "text": " Geographic distribution:",
+        "page": 4,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "system is distributed along a geographical region of ",
         "page": 4,
-        "order": 42,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "23000 hectares. ",
         "page": 4,
-        "order": 43,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "6.",
         "page": 4,
-        "order": 44,
+        "order": 41,
+        "type": "content"
+      },
+      {
+        "text": " Heterogeneity:",
+        "page": 4,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "different from each other, depending on a variety of ",
         "page": 4,
-        "order": 45,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "factors like changes in altitude, differences in shade ",
         "page": 4,
-        "order": 46,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "and precipitation or managerial styles. ",
         "page": 4,
-        "order": 47,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "7.",
         "page": 4,
-        "order": 48,
+        "order": 46,
+        "type": "content"
+      },
+      {
+        "text": " Network of networks:",
+        "page": 4,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "connected by proximity and social relations, creating ",
         "page": 4,
-        "order": 49,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "a network. These networks interact with others at the ",
         "page": 4,
-        "order": 50,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "same level and at different levels. ",
         "page": 4,
-        "order": 51,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "8.",
+        "page": 4,
+        "order": 51,
+        "type": "content"
+      },
+      {
+        "text": " Inter-disciplinary understanding:",
         "page": 4,
         "order": 52,
         "type": "content"
@@ -3644,7 +3643,13 @@
         "text": "Table 2. Summarized ROPE model for the Valle ",
         "page": 5,
         "order": 0,
-        "type": "heading"
+        "type": "table_cell"
+      },
+      {
+        "text": "Occidental coffee region  ",
+        "page": 5,
+        "order": 0,
+        "type": "content"
       },
       {
         "text": "Resources ",
@@ -4067,1393 +4072,1387 @@
         "type": "table_cell"
       },
       {
-        "text": "Occidental coffee region  ",
-        "page": 5,
-        "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": "Information sharing in the Valle Occidental coffee region  ",
-        "page": 5,
-        "order": 2,
-        "type": "heading"
-      },
-      {
         "text": "micro- ",
         "page": 5,
-        "order": 3,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "level ",
         "page": 5,
-        "order": 4,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "clusters, ",
         "page": 5,
-        "order": 5,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "cooperative ",
         "page": 5,
-        "order": 6,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "s, private ",
         "page": 5,
-        "order": 7,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "associations ",
         "page": 5,
-        "order": 8,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "al suppliers ",
         "page": 5,
-        "order": 9,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "\u03b3- ",
         "page": 5,
-        "order": 10,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "Valle ",
         "page": 5,
-        "order": 11,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "level ",
         "page": 5,
-        "order": 12,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "Occidental ",
         "page": 5,
-        "order": 13,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "farming ",
         "page": 5,
-        "order": 14,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "region, ",
         "page": 5,
-        "order": 15,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "\u03b4- ",
         "page": 5,
-        "order": 16,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "Network of ",
         "page": 5,
-        "order": 17,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "level ",
         "page": 5,
-        "order": 18,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "farming ",
         "page": 5,
-        "order": 19,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "regions at a ",
         "page": 5,
-        "order": 20,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "national ",
         "page": 5,
-        "order": 21,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "The advantage of applying the SoS lexicon and ",
         "page": 5,
-        "order": 22,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "ROPE model for this case is that both show that grain sizes ",
         "page": 5,
-        "order": 23,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "affect the dynamics of the system. A national policy like ",
         "page": 5,
-        "order": 24,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "health care coverage for seasonal migrant workers might be ",
         "page": 5,
-        "order": 25,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "designed at a \u03b4-level but its enforcement will look different at ",
         "page": 5,
-        "order": 26,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "the \u03b3-level and \u03b1-level. In a similar way, the timescales, type ",
         "page": 5,
-        "order": 27,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "of information and flow that is needed to respond to a disaster ",
         "page": 5,
-        "order": 28,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "will depend on the level of the system-of-systems.  ",
         "page": 5,
-        "order": 29,
+        "order": 27,
+        "type": "content"
+      },
+      {
+        "text": "Information sharing in the Valle Occidental coffee region  ",
+        "page": 5,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "As mentioned above, the complexity in information ",
         "page": 5,
-        "order": 30,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "sharing in the Valle Occidental region is multicausal. The ",
         "page": 5,
-        "order": 31,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "diversification of sources for technical information has ",
         "page": 5,
-        "order": 32,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "debilitated some of the ties that existed between producers and ",
         "page": 5,
-        "order": 33,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "the public sector. In the day-to-day reality, this mostly affects ",
         "page": 5,
-        "order": 34,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "pay, plan ",
         "page": 5,
-        "order": 35,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "coffee, ",
         "page": 5,
-        "order": 36,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "coordinate ",
         "page": 5,
-        "order": 37,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "workforce ",
         "page": 5,
-        "order": 38,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "allocation, ",
         "page": 5,
-        "order": 39,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "farmers ",
         "page": 5,
-        "order": 40,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "Coordinate ",
         "page": 5,
-        "order": 41,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "information ",
         "page": 5,
-        "order": 42,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "sharing in ",
         "page": 5,
-        "order": 43,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "region, ",
         "page": 5,
-        "order": 44,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "National ",
         "page": 5,
-        "order": 45,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "coffee ",
         "page": 5,
-        "order": 46,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "production ",
         "page": 5,
-        "order": 47,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "coordination, ",
         "page": 5,
-        "order": 48,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "coordination ",
         "page": 5,
-        "order": 49,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "and seasonal ",
         "page": 5,
-        "order": 50,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "workers ",
         "page": 5,
-        "order": 51,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "regulation ",
         "page": 5,
-        "order": 52,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "and ",
         "page": 5,
-        "order": 53,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "inspection, ",
         "page": 5,
-        "order": 54,
+        "order": 53,
         "type": "content"
       },
       {
         "text": "volume ",
         "page": 5,
-        "order": 55,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "regulation, ",
         "page": 5,
-        "order": 56,
+        "order": 55,
         "type": "content"
       },
       {
         "text": "timeframe ",
         "page": 5,
-        "order": 57,
+        "order": 56,
         "type": "content"
       },
       {
         "text": "to deliver ",
         "page": 5,
-        "order": 58,
+        "order": 57,
         "type": "content"
       },
       {
         "text": "fruit to mills ",
         "page": 5,
-        "order": 59,
+        "order": 58,
         "type": "content"
       },
       {
         "text": "Training ",
         "page": 5,
-        "order": 60,
+        "order": 59,
         "type": "content"
       },
       {
         "text": "and ",
         "page": 5,
-        "order": 61,
+        "order": 60,
         "type": "content"
       },
       {
         "text": "education ",
         "page": 5,
-        "order": 62,
+        "order": 61,
         "type": "content"
       },
       {
         "text": "policies for ",
         "page": 5,
-        "order": 63,
+        "order": 62,
         "type": "content"
       },
       {
         "text": "health care ",
         "page": 5,
-        "order": 64,
+        "order": 63,
         "type": "content"
       },
       {
         "text": "center for ",
         "page": 5,
-        "order": 65,
+        "order": 64,
         "type": "content"
       },
       {
         "text": "seasonal ",
         "page": 5,
-        "order": 66,
+        "order": 65,
         "type": "content"
       },
       {
         "text": "migrant ",
         "page": 5,
-        "order": 67,
+        "order": 66,
         "type": "content"
       },
       {
         "text": "workers ",
         "page": 5,
-        "order": 68,
+        "order": 67,
         "type": "content"
       },
       {
         "text": "National ",
         "page": 5,
-        "order": 69,
+        "order": 68,
         "type": "content"
       },
       {
         "text": "coffee law, ",
         "page": 5,
-        "order": 70,
+        "order": 69,
         "type": "content"
       },
       {
         "text": "alliance ",
         "page": 5,
-        "order": 71,
+        "order": 70,
         "type": "content"
       },
       {
         "text": "with health ",
         "page": 5,
-        "order": 72,
+        "order": 71,
         "type": "content"
       },
       {
         "text": "provide ",
         "page": 5,
-        "order": 73,
+        "order": 72,
         "type": "content"
       },
       {
         "text": "health care ",
         "page": 5,
-        "order": 74,
+        "order": 73,
         "type": "content"
       },
       {
         "text": "to seasonal ",
         "page": 5,
-        "order": 75,
+        "order": 74,
         "type": "content"
       },
       {
         "text": "workers ",
         "page": 5,
-        "order": 76,
+        "order": 75,
         "type": "content"
       },
       {
         "text": "investment ",
         "page": 5,
-        "order": 77,
+        "order": 76,
         "type": "content"
       },
       {
         "text": "Subsidies in ",
         "page": 5,
-        "order": 78,
+        "order": 77,
         "type": "content"
       },
       {
         "text": "the form of ",
         "page": 5,
-        "order": 79,
+        "order": 78,
         "type": "content"
       },
       {
         "text": "technical ",
         "page": 5,
-        "order": 80,
+        "order": 79,
         "type": "content"
       },
       {
         "text": "assistance, ",
         "page": 5,
-        "order": 81,
+        "order": 80,
         "type": "content"
       },
       {
         "text": "competition ",
         "page": 5,
-        "order": 82,
+        "order": 81,
         "type": "content"
       },
       {
         "text": "Price ",
         "page": 5,
-        "order": 83,
+        "order": 82,
         "type": "content"
       },
       {
         "text": "regulation, ",
         "page": 5,
-        "order": 84,
+        "order": 83,
         "type": "content"
       },
       {
         "text": "regional ",
         "page": 5,
-        "order": 85,
+        "order": 84,
         "type": "content"
       },
       {
         "text": "government ",
         "page": 5,
-        "order": 86,
+        "order": 85,
         "type": "content"
       },
       {
         "text": "National ",
         "page": 5,
-        "order": 87,
+        "order": 86,
         "type": "content"
       },
       {
         "text": "coffee ",
         "page": 5,
-        "order": 88,
+        "order": 87,
         "type": "content"
       },
       {
         "text": "market ",
         "page": 5,
-        "order": 89,
+        "order": 88,
         "type": "content"
       },
       {
         "text": "trends, costs ",
         "page": 5,
-        "order": 90,
+        "order": 89,
         "type": "content"
       },
       {
         "text": "migrant ",
         "page": 5,
-        "order": 91,
+        "order": 90,
         "type": "content"
       },
       {
         "text": "seasonal ",
         "page": 5,
-        "order": 92,
+        "order": 91,
         "type": "content"
       },
       {
         "text": "workers  ",
         "page": 5,
-        "order": 93,
+        "order": 92,
         "type": "content"
       },
       {
         "text": "impact alignment in non-routine activities like disaster ",
         "page": 5,
-        "order": 94,
+        "order": 93,
         "type": "content"
       },
       {
         "text": "\u03b3-level, through the joint effort of regional offices, local ",
         "page": 5,
-        "order": 95,
+        "order": 94,
         "type": "content"
       },
       {
         "text": "governments and first responders. However, according to ",
         "page": 5,
-        "order": 96,
+        "order": 95,
         "type": "content"
       },
       {
         "text": "officials, ICAFE is not part of the CNE\u2019s robust ",
         "page": 5,
-        "order": 97,
+        "order": 96,
         "type": "content"
       },
       {
         "text": "communication network and interaction between the two ",
         "page": 5,
-        "order": 98,
+        "order": 97,
         "type": "content"
       },
       {
         "text": "institutions is sporadic (see Figure 2) (Fonseca, 2020). On the ",
         "page": 5,
-        "order": 99,
+        "order": 98,
         "type": "content"
       },
       {
         "text": "other hand, relations between the Ministry of Agriculture and ",
         "page": 5,
-        "order": 100,
+        "order": 99,
         "type": "content"
       },
       {
         "text": "ICAFE are strong at the \u03b4-level, as the Ministry of Agriculture ",
         "page": 5,
-        "order": 101,
+        "order": 100,
         "type": "content"
       },
       {
         "text": "and communication (Fonseca, 2020). For example, the MAG ",
         "page": 5,
-        "order": 102,
+        "order": 101,
         "type": "content"
       },
       {
         "text": "region that includes ICAFE\u2019s Valle Occidental region, also ",
         "page": 5,
-        "order": 103,
+        "order": 102,
         "type": "content"
       },
       {
         "text": "includes parts of ICAFE\u2019s Central region. To address this, the ",
         "page": 5,
-        "order": 104,
+        "order": 103,
         "type": "content"
       },
       {
         "text": "institutions have created a regional committee, coordinated by ",
         "page": 5,
-        "order": 105,
+        "order": 104,
         "type": "content"
       },
       {
         "text": "ICAFE\u2019s Valle Occidental office, with the purpose of aligning ",
         "page": 5,
-        "order": 106,
+        "order": 105,
         "type": "content"
       },
       {
         "text": "information between offices for the specific needs of Valle ",
         "page": 5,
-        "order": 107,
+        "order": 106,
         "type": "content"
       },
       {
         "text": "Occidental (Ruiz, 2020). In practice, communication with ",
         "page": 5,
-        "order": 108,
+        "order": 107,
         "type": "content"
       },
       {
         "text": "some individual micro-farms.   ",
         "page": 5,
-        "order": 109,
+        "order": 108,
         "type": "content"
       },
       {
         "text": "Figure 2. Information flow for disaster response at the \u03b3-level  ",
         "page": 5,
-        "order": 110,
+        "order": 109,
         "type": "content"
       },
       {
         "text": "regional offices and farms depends on the willingness of the ",
         "page": 5,
-        "order": 111,
+        "order": 110,
         "type": "content"
       },
       {
         "text": "producer or cooperative to establish a link. For example, mass ",
         "page": 5,
-        "order": 112,
+        "order": 111,
         "type": "content"
       },
       {
         "text": "group messaging between farmers and ICAFE officials is the ",
         "page": 5,
-        "order": 113,
+        "order": 112,
         "type": "content"
       },
       {
         "text": "most common way of communicating but it is only effective ",
         "page": 5,
-        "order": 114,
+        "order": 113,
         "type": "content"
       },
       {
         "text": "when the producer has ICAFE as one of its contacts (Rojas ",
         "page": 5,
-        "order": 115,
+        "order": 114,
         "type": "content"
       },
       {
         "text": "M., 2020; Sol\u00eds, 2020). Coffee producers that are not part of ",
         "page": 5,
-        "order": 116,
+        "order": 115,
         "type": "content"
       },
       {
         "text": "these group chats are not necessarily isolated, some create ",
         "page": 5,
-        "order": 117,
+        "order": 116,
         "type": "content"
       },
       {
         "text": "their alternative communication networks, even in person ",
         "page": 5,
-        "order": 118,
+        "order": 117,
         "type": "content"
       },
       {
         "text": "ones, with neighbors, seasonal workers and private mills or ",
         "page": 5,
-        "order": 119,
+        "order": 118,
         "type": "content"
       },
       {
         "text": "Information flow, at a \u03b3-level, between ICAFE ",
         "page": 5,
-        "order": 120,
+        "order": 119,
         "type": "content"
-      },
-      {
-        "text": "CONCLUSIONS  ",
-        "page": 6,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": "REFERENCES  ",
-        "page": 6,
-        "order": 1,
-        "type": "heading"
       },
       {
         "text": "suppliers (Quesada, 2020). At a \u03b4-level, information regarding ",
         "page": 6,
-        "order": 2,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "weather forecasts and disease outbreaks is available through ",
         "page": 6,
-        "order": 3,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "social media and ICAFE\u2019s website but alignment also depends ",
         "page": 6,
-        "order": 4,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "on factors like the farmer\u2019s interest and technology literacy. ",
         "page": 6,
-        "order": 5,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "Cultural factors like tradition and a passive mindset when it ",
         "page": 6,
-        "order": 6,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "comes to information foraging hinder information alignment ",
         "page": 6,
-        "order": 7,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "as well (Fonseca, 2020).  ",
         "page": 6,
-        "order": 8,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "The Valle Occidental coffee region of Costa Rica is an ",
         "page": 6,
-        "order": 9,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "example of a system-of-systems at a \u03b3-level. In it, networks of ",
         "page": 6,
-        "order": 10,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "systems at different levels can and do operate independently ",
         "page": 6,
-        "order": 11,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "and out of their interactions new properties emerge. With time, ",
         "page": 6,
-        "order": 12,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "the SoS has also evolved, especially in constructing new ",
         "page": 6,
-        "order": 13,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "information pathways and diversifying its economic activities. ",
         "page": 6,
-        "order": 14,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "The fact that there is regulation does not change its ",
         "page": 6,
-        "order": 15,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "classification as a system-of-systems, as regulation is also seen ",
         "page": 6,
-        "order": 16,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "in other SoS like a transportation networks or the Internet. ",
         "page": 6,
-        "order": 17,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "An SoS representation of the Valle Occidental coffee ",
         "page": 6,
-        "order": 18,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "region is useful for decision makers that seek to improve ",
         "page": 6,
-        "order": 19,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "information alignment. From the breaking down the system in ",
         "page": 6,
-        "order": 20,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "its components and levels, it is clear that information sharing ",
         "page": 6,
-        "order": 21,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "in the system looks different depending on the grain size.  As ",
         "page": 6,
-        "order": 22,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "ICAFE works to develop tools for better technology transfer, ",
         "page": 6,
-        "order": 23,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "aspects like the informal networks that producers create at the ",
         "page": 6,
-        "order": 24,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "\u03b1-level or the close relations between farmers and technicians ",
         "page": 6,
-        "order": 25,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "from agrochemical suppliers at the \u03b2-level have to be taken ",
         "page": 6,
-        "order": 26,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "into consideration. The fact that farmers and millers must be ",
         "page": 6,
-        "order": 27,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "registered at the ICAFE regional offices is an advantage for ",
         "page": 6,
-        "order": 28,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "information alignment, but it currently does not guarantee that ",
         "page": 6,
-        "order": 29,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "communication takes place. There are examples of farmers ",
         "page": 6,
-        "order": 30,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "that prefer technical assistance from other sources and those ",
         "page": 6,
-        "order": 31,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "who are skeptical of regulation. As regional government ",
         "page": 6,
-        "order": 32,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "offices plan their strategies regarding disaster response, to ",
         "page": 6,
-        "order": 33,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "understand the region as a system-of-systems helps to identify ",
         "page": 6,
-        "order": 34,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "those \u201csmall-world\u201d networks through which key information ",
         "page": 6,
-        "order": 35,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "is passed, the level in which they operate and how they ",
         "page": 6,
-        "order": 36,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "interact with networks in other levels. ",
         "page": 6,
-        "order": 37,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "As far as information sharing between public institutions, ",
         "page": 6,
-        "order": 38,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "the SoS representation proposed in this paper sheds light into ",
         "page": 6,
-        "order": 39,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "strengths and weaknesses in their alignment. Communication ",
         "page": 6,
-        "order": 40,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "between institutions is strongest at the \u03b4-level, where public ",
         "page": 6,
-        "order": 41,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "policy is designed. At this level, ICAFE and MAG have a ",
         "page": 6,
-        "order": 42,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "solid communication pathway through ICAFE\u2019s Board of ",
         "page": 6,
-        "order": 43,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "Directors. At the \u03b3-level, through tasks associated to the ",
         "page": 6,
-        "order": 44,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "regional technical committee, both regional offices are ",
         "page": 6,
-        "order": 45,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "connected; however, the differences in regional divisions in ",
         "page": 6,
-        "order": 46,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "both institutions mean that MAG has to perform additional ",
         "page": 6,
-        "order": 47,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "tasks of internal alignment before sharing with ICAFE. ",
         "page": 6,
-        "order": 48,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "Another weakness in alignment has to do with disaster ",
         "page": 6,
-        "order": 49,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "response in the Valle Occidental region, since few pathways ",
         "page": 6,
-        "order": 50,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "exist between ICAFE\u2019s regional offices and the National ",
         "page": 6,
-        "order": 51,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "Emergency Commission. CNE does not participate of the ",
         "page": 6,
-        "order": 52,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "regional technical committee and its link to the region occurs ",
         "page": 6,
-        "order": 53,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "through local governments, whereas ICAFE\u2019s main link to the ",
         "page": 6,
-        "order": 54,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "region is directly through farms and cooperatives. In other ",
         "page": 6,
-        "order": 55,
+        "order": 53,
+        "type": "content"
+      },
+      {
+        "text": "CONCLUSIONS  ",
+        "page": 6,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "words, the Valle Occidental coffee region, as a system-of- ",
         "page": 6,
-        "order": 56,
+        "order": 55,
         "type": "content"
       },
       {
         "text": "systems, has established information pathways, both formal ",
         "page": 6,
-        "order": 57,
+        "order": 56,
         "type": "content"
       },
       {
         "text": "and informal, but these do not include the CNE. Additional ",
         "page": 6,
-        "order": 58,
+        "order": 57,
         "type": "content"
       },
       {
         "text": "work could be done to compare the description of the state of ",
         "page": 6,
-        "order": 59,
+        "order": 58,
         "type": "content"
       },
       {
         "text": "the system proposed in this research with the designed disaster ",
         "page": 6,
-        "order": 60,
+        "order": 59,
         "type": "content"
       },
       {
         "text": "response ",
         "page": 6,
-        "order": 61,
+        "order": 60,
         "type": "content"
       },
       {
         "text": "information alignment for the overall farming system, ",
         "page": 6,
-        "order": 62,
+        "order": 61,
         "type": "content"
       },
       {
         "text": "enhancing its capacity to withstand uncertainty from the ",
         "page": 6,
-        "order": 63,
+        "order": 62,
         "type": "content"
       },
       {
         "text": "environment.  ",
         "page": 6,
-        "order": 64,
+        "order": 63,
         "type": "content"
       },
       {
         "text": "complex with the societal and economic changes that the ",
         "page": 6,
-        "order": 65,
+        "order": 64,
         "type": "content"
       },
       {
         "text": "industry is undergoing. New farming styles brought by ",
         "page": 6,
-        "order": 66,
+        "order": 65,
         "type": "content"
       },
       {
         "text": "younger generations, the producers\u2019 desire to process their ",
         "page": 6,
-        "order": 67,
+        "order": 66,
         "type": "content"
       },
       {
         "text": "own coffee beans in their micro-mills instead of partnering ",
         "page": 6,
-        "order": 68,
+        "order": 67,
         "type": "content"
       },
       {
         "text": "with private mills, the possibility to access technology from ",
         "page": 6,
-        "order": 69,
+        "order": 68,
         "type": "content"
       },
       {
         "text": "other sources plus environmental changes will challenge the ",
         "page": 6,
-        "order": 70,
+        "order": 69,
         "type": "content"
       },
       {
         "text": "status quo of the system. This paper offers a first step into a ",
         "page": 6,
-        "order": 71,
+        "order": 70,
         "type": "content"
       },
       {
         "text": "qualitative understanding of the current system dynamics, but ",
         "page": 6,
-        "order": 72,
+        "order": 71,
         "type": "content"
       },
       {
         "text": "it is important to note that the complex nature of these systems ",
         "page": 6,
-        "order": 73,
+        "order": 72,
         "type": "content"
       },
       {
         "text": "made up of systems means that conditions can and will change ",
         "page": 6,
-        "order": 74,
+        "order": 73,
         "type": "content"
       },
       {
         "text": "in the future. Nonetheless, the categorization presented here is ",
         "page": 6,
-        "order": 75,
+        "order": 74,
         "type": "content"
       },
       {
         "text": "valuable and can help to effectively guide a more quantitative ",
         "page": 6,
-        "order": 76,
+        "order": 75,
         "type": "content"
       },
       {
         "text": "study in the future, one that could include modeling and ",
         "page": 6,
-        "order": 77,
+        "order": 76,
         "type": "content"
       },
       {
         "text": "simulation of information flow in this system-of-systems. ",
         "page": 6,
-        "order": 78,
+        "order": 77,
         "type": "content"
       },
       {
         "text": "Ackoff, R. L. (1971). Towards a system of systems concepts. ",
         "page": 6,
-        "order": 79,
+        "order": 78,
         "type": "content"
       },
       {
         "text": "Boustany, K. C., & Caldwell, B. S. (2007). Information and ",
         "page": 6,
-        "order": 80,
+        "order": 79,
         "type": "content"
       },
       {
         "text": "Caldwell, B. S. (2008). Knowledge sharing and expertise ",
         "page": 6,
-        "order": 81,
+        "order": 80,
         "type": "content"
       },
       {
         "text": "Caldwell, B. S. (2013). Improving information alignment and ",
         "page": 6,
-        "order": 82,
+        "order": 81,
         "type": "content"
       },
       {
         "text": "Caldwell, B. S., Palmer, R. C., & Cuevas, H. M. (2013). ",
         "page": 6,
-        "order": 83,
+        "order": 82,
         "type": "content"
       },
       {
         "text": "Canet, G. (1993). Evoluci\u00f3n de la caficultura costarricense y ",
         "page": 6,
-        "order": 84,
+        "order": 83,
         "type": "content"
       },
       {
         "text": "Castro, M. (2020, May 20). Interview with ICAFE board ",
         "page": 6,
-        "order": 85,
+        "order": 84,
         "type": "content"
       },
       {
         "text": "Comfort, L. K., Ko, K., & Zagorecki, A. (2004). Coordination ",
         "page": 6,
-        "order": 86,
+        "order": 85,
         "type": "content"
       },
       {
         "text": "information ",
         "page": 6,
-        "order": 87,
+        "order": 86,
         "type": "content"
       },
       {
         "text": "Information alignment in the region will become more ",
         "page": 6,
-        "order": 88,
+        "order": 87,
         "type": "content"
       },
       {
         "text": "Management Science, 17",
         "page": 6,
-        "order": 89,
+        "order": 88,
         "type": "content"
       },
       {
         "text": "from ",
         "page": 6,
-        "order": 90,
+        "order": 89,
         "type": "content"
       },
       {
         "text": "https://ackoffcenter.blogs.com/ackoff_center_weblog ",
         "page": 6,
-        "order": 91,
+        "order": 90,
         "type": "content"
       },
       {
         "text": "/files/AckoffSystemOfSystems.pdf ",
         "page": 6,
-        "order": 92,
+        "order": 91,
         "type": "content"
       },
       {
         "text": "Resource Coordination in Healthcare Providers. ",
         "page": 6,
-        "order": 93,
+        "order": 92,
         "type": "content"
       },
       {
         "text": "Proceedings of the 2007 Industrial Engineering ",
         "page": 6,
-        "order": 94,
+        "order": 93,
         "type": "content"
       },
       {
         "text": "Research Conference. ",
         "page": 6,
-        "order": 95,
+        "order": 94,
         "type": "content"
       },
       {
         "text": "coordination of event response in organizations. ",
         "page": 6,
-        "order": 96,
+        "order": 95,
         "type": "content"
       },
       {
         "text": "Applied Ergonomics, 39",
         "page": 6,
-        "order": 97,
+        "order": 96,
         "type": "content"
       },
       {
         "text": "dynamic allocation of IT functions.",
         "page": 6,
-        "order": 98,
+        "order": 97,
         "type": "content"
       },
       {
         "text": "the 2013 Industrial and Systems Engineering ",
         "page": 6,
-        "order": 99,
+        "order": 98,
         "type": "content"
       },
       {
         "text": "Research Conference. ",
         "page": 6,
-        "order": 100,
+        "order": 99,
         "type": "content"
       },
       {
         "text": "Information Alignment and Task Coordination in ",
         "page": 6,
-        "order": 101,
+        "order": 100,
         "type": "content"
       },
       {
         "text": "Organizations:",
         "page": 6,
-        "order": 102,
+        "order": 101,
         "type": "content"
       },
       {
         "text": "33-44. ",
         "page": 6,
-        "order": 103,
+        "order": 102,
         "type": "content"
       },
       {
         "text": "situaci\u00f3n actual de la actividad: enfoque a nivel ",
         "page": 6,
-        "order": 104,
+        "order": 103,
         "type": "content"
       },
       {
         "text": "nacional y mundial [Evolution and current state of ",
         "page": 6,
-        "order": 105,
+        "order": 104,
         "type": "content"
       },
       {
         "text": "the Costa Rican coffee culture: a national and ",
         "page": 6,
-        "order": 106,
+        "order": 105,
         "type": "content"
       },
       {
         "text": "international approach].",
         "page": 6,
-        "order": 107,
+        "order": 106,
         "type": "content"
       },
       {
         "text": "agropecuario y de recursos naturales",
         "page": 6,
-        "order": 108,
+        "order": 107,
         "type": "content"
       },
       {
         "text": "member and coffee producer. (I. Campos Valle, ",
         "page": 6,
-        "order": 109,
+        "order": 108,
         "type": "content"
       },
       {
         "text": "Interviewer) ",
         "page": 6,
-        "order": 110,
+        "order": 109,
         "type": "content"
       },
       {
         "text": "in Rapidly Evolving Disaster Response Systems: The ",
+        "page": 6,
+        "order": 110,
+        "type": "content"
+      },
+      {
+        "text": "REFERENCES  ",
         "page": 6,
         "order": 111,
         "type": "content"
@@ -6755,10 +6754,10 @@
         "type": "content"
       },
       {
-        "text": "APPENDIX   ",
+        "text": "Resources ",
         "page": 8,
         "order": 0,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "Trucks, baskets, bushels, prunners ",
@@ -6923,109 +6922,109 @@
         "type": "table_cell"
       },
       {
-        "text": "Resources ",
+        "text": "\u03b1 ",
         "page": 8,
         "order": 1,
         "type": "content"
       },
       {
-        "text": "\u03b1 ",
+        "text": "Technical resources (technicians, agro engineers) ",
         "page": 8,
         "order": 2,
         "type": "content"
       },
       {
-        "text": "Technical resources (technicians, agro engineers) ",
+        "text": "\"Micro-farm\" cluster ",
         "page": 8,
         "order": 3,
         "type": "content"
       },
       {
-        "text": "\"Micro-farm\" cluster ",
+        "text": "Private farmers associations ",
         "page": 8,
         "order": 4,
         "type": "content"
       },
       {
-        "text": "Private farmers associations ",
+        "text": "Private mills ",
         "page": 8,
         "order": 5,
         "type": "content"
       },
       {
-        "text": "Private mills ",
+        "text": "Regional ICAFE offices ",
         "page": 8,
         "order": 6,
         "type": "content"
       },
       {
-        "text": "Regional ICAFE offices ",
+        "text": "Regional Ministry of Agriculture  and National Emergency ",
         "page": 8,
         "order": 7,
         "type": "content"
       },
       {
-        "text": "Regional Ministry of Agriculture  and National Emergency ",
+        "text": "Regional technical committee ",
         "page": 8,
         "order": 8,
         "type": "content"
       },
       {
-        "text": "Regional technical committee ",
+        "text": "National network of farming regions ",
         "page": 8,
         "order": 9,
         "type": "content"
       },
       {
-        "text": "National network of farming regions ",
+        "text": "National ICAFE offices ",
         "page": 8,
         "order": 10,
         "type": "content"
       },
       {
-        "text": "National ICAFE offices ",
+        "text": "Ministry of Agriculture (MAG) and National Emergency Commission ",
         "page": 8,
         "order": 11,
         "type": "content"
       },
       {
-        "text": "Ministry of Agriculture (MAG) and National Emergency Commission ",
+        "text": "\u03b4 ",
         "page": 8,
         "order": 12,
         "type": "content"
       },
       {
-        "text": "\u03b4 ",
+        "text": "(CNE) offices ",
         "page": 8,
         "order": 13,
         "type": "content"
       },
       {
-        "text": "(CNE) offices ",
+        "text": "National laboratories ",
         "page": 8,
         "order": 14,
         "type": "content"
       },
       {
-        "text": "National laboratories ",
+        "text": "Sources: ICAFE, Alejandro Quesada, Hern\u00e1n Solis. ",
         "page": 8,
         "order": 15,
         "type": "content"
       },
       {
-        "text": "Sources: ICAFE, Alejandro Quesada, Hern\u00e1n Solis. ",
+        "text": "Appendix 1. ROPE Model for Valle Occidental coffee region  ",
         "page": 8,
         "order": 16,
         "type": "content"
       },
       {
-        "text": "Appendix 1. ROPE Model for Valle Occidental coffee region  ",
+        "text": "Operations ",
         "page": 8,
         "order": 17,
         "type": "content"
       },
       {
-        "text": "Operations ",
+        "text": "Sell and trade ",
         "page": 8,
         "order": 18,
         "type": "content"
@@ -7037,109 +7036,109 @@
         "type": "content"
       },
       {
-        "text": "Sell and trade ",
+        "text": "Assist farmers on technological transfer ",
         "page": 8,
         "order": 20,
         "type": "content"
       },
       {
-        "text": "Assist farmers on technological transfer ",
+        "text": "Communicate with \"micro-farm\" cluster or associated ",
         "page": 8,
         "order": 21,
         "type": "content"
       },
       {
-        "text": "Communicate with \"micro-farm\" cluster or associated ",
+        "text": "farmers ",
         "page": 8,
         "order": 22,
         "type": "content"
       },
       {
-        "text": "farmers ",
+        "text": "Educate and train on disaster prevention ",
         "page": 8,
         "order": 23,
         "type": "content"
       },
       {
-        "text": "Educate and train on disaster prevention ",
+        "text": "Coordinate relations with strategic partners (private ",
         "page": 8,
         "order": 24,
         "type": "content"
       },
       {
-        "text": "Coordinate relations with strategic partners (private ",
+        "text": "mills, social leaders etc). ",
         "page": 8,
         "order": 25,
         "type": "content"
       },
       {
-        "text": "mills, social leaders etc). ",
+        "text": "Monitor local weather, potential disasters ",
         "page": 8,
         "order": 26,
         "type": "content"
       },
       {
-        "text": "Monitor local weather, potential disasters ",
+        "text": "Coordinate information sharing with farming region ",
         "page": 8,
         "order": 27,
         "type": "content"
       },
       {
-        "text": "Coordinate information sharing with farming region ",
+        "text": "Investigate in cases of conflict between actors ",
         "page": 8,
         "order": 28,
         "type": "content"
       },
       {
-        "text": "Investigate in cases of conflict between actors ",
+        "text": "Train technicians from private mills and cooperatives ",
         "page": 8,
         "order": 29,
         "type": "content"
       },
       {
-        "text": "Train technicians from private mills and cooperatives ",
+        "text": "Coordinate regional disaster response ",
         "page": 8,
         "order": 30,
         "type": "content"
       },
       {
-        "text": "Coordinate regional disaster response ",
+        "text": "Analyse data on weather conditions, potential disasters ",
         "page": 8,
         "order": 31,
         "type": "content"
       },
       {
-        "text": "Analyse data on weather conditions, potential disasters ",
+        "text": "National coffee production coordination ",
         "page": 8,
         "order": 32,
         "type": "content"
       },
       {
-        "text": "National coffee production coordination ",
+        "text": "National emergency coordination ",
         "page": 8,
         "order": 33,
         "type": "content"
       },
       {
-        "text": "National emergency coordination ",
+        "text": "Joint research with national universities ",
         "page": 8,
         "order": 34,
         "type": "content"
       },
       {
-        "text": "Joint research with national universities ",
+        "text": "Database management ",
         "page": 8,
         "order": 35,
         "type": "content"
       },
       {
-        "text": "Database management ",
+        "text": "Coffee production industry Valle Occidental, Costa Rica  ",
         "page": 8,
         "order": 36,
         "type": "content"
       },
       {
-        "text": "Coffee production industry Valle Occidental, Costa Rica  ",
+        "text": "APPENDIX   ",
         "page": 8,
         "order": 37,
         "type": "content"
@@ -10222,9 +10221,9 @@
           "colspan": 1,
           "rowspan": 1,
           "bbox": [
-            210.2324676513672,
+            210.23248291015625,
             163.1062774658203,
-            254.62353515625,
+            254.62355041503906,
             168.24012756347656
           ]
         },
@@ -10248,7 +10247,7 @@
           "colspan": 1,
           "rowspan": 1,
           "bbox": [
-            210.2324676513672,
+            210.23248291015625,
             169.94534301757812,
             281.84991455078125,
             175.07919311523438
@@ -10287,7 +10286,7 @@
           "colspan": 1,
           "rowspan": 1,
           "bbox": [
-            210.2324676513672,
+            210.23248291015625,
             176.7753143310547,
             264.81414794921875,
             181.90916442871094

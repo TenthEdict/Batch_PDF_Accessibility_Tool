@@ -1,0 +1,47 @@
+{
+  "0": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 40.75
+  },
+  "1": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 0
+  },
+  "2": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 29.75
+  },
+  "3": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 47.0
+  },
+  "4": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 29.333333333333332
+  },
+  "5": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 34.41025641025641
+  },
+  "6": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 39.666666666666664
+  },
+  "7": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 33.72727272727273
+  },
+  "8": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 85.0
+  }
+}

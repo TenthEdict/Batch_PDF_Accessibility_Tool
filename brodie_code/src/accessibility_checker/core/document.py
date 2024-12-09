@@ -9,7 +9,6 @@ from typing import Dict, List, Tuple, Optional
 import pandas as pd
 from tqdm import tqdm
 import fitz  # PyMuPDF
-import pytesseract
 from pdf2image import convert_from_path
 import cv2
 import numpy as np
@@ -155,150 +154,6 @@ class TableStructure:
                     if col_idx + i < self.num_cols:
                         self.rows[row_idx][col_idx + i] = cell
 
-# ============= Academic OCR Processor =============
-
-class AcademicOCRProcessor:
-    def __init__(self):
-        self.text_config = {
-            'language': 'eng',
-            'psm': 3,
-            'oem': 3,
-            'tessedit_char_whitelist': 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}"\'-',
-            'preserve_interword_spaces': '1',
-            'textord_heavy_nr': '1',
-            'textord_force_make_prop_words': '1',
-            'edges_max_children_per_outline': '40'
-        }
-        
-        self.equation_config = {
-            'language': 'equ',
-            'psm': 6,
-            'oem': 3,
-            'tessedit_char_whitelist': '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-=/*()[]{}^∫∑∏√∆∇∂μσπλα∞θ',
-            'textord_equation_detect': '1',
-            'textord_heavy_nr': '1',
-            'textord_noise_sizelimit': '0.2'
-        }
-        
-        self.reference_config = {
-            'language': 'eng',
-            'psm': 6,
-            'oem': 3,
-            'tessedit_char_whitelist': 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}"\'-&',
-            'preserve_interword_spaces': '1',
-            'textord_heavy_nr': '1'
-        }
-
-    def _create_tesseract_config(self, config: Dict[str, str]) -> str:
-        return ' '.join([f'-c {k}={v}' for k, v in config.items()])
-
-    def preprocess_image(self, image: np.ndarray) -> np.ndarray:
-        if len(image.shape) == 3:
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        else:
-            gray = image.copy()
-        
-        binary = cv2.adaptiveThreshold(
-            gray,
-            255,
-            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY,
-            11,
-            2
-        )
-        
-        denoised = cv2.fastNlMeansDenoising(binary)
-        
-        angle = self._get_skew_angle(denoised)
-        if abs(angle) > 0.5:
-            denoised = self._rotate_image(denoised, angle)
-        
-        return denoised
-
-    def _get_skew_angle(self, image: np.ndarray) -> float:
-        coords = np.column_stack(np.where(image > 0))
-        angle = cv2.minAreaRect(coords)[-1]
-        if angle < -45:
-            angle = 90 + angle
-        return angle
-
-    def _rotate_image(self, image: np.ndarray, angle: float) -> np.ndarray:
-        (h, w) = image.shape
-        center = (w // 2, h // 2)
-        M = cv2.getRotationMatrix2D(center, angle, 1.0)
-        rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-        return rotated
-
-    def detect_layout(self, image: np.ndarray) -> List[Dict]:
-        binary = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-        contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        
-        regions = []
-        for contour in contours:
-            x, y, w, h = cv2.boundingRect(contour)
-            if w * h > 100:
-                region_type = self._classify_region(image[y:y+h, x:x+w])
-                regions.append({
-                    'type': region_type,
-                    'bbox': (x, y, x+w, y+h)
-                })
-        
-        return self._merge_regions(regions)
-
-    def _classify_region(self, region: np.ndarray) -> str:
-        height, width = region.shape
-        aspect_ratio = width / height
-        density = np.sum(region > 0) / (width * height)
-        
-        math_symbols = re.findall(r'[+\-*/=(){}\[\]∫∑∏√]', pytesseract.image_to_string(region))
-        
-        if len(math_symbols) > 3:
-            return 'equation'
-        elif aspect_ratio > 3 and density < 0.2:
-            return 'reference'
-        else:
-            return 'text'
-
-    def process_page(self, image: np.ndarray, page_num: int) -> List[OCRElement]:
-        processed_image = self.preprocess_image(image)
-        regions = self.detect_layout(processed_image)
-        
-        elements = []
-        for region in regions:
-            x1, y1, x2, y2 = region['bbox']
-            region_image = processed_image[y1:y2, x1:x2]
-            
-            config = self.equation_config if region['type'] == 'equation' else \
-                    self.reference_config if region['type'] == 'reference' else \
-                    self.text_config
-            
-            ocr_data = pytesseract.image_to_data(
-                region_image,
-                config=self._create_tesseract_config(config),
-                output_type=pytesseract.Output.DICT
-            )
-            
-            for i, text in enumerate(ocr_data['text']):
-                if text.strip():
-                    confidence = float(ocr_data['conf'][i])
-                    if confidence > 0:
-                        bbox = (
-                            x1 + ocr_data['left'][i],
-                            y1 + ocr_data['top'][i],
-                            x1 + ocr_data['left'][i] + ocr_data['width'][i],
-                            y1 + ocr_data['top'][i] + ocr_data['height'][i]
-                        )
-                        
-                        elements.append(OCRElement(
-                            text=text,
-                            confidence=confidence,
-                            bbox=bbox,
-                            type=region['type'],
-                            page_num=page_num
-                        ))
-        
-        return elements
-
 # ============= Accessibility Document Processor =============
 
 class AccessibilityDocumentProcessor:
@@ -306,7 +161,8 @@ class AccessibilityDocumentProcessor:
         self, 
         pdf_path: str,
         ocr_processor: Optional[OCRProcessor] = None,
-        retry_handler: Optional[RetryHandler] = None
+        retry_handler: Optional[RetryHandler] = None,
+        enable_ocr: bool = True
     ):
         self.pdf_path = pdf_path
         self.doc = fitz.open(pdf_path)
@@ -314,9 +170,18 @@ class AccessibilityDocumentProcessor:
         self.tables: List[TableStructure] = []
         self.corrections: Dict[int, List[Dict]] = {}
         self.heading_font_sizes: Dict[float, int] = {}
-        self.ocr_processor = ocr_processor or AcademicOCRProcessor()
+        self.ocr_processor = ocr_processor
         self.retry_handler = retry_handler
+        self.enable_ocr = enable_ocr
         self.logger = logging.getLogger(__name__)
+
+        if self.enable_ocr and self.ocr_processor:
+            try:
+                self.ocr_results = self.verify_text_with_ocr()
+                self.logger.info("Initial OCR verification completed")
+            except Exception as e:
+                self.logger.warning(f"Initial OCR verification failed: {str(e)}")
+                self.ocr_results = {}
 
     def export_corrections(self, output_path: str) -> None:
         """
@@ -360,65 +225,46 @@ class AccessibilityDocumentProcessor:
             self.logger.error(f"Error processing images on page {page_num}: {str(e)}")
 
     def verify_text_with_ocr(self) -> Dict[int, Dict]:
-        """Verify text content using OCR with error handling."""
+        """Improved OCR verification with better error handling"""
         results = {}
         
         try:
+            # Convert PDF to images
             images = convert_from_path(self.pdf_path)
             
             for page_num, image in enumerate(images):
-                if image is None:
-                    continue
-                    
                 try:
+                    # Convert PIL image to numpy array
                     image_np = np.array(image)
-                    if image_np is None or image_np.size == 0:
-                        continue
-                        
-                    ocr_elements = self.ocr_processor.process_page(image_np, page_num)
-                    results[page_num] = {
-                        'status': 'success',
-                        'corrections': [],
-                        'confidence': np.mean([elem.confidence for elem in ocr_elements]) if ocr_elements else 0
-                    }
                     
+                    # Process with OCR
+                    if self.ocr_processor:
+                        ocr_results = self.ocr_processor.process_page(image_np, page_num)
+                        
+                        # Store results
+                        results[page_num] = {
+                            'status': 'success',
+                            'corrections': [],
+                            'confidence': np.mean([
+                                elem.confidence for elem in ocr_results 
+                                if hasattr(elem, 'confidence')
+                            ]) if ocr_results else 0
+                        }
+                        
+                        self.logger.info(f"OCR completed for page {page_num}")
+                    else:
+                        self.logger.warning("No OCR processor available")
+                        
                 except Exception as e:
                     self.logger.error(f"OCR error on page {page_num}: {str(e)}")
-                    results[page_num] = {'status': 'failed', 'error': str(e), 'confidence': 0}
+                    results[page_num] = {
+                        'status': 'failed',
+                        'error': str(e)
+                    }
                     
         except Exception as e:
             self.logger.error(f"PDF conversion error: {str(e)}")
-            raise ProcessingError(f"Failed to convert PDF: {str(e)}")
-            
-        return results
-
-    def verify_text_with_ocr(self) -> Dict[int, Dict]:
-        """Verify text content using OCR and return results."""
-        results = {}
-        try:
-            images = convert_from_path(self.pdf_path)
-            
-            for page_num, image in enumerate(images):
-                try:
-                    image_np = np.array(image)
-                    ocr_elements = self.ocr_processor.process_page(image_np, page_num)
-                    
-                    results[page_num] = {
-                        'status': 'success',
-                        'corrections': [],
-                        'confidence': np.mean([elem.confidence for elem in ocr_elements]) if ocr_elements else 0
-                    }
-                    
-                except Exception as e:
-                    self.logger.error(f"Error processing page {page_num}: {str(e)}")
-                    results[page_num] = {
-                        'status': 'failed',
-                        'error': str(e),
-                        'confidence': 0
-                    }
-        except Exception as e:
-            self.logger.error(f"Error in verify_text_with_ocr: {str(e)}")
-            raise
+            raise ProcessingError(f"Failed to process PDF with OCR: {str(e)}")
             
         return results
     
@@ -428,7 +274,6 @@ class AccessibilityDocumentProcessor:
                 rect = fitz.Rect(element.x, element.y, element.x + element.width, element.y + element.height)
                 page.insert_text(rect.tl, element.text, fontsize=element.font_size)
 
-    # ... rest of your existing methods ...
     def extract_text_with_positions(self):
         for page_num in range(len(self.doc)):
             page = self.doc[page_num]
@@ -485,20 +330,114 @@ class AccessibilityDocumentProcessor:
                         self.text_elements[-1].text += " "      
             
     def detect_headings(self):
-        font_sizes = defaultdict(int)
+        """
+        Improved heading detection with stricter criteria.
+        Only detects legitimate headings based on font size, style, and content.
+        """
+        # Reset heading detection
+        self.heading_font_sizes.clear()
         for element in self.text_elements:
-            if element.is_bold and len(element.text.strip()) > 0:
-                font_sizes[element.font_size] += 1
-        
-        sorted_sizes = sorted(font_sizes.keys(), reverse=True)
-        
-        for i, size in enumerate(sorted_sizes[:6]):
-            self.heading_font_sizes[size] = i + 1
-            
-        for element in self.text_elements:
-            if element.is_bold and element.font_size in self.heading_font_sizes:
-                element.heading_level = self.heading_font_sizes[element.font_size]
+            element.heading_level = None
 
+        # Get all text elements that could be headings
+        potential_headings = [
+            elem for elem in self.text_elements
+            if elem.text.strip() and                    # Must have text
+            len(elem.text.strip()) > 1 and           # More than one character
+            len(elem.text.strip()) < 200 and         # Not too long
+            len(elem.text.split()) <= 20 and         # Not too many words
+            not elem.text.strip().endswith(':') and  # Not likely a label
+            not elem.text.strip().endswith('.') and  # Not likely a sentence
+            not any(elem.text.lower().startswith(x) for x in ['fig', 'table', 'note:'])  # Not figures or tables
+        ]
+
+        if not potential_headings:
+            return
+
+        # Group elements by font size
+        font_sizes = defaultdict(list)
+        for elem in potential_headings:
+            font_sizes[elem.font_size].append(elem)
+
+        # Find the most common (body) font size
+        body_font_size = max(
+            (size for size in font_sizes.keys() if len(font_sizes[size]) > 3),
+            default=min(font_sizes.keys()),
+            key=lambda x: len(font_sizes[x])
+        )
+
+        # Get sizes larger than body text
+        larger_sizes = sorted(
+            [size for size in font_sizes.keys() if size > body_font_size * 1.1],
+            reverse=True
+        )
+
+        # Limit to maximum 6 heading levels
+        heading_sizes = larger_sizes[:6]
+        
+        # Assign heading levels
+        for level, size in enumerate(heading_sizes, start=1):
+            for element in font_sizes[size]:
+                # Additional validation for headings
+                if self._is_valid_heading(element, body_font_size):
+                    element.heading_level = level
+
+    def _is_valid_heading(self, element: TextElement, body_font_size: float) -> bool:
+        """
+        Validate if a text element is a legitimate heading.
+        
+        Args:
+            element: TextElement to validate
+            body_font_size: Base font size for body text
+        
+        Returns:
+            bool: True if element is a valid heading
+        """
+        text = element.text.strip()
+        
+        # Basic text validation
+        if not text or len(text) < 2:
+            return False
+
+        # Length checks
+        if len(text) > 200 or len(text.split()) > 20:
+            return False
+
+        # Style checks
+        font_size_ratio = element.font_size / body_font_size
+        if font_size_ratio < 1.1:  # Must be at least 10% larger than body text
+            return False
+
+        # Content checks
+        lower_text = text.lower()
+        if any([
+            lower_text.startswith(x) for x in [
+                'fig', 'figure', 'table', 'note:', 'example', 'copyright'
+            ]
+        ]):
+            return False
+
+        # Structural checks
+        if (
+            text.endswith(':') or                    # Likely a label
+            text.endswith('.') or                    # Likely a sentence
+            text.count('.') > 2 or                   # Too many periods
+            text.count(',') > 2 or                   # Too many commas
+            len(text.split('\n')) > 1 or            # Multiple lines
+            text.count('(') != text.count(')')      # Unmatched parentheses
+        ):
+            return False
+
+        # Additional academic document checks
+        common_non_headings = [
+            'abstract', 'keywords:', 'acknowledgments', 'references',
+            'appendix', 'et al.', 'submitted to', 'prepared by'
+        ]
+        if any(marker in lower_text for marker in common_non_headings):
+            return False
+
+        return True
+   
     def detect_tables(self):
         for page_num in range(len(self.doc)):
             # Filter out None elements and validate attributes
@@ -862,17 +801,6 @@ class BatchPDFProcessor:
         ocr_processor: Optional[OCRProcessor] = None,
         retry_handler: Optional[RetryHandler] = None
     ):
-        """
-        Initialize batch processor for PDF accessibility checking.
-        
-        Args:
-            input_dir: Directory containing PDF files
-            output_dir: Directory for output files and reports
-            max_workers: Maximum number of concurrent processes
-            ocr_processor: Optional OCR processor for text verification
-            retry_handler: Optional retry handler for error recovery
-        """
-        # Existing initialization code...
         self.input_dir = Path(input_dir).resolve()
         self.output_dir = Path(output_dir).resolve()
         self.max_workers = max_workers
@@ -885,7 +813,7 @@ class BatchPDFProcessor:
         self.reports_dir = self.output_dir / "reports"
         self.processed_dir = self.output_dir / "processed_pdfs"
         self.logs_dir = self.output_dir / "logs"
-        self.ocr_dir = self.output_dir / "ocr_results"  # New directory for OCR
+        self.ocr_dir = self.output_dir / "ocr_results"
         
         for directory in [self.corrections_dir, self.reports_dir, 
                          self.processed_dir, self.logs_dir, self.ocr_dir]:
@@ -1022,10 +950,14 @@ def process_single_pdf(self, pdf_path: Path) -> Dict:
     return stats
             
 def main():
-    # Use absolute paths
-    project_dir = Path("/Users/broderickschipp/accessibility_project")
-    input_dir = str(project_dir / "input")
-    output_dir = str(project_dir / "output")
+    # Get the project root (3 levels up from document.py)
+    # document.py is in src/accessibility_checker/core/document.py
+    current_file = Path(__file__).resolve()
+    project_root = current_file.parent.parent.parent.parent
+    
+    # Create paths relative to project root
+    input_dir = project_root / "input"
+    output_dir = project_root / "output"
     
     # Set up logging
     logging.basicConfig(
@@ -1034,15 +966,20 @@ def main():
     )
     
     logging.debug(f"Starting processing with:")
+    logging.debug(f"Project root: {project_root}")
     logging.debug(f"Input directory: {input_dir}")
     logging.debug(f"Output directory: {output_dir}")
     
+    # Create directories if they don't exist
+    input_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
     try:
-        processor = BatchPDFProcessor(input_dir, output_dir)
+        processor = BatchPDFProcessor(str(input_dir), str(output_dir))
         
         # Verify directories were created
-        for dir_name in ['corrections', 'reports', 'processed_pdfs', 'logs']:
-            dir_path = Path(output_dir) / dir_name
+        for dir_name in ['corrections', 'reports', 'processed_pdfs', 'logs', 'ocr_results']:
+            dir_path = output_dir / dir_name
             logging.debug(f"Checking if directory exists: {dir_path}")
             if not dir_path.exists():
                 raise RuntimeError(f"Output directory was not created: {dir_path}")
@@ -1058,7 +995,6 @@ def main():
             print(f"Successfully processed: {success_count}")
             print(f"Failed: {failed_count}")
             
-            # Print details about processed files
             print("\nProcessed files:")
             for idx, row in summary_df.iterrows():
                 print(f"  - {idx}: {row['status']}")
@@ -1067,10 +1003,9 @@ def main():
                 
             print(f"\nOutput files located in: {output_dir}")
             
-            # List contents of output directories
             print("\nOutput directory contents:")
-            for dir_name in ['corrections', 'reports', 'processed_pdfs', 'logs']:
-                dir_path = Path(output_dir) / dir_name
+            for dir_name in ['corrections', 'reports', 'processed_pdfs', 'logs', 'ocr_results']:
+                dir_path = output_dir / dir_name
                 print(f"\n{dir_name}:")
                 if dir_path.exists():
                     for file in dir_path.glob('*'):

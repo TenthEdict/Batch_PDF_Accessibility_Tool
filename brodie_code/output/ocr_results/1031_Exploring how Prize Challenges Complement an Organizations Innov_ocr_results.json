@@ -1,0 +1,47 @@
+{
+  "0": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 0
+  },
+  "1": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 3.0
+  },
+  "2": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 35.21052631578947
+  },
+  "3": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 47.96296296296296
+  },
+  "4": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 30.0
+  },
+  "5": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 31.0
+  },
+  "6": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 21.666666666666668
+  },
+  "7": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 0
+  },
+  "8": {
+    "status": "success",
+    "corrections": [],
+    "confidence": 45.166666666666664
+  }
+}

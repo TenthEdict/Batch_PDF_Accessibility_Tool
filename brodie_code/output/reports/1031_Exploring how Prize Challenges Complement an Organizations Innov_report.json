@@ -2,7 +2,11 @@
   "document_structure": {
     "pages": 9,
     "heading_hierarchy": {
-      "heading_counts": {},
+      "heading_counts": {
+        "1": 2,
+        "2": 5,
+        "3": 1
+      },
       "skipped_levels": []
     },
     "tables": 6,
@@ -11,310 +15,310 @@
         "text": "Exploring how Prize Challenges Complement an ",
         "page": 0,
         "order": 0,
-        "type": "content"
+        "type": "heading"
+      },
+      {
+        "text": "Organization\u2019s Innovation Efforts ",
+        "page": 0,
+        "order": 1,
+        "type": "heading"
+      },
+      {
+        "text": "Ademir Vrolijk and Zoe Szajnfarber ",
+        "page": 0,
+        "order": 2,
+        "type": "heading"
       },
       {
         "text": "Abstract",
-        "page": 0,
-        "order": 1,
-        "type": "content"
-      },
-      {
-        "text": "innovate: broadcasting a technology problem widely in hopes of ",
-        "page": 0,
-        "order": 2,
-        "type": "content"
-      },
-      {
-        "text": "getting useful solutions from the crowd. To better understand this ",
         "page": 0,
         "order": 3,
         "type": "content"
       },
       {
-        "text": "tool for innovation, scholars have explored how the crowd solves ",
+        "text": "innovate: broadcasting a technology problem widely in hopes of ",
         "page": 0,
         "order": 4,
         "type": "content"
       },
       {
-        "text": "the problem posed to them. However, less attention has been ",
+        "text": "getting useful solutions from the crowd. To better understand this ",
         "page": 0,
         "order": 5,
         "type": "content"
       },
       {
-        "text": "paid to the interaction between challenges and organizations\u2019 ",
+        "text": "tool for innovation, scholars have explored how the crowd solves ",
         "page": 0,
         "order": 6,
         "type": "content"
       },
       {
-        "text": "existing innovation processes. To address this gap, we studied the ",
+        "text": "the problem posed to them. However, less attention has been ",
         "page": 0,
         "order": 7,
         "type": "content"
       },
       {
-        "text": "formulation, launch, execution, and outcomes of an important ",
+        "text": "paid to the interaction between challenges and organizations\u2019 ",
         "page": 0,
         "order": 8,
         "type": "content"
       },
       {
-        "text": "success in NASA\u2019s open innovation ecosystem: the 3D Printed ",
+        "text": "existing innovation processes. To address this gap, we studied the ",
         "page": 0,
         "order": 9,
         "type": "content"
       },
       {
-        "text": "Habitat Challenge (3DPH). As part of that study, we summarize ",
+        "text": "formulation, launch, execution, and outcomes of an important ",
         "page": 0,
         "order": 10,
         "type": "content"
       },
       {
-        "text": "the analytical chronology of our case in this paper. It illustrates ",
+        "text": "success in NASA\u2019s open innovation ecosystem: the 3D Printed ",
         "page": 0,
         "order": 11,
         "type": "content"
       },
       {
-        "text": "how the 3D Printed Habitat Challenge (3DPH) was designed ",
+        "text": "Habitat Challenge (3DPH). As part of that study, we summarize ",
         "page": 0,
         "order": 12,
         "type": "content"
       },
       {
-        "text": "to complement ongoing efforts in NASA\u2019s additive construction ",
+        "text": "the analytical chronology of our case in this paper. It illustrates ",
         "page": 0,
         "order": 13,
         "type": "content"
       },
       {
-        "text": "ecosystem. We also describe how this case opens the door to new ",
+        "text": "how the 3D Printed Habitat Challenge (3DPH) was designed ",
         "page": 0,
         "order": 14,
         "type": "content"
       },
       {
-        "text": "questions in our understanding of prize challenges. ",
+        "text": "to complement ongoing efforts in NASA\u2019s additive construction ",
         "page": 0,
         "order": 15,
         "type": "content"
       },
       {
-        "text": "Index Terms",
+        "text": "ecosystem. We also describe how this case opens the door to new ",
         "page": 0,
         "order": 16,
         "type": "content"
       },
       {
-        "text": "NASA, 3D printed habitat challenge, additive manufacturing ",
+        "text": "questions in our understanding of prize challenges. ",
         "page": 0,
         "order": 17,
         "type": "content"
       },
       {
-        "text": "Prize challenges are catalysts for innovation. Here, teams of ",
+        "text": "Index Terms",
         "page": 0,
         "order": 18,
         "type": "content"
       },
       {
-        "text": "\u201csolvers\u201d in the crowd compete to achieve, or beat, technology ",
+        "text": "NASA, 3D printed habitat challenge, additive manufacturing ",
         "page": 0,
         "order": 19,
         "type": "content"
       },
       {
-        "text": "performance goals set by an organization\u2014the \u201cseeker\u201d [1]. ",
+        "text": "Prize challenges are catalysts for innovation. Here, teams of ",
         "page": 0,
         "order": 20,
         "type": "content"
       },
       {
-        "text": "The seeker bene\ufb01ts from the efforts of these non-traditional ",
+        "text": "\u201csolvers\u201d in the crowd compete to achieve, or beat, technology ",
         "page": 0,
         "order": 21,
         "type": "content"
       },
       {
-        "text": "individuals [2] because their diverse solutions would otherwise ",
+        "text": "performance goals set by an organization\u2014the \u201cseeker\u201d [1]. ",
         "page": 0,
         "order": 22,
         "type": "content"
       },
       {
-        "text": "be dif\ufb01cult for the seeker to access [3]. In many contests, ",
+        "text": "The seeker bene\ufb01ts from the efforts of these non-traditional ",
         "page": 0,
         "order": 23,
         "type": "content"
       },
       {
-        "text": "winners even surpass the state-of-the-art of that domain [2], ",
+        "text": "individuals [2] because their diverse solutions would otherwise ",
         "page": 0,
         "order": 24,
         "type": "content"
       },
       {
-        "text": "[4]. In turn, the solvers compete for an attractive (monetary) ",
+        "text": "be dif\ufb01cult for the seeker to access [3]. In many contests, ",
         "page": 0,
         "order": 25,
         "type": "content"
       },
       {
-        "text": "prize\u2014the incentive to participate and do well [5]. In short, a ",
+        "text": "winners even surpass the state-of-the-art of that domain [2], ",
         "page": 0,
         "order": 26,
         "type": "content"
       },
       {
-        "text": "contest can prompt a dedicated effort from a broad range of ",
+        "text": "[4]. In turn, the solvers compete for an attractive (monetary) ",
         "page": 0,
         "order": 27,
         "type": "content"
       },
       {
-        "text": "individuals, meet or surpass technical performance goals, and ",
+        "text": "prize\u2014the incentive to participate and do well [5]. In short, a ",
         "page": 0,
         "order": 28,
         "type": "content"
       },
       {
-        "text": "have a signi\ufb01cant impact within its focal domain. ",
+        "text": "contest can prompt a dedicated effort from a broad range of ",
         "page": 0,
         "order": 29,
         "type": "content"
       },
       {
-        "text": "Technical ",
+        "text": "individuals, meet or surpass technical performance goals, and ",
         "page": 0,
         "order": 30,
         "type": "content"
       },
       {
-        "text": "agencies\u2014want to reap these bene\ufb01ts in their domains. As ",
+        "text": "have a signi\ufb01cant impact within its focal domain. ",
         "page": 0,
         "order": 31,
         "type": "content"
       },
       {
-        "text": "such, they are increasingly using contests to help address ",
+        "text": "Technical ",
         "page": 0,
         "order": 32,
         "type": "content"
       },
       {
-        "text": "problems that are core to their mission(s) [6]\u2013[8]. For example, ",
+        "text": "agencies\u2014want to reap these bene\ufb01ts in their domains. As ",
         "page": 0,
         "order": 33,
         "type": "content"
       },
       {
-        "text": "when faced with the Deepwater Horizon oil spill in the Gulf ",
+        "text": "such, they are increasingly using contests to help address ",
         "page": 0,
         "order": 34,
         "type": "content"
       },
       {
-        "text": "of Mexico, BP launched a prize challenge in addition to their ",
+        "text": "problems that are core to their mission(s) [6]\u2013[8]. For example, ",
         "page": 0,
         "order": 35,
         "type": "content"
       },
       {
-        "text": "internal efforts. In total, it received 120,000 contributions on ",
+        "text": "when faced with the Deepwater Horizon oil spill in the Gulf ",
         "page": 0,
         "order": 36,
         "type": "content"
       },
       {
-        "text": "how to contain the spill\u2019s damaging effects [9], [10]. ",
+        "text": "of Mexico, BP launched a prize challenge in addition to their ",
         "page": 0,
         "order": 37,
         "type": "content"
       },
       {
-        "text": "The increase in prize challenge usage increases the urgency ",
+        "text": "internal efforts. In total, it received 120,000 contributions on ",
         "page": 0,
         "order": 38,
         "type": "content"
       },
       {
-        "text": "to understand how they catalyze innovation. Here, the literature ",
+        "text": "how to contain the spill\u2019s damaging effects [9], [10]. ",
         "page": 0,
         "order": 39,
         "type": "content"
       },
       {
-        "text": "calls for a better understanding of how the contest \ufb01ts into ",
+        "text": "The increase in prize challenge usage increases the urgency ",
         "page": 0,
         "order": 40,
         "type": "content"
       },
       {
-        "text": "The authors gratefully acknowledge funding from the National Aeronautics ",
+        "text": "to understand how they catalyze innovation. Here, the literature ",
         "page": 0,
         "order": 41,
         "type": "content"
       },
       {
-        "text": "and Space Administration in support of this work. ",
+        "text": "calls for a better understanding of how the contest \ufb01ts into ",
         "page": 0,
         "order": 42,
         "type": "content"
       },
       {
-        "text": "\u2014Increasingly, organizations use prize challenges to ",
+        "text": "The authors gratefully acknowledge funding from the National Aeronautics ",
         "page": 0,
         "order": 43,
         "type": "content"
       },
       {
-        "text": "\u2014prize challenge, open innovation, crowdsourcing, ",
+        "text": "and Space Administration in support of this work. ",
         "page": 0,
         "order": 44,
         "type": "content"
       },
       {
-        "text": "I. I",
+        "text": "\u2014Increasingly, organizations use prize challenges to ",
         "page": 0,
         "order": 45,
         "type": "content"
       },
       {
-        "text": "NTRODUCTION AND",
+        "text": "\u2014prize challenge, open innovation, crowdsourcing, ",
         "page": 0,
         "order": 46,
         "type": "content"
       },
       {
-        "text": "organizations\u2014both ",
+        "text": "I. I",
         "page": 0,
         "order": 47,
         "type": "content"
       },
       {
-        "text": "Organization\u2019s Innovation Efforts ",
+        "text": "NTRODUCTION AND",
         "page": 0,
         "order": 48,
         "type": "content"
       },
       {
-        "text": "Engineering Management and Systems Engineering Department ",
+        "text": "organizations\u2014both ",
         "page": 0,
         "order": 49,
         "type": "content"
       },
       {
-        "text": "orcid.org/0000-0002-1302-3581 and orcid.org/0000-0001-5601-1612 ",
+        "text": "Engineering Management and Systems Engineering Department ",
         "page": 0,
         "order": 50,
         "type": "content"
       },
       {
-        "text": "Ademir Vrolijk and Zoe Szajnfarber ",
+        "text": "orcid.org/0000-0002-1302-3581 and orcid.org/0000-0001-5601-1612 ",
         "page": 0,
         "order": 51,
         "type": "content"
@@ -3425,13 +3429,7 @@
         "text": "Phases and levels ",
         "page": 4,
         "order": 0,
-        "type": "content"
-      },
-      {
-        "text": "1: Design ",
-        "page": 4,
-        "order": 0,
-        "type": "table_cell"
+        "type": "heading"
       },
       {
         "text": "L1 ",
@@ -3470,573 +3468,579 @@
         "type": "table_cell"
       },
       {
-        "text": "2: Structural Member ",
+        "text": "1: Design ",
         "page": 4,
         "order": 1,
-        "type": "content"
+        "type": "heading"
+      },
+      {
+        "text": "2: Structural Member ",
+        "page": 4,
+        "order": 2,
+        "type": "heading"
       },
       {
         "text": "3: Virtual ",
         "page": 4,
-        "order": 2,
-        "type": "content"
+        "order": 3,
+        "type": "heading"
       },
       {
         "text": "3: Construction ",
         "page": 4,
-        "order": 3,
-        "type": "content"
+        "order": 4,
+        "type": "heading"
       },
       {
         "text": "deliverable requirements would nudge participants in useful ",
-        "page": 4,
-        "order": 4,
-        "type": "content"
-      },
-      {
-        "text": "directions. ",
         "page": 4,
         "order": 5,
         "type": "content"
       },
       {
-        "text": "As such, both priorities became key drivers for the rules ",
+        "text": "directions. ",
         "page": 4,
         "order": 6,
         "type": "content"
       },
       {
-        "text": "governing the feedstock selection. First, to emphasize the need ",
+        "text": "As such, both priorities became key drivers for the rules ",
         "page": 4,
         "order": 7,
         "type": "content"
       },
       {
-        "text": "to reduce the amount of material sent to space, the rules stated ",
+        "text": "governing the feedstock selection. First, to emphasize the need ",
         "page": 4,
         "order": 8,
         "type": "content"
       },
       {
-        "text": "that a minimum of 70% of the participants\u2019 feedstock would be ",
+        "text": "to reduce the amount of material sent to space, the rules stated ",
         "page": 4,
         "order": 9,
         "type": "content"
       },
       {
-        "text": "indigenous materials. Furthermore, imported materials\u2014e.g., ",
+        "text": "that a minimum of 70% of the participants\u2019 feedstock would be ",
         "page": 4,
         "order": 10,
         "type": "content"
       },
       {
-        "text": "additives and binders produced on Earth that would help create ",
+        "text": "indigenous materials. Furthermore, imported materials\u2014e.g., ",
         "page": 4,
         "order": 11,
         "type": "content"
       },
       {
-        "text": "a viable feedstock on Mars\u2014would be severely penalized in ",
+        "text": "additives and binders produced on Earth that would help create ",
         "page": 4,
         "order": 12,
         "type": "content"
       },
       {
-        "text": "the points structure. Water was also penalized, as it was seen ",
+        "text": "a viable feedstock on Mars\u2014would be severely penalized in ",
         "page": 4,
         "order": 13,
         "type": "content"
       },
       {
-        "text": "as too valuable to be used as a building material. Second, ",
+        "text": "the points structure. Water was also penalized, as it was seen ",
         "page": 4,
         "order": 14,
         "type": "content"
       },
       {
-        "text": "the rules strongly favored the use of (recycled) polymers as ",
+        "text": "as too valuable to be used as a building material. Second, ",
         "page": 4,
         "order": 15,
         "type": "content"
       },
       {
-        "text": "binders: these were given the highest point values by mass. ",
+        "text": "the rules strongly favored the use of (recycled) polymers as ",
         "page": 4,
         "order": 16,
         "type": "content"
       },
       {
-        "text": "While still allowing some \u201cfreedom of thought\u201d per one SME, ",
+        "text": "binders: these were given the highest point values by mass. ",
         "page": 4,
         "order": 17,
         "type": "content"
       },
       {
-        "text": "these rules would\u2014likely\u2014narrow the range of options that ",
+        "text": "While still allowing some \u201cfreedom of thought\u201d per one SME, ",
         "page": 4,
         "order": 18,
         "type": "content"
       },
       {
-        "text": "participants considered and encourage the selection of polymer ",
+        "text": "these rules would\u2014likely\u2014narrow the range of options that ",
         "page": 4,
         "order": 19,
         "type": "content"
       },
       {
-        "text": "concretes over other cementitious feedstocks. ",
+        "text": "participants considered and encourage the selection of polymer ",
         "page": 4,
         "order": 20,
         "type": "content"
       },
       {
-        "text": "The focus on materials and their performance shifted the ",
+        "text": "concretes over other cementitious feedstocks. ",
         "page": 4,
         "order": 21,
         "type": "content"
       },
       {
-        "text": "challenge towards the construction industry, with effects on ",
+        "text": "The focus on materials and their performance shifted the ",
         "page": 4,
         "order": 22,
         "type": "content"
       },
       {
-        "text": "the challenge\u2019s partners, participants, and rules. First, the CCP ",
+        "text": "challenge towards the construction industry, with effects on ",
         "page": 4,
         "order": 23,
         "type": "content"
       },
       {
-        "text": "replaced their Phase 1 administrative partner: the scope that ",
+        "text": "the challenge\u2019s partners, participants, and rules. First, the CCP ",
         "page": 4,
         "order": 24,
         "type": "content"
       },
       {
-        "text": "they envisioned for Phase 2 and 3 exceeded that partner\u2019s ",
+        "text": "replaced their Phase 1 administrative partner: the scope that ",
         "page": 4,
         "order": 25,
         "type": "content"
       },
       {
-        "text": "capabilities. Instead, CCP reached out\u2014and landed\u2014new ",
+        "text": "they envisioned for Phase 2 and 3 exceeded that partner\u2019s ",
         "page": 4,
         "order": 26,
         "type": "content"
       },
       {
-        "text": "academic and corporate partners in the construction industry: ",
+        "text": "capabilities. Instead, CCP reached out\u2014and landed\u2014new ",
         "page": 4,
         "order": 27,
         "type": "content"
       },
       {
-        "text": "Bradley University, Caterpillar Inc., Bechtel Corporation, and ",
+        "text": "academic and corporate partners in the construction industry: ",
         "page": 4,
         "order": 28,
         "type": "content"
       },
       {
-        "text": "Brick and Mortar Ventures. The addition signaled a legitimate ",
+        "text": "Bradley University, Caterpillar Inc., Bechtel Corporation, and ",
         "page": 4,
         "order": 29,
         "type": "content"
       },
       {
-        "text": "attempt to connect with the construction industry. The partners ",
+        "text": "Brick and Mortar Ventures. The addition signaled a legitimate ",
         "page": 4,
         "order": 30,
         "type": "content"
       },
       {
-        "text": "provided their services and sponsorship to help run the chal- ",
+        "text": "attempt to connect with the construction industry. The partners ",
         "page": 4,
         "order": 31,
         "type": "content"
       },
       {
-        "text": "lenge. They also provided their expertise in the construction ",
+        "text": "provided their services and sponsorship to help run the chal- ",
         "page": 4,
         "order": 32,
         "type": "content"
       },
       {
-        "text": "industry by joining 3DPH\u2019s formulation team. ",
+        "text": "lenge. They also provided their expertise in the construction ",
         "page": 4,
         "order": 33,
         "type": "content"
       },
       {
-        "text": "Second, CCP recruited participants from the construction ",
+        "text": "industry by joining 3DPH\u2019s formulation team. ",
         "page": 4,
         "order": 34,
         "type": "content"
       },
       {
-        "text": "domain as well. To the SMEs, this phase demonstrated the ",
+        "text": "Second, CCP recruited participants from the construction ",
         "page": 4,
         "order": 35,
         "type": "content"
       },
       {
-        "text": "importance of targeting the right kinds of solvers. Phase 1\u2019s ",
+        "text": "domain as well. To the SMEs, this phase demonstrated the ",
         "page": 4,
         "order": 36,
         "type": "content"
       },
       {
-        "text": "participants possessed the wrong kinds of skills to address the ",
+        "text": "importance of targeting the right kinds of solvers. Phase 1\u2019s ",
         "page": 4,
         "order": 37,
         "type": "content"
       },
       {
-        "text": "problem. As one SME recalled, the they were: ",
+        "text": "participants possessed the wrong kinds of skills to address the ",
         "page": 4,
         "order": 38,
         "type": "content"
       },
       {
-        "text": "Jan Apr Sep Dec Jan Apr Sep Dec Jan Apr Sep Dec Jan Apr Sep Dec Jan Apr Sep Dec ",
+        "text": "problem. As one SME recalled, the they were: ",
         "page": 4,
         "order": 39,
         "type": "content"
       },
       {
-        "text": "Final ",
+        "text": "Jan Apr Sep Dec Jan Apr Sep Dec Jan Apr Sep Dec Jan Apr Sep Dec Jan Apr Sep Dec ",
         "page": 4,
         "order": 40,
         "type": "content"
       },
       {
-        "text": "Rules released ",
+        "text": "Final ",
         "page": 4,
         "order": 41,
         "type": "content"
       },
       {
-        "text": "New partners ",
+        "text": "Rules released ",
         "page": 4,
         "order": 42,
         "type": "content"
       },
       {
-        "text": "added ",
+        "text": "New partners ",
         "page": 4,
         "order": 43,
         "type": "content"
       },
       {
-        "text": "Fig. 1. Timeline of the 3DPH Challenge ",
+        "text": "added ",
         "page": 4,
         "order": 44,
         "type": "content"
       },
       {
-        "text": "Rules released ",
+        "text": "Fig. 1. Timeline of the 3DPH Challenge ",
         "page": 4,
         "order": 45,
         "type": "content"
       },
       {
-        "text": "Accordingly, CCP presented at several construction-speci\ufb01c ",
+        "text": "Rules released ",
         "page": 4,
         "order": 46,
         "type": "content"
       },
       {
-        "text": "conferences, and advertised the challenge domain-speci\ufb01c ",
+        "text": "Accordingly, CCP presented at several construction-speci\ufb01c ",
         "page": 4,
         "order": 47,
         "type": "content"
       },
       {
-        "text": "outlets. This outreach was in addition to the general technology ",
+        "text": "conferences, and advertised the challenge domain-speci\ufb01c ",
         "page": 4,
         "order": 48,
         "type": "content"
       },
       {
-        "text": "conferences and space-themed outlets that CCP previously ",
+        "text": "outlets. This outreach was in addition to the general technology ",
         "page": 4,
         "order": 49,
         "type": "content"
       },
       {
-        "text": "engaged with. ",
+        "text": "conferences and space-themed outlets that CCP previously ",
         "page": 4,
         "order": 50,
         "type": "content"
       },
       {
-        "text": "Third, the shift impacted the rules for Phase 2, and later, ",
+        "text": "engaged with. ",
         "page": 4,
         "order": 51,
         "type": "content"
       },
       {
-        "text": "Phase 3 as well. While its planned outcomes remained the ",
+        "text": "Third, the shift impacted the rules for Phase 2, and later, ",
         "page": 4,
         "order": 52,
         "type": "content"
       },
       {
-        "text": "same, the construction industry provided the right stepping ",
+        "text": "Phase 3 as well. While its planned outcomes remained the ",
         "page": 4,
         "order": 53,
         "type": "content"
       },
       {
-        "text": "stones to achieve them. With the addition of construction ",
+        "text": "same, the construction industry provided the right stepping ",
         "page": 4,
         "order": 54,
         "type": "content"
       },
       {
-        "text": "SMEs, the (new) formulation team drew on the industry\u2019s ",
+        "text": "stones to achieve them. With the addition of construction ",
         "page": 4,
         "order": 55,
         "type": "content"
       },
       {
-        "text": "standards and tests for material performance measures. Phase 2 ",
+        "text": "SMEs, the (new) formulation team drew on the industry\u2019s ",
         "page": 4,
         "order": 56,
         "type": "content"
       },
       {
-        "text": "required participants to print and test pre-determined shapes\u2014 ",
+        "text": "standards and tests for material performance measures. Phase 2 ",
         "page": 4,
         "order": 57,
         "type": "content"
       },
       {
-        "text": "cones, cylinders, beams\u2014in well understood ways",
+        "text": "required participants to print and test pre-determined shapes\u2014 ",
         "page": 4,
         "order": 58,
         "type": "content"
       },
       {
-        "text": "Technical Outcomes:",
+        "text": "cones, cylinders, beams\u2014in well understood ways",
         "page": 4,
         "order": 59,
         "type": "content"
       },
       {
-        "text": "materials and meaningful insights; a big return on the efforts ",
+        "text": "Technical Outcomes:",
         "page": 4,
         "order": 60,
         "type": "content"
       },
       {
-        "text": "by the SMEs. The winning team was a partnership between ",
+        "text": "materials and meaningful insights; a big return on the efforts ",
         "page": 4,
         "order": 61,
         "type": "content"
       },
       {
-        "text": "Branch Technologies Inc., Techmer Polymer Modi\ufb01ers, and ",
+        "text": "by the SMEs. The winning team was a partnership between ",
         "page": 4,
         "order": 62,
         "type": "content"
       },
       {
-        "text": "returning participant Foster + Partners. Their material per- ",
+        "text": "Branch Technologies Inc., Techmer Polymer Modi\ufb01ers, and ",
         "page": 4,
         "order": 63,
         "type": "content"
       },
       {
-        "text": "formance in the \ufb01nal\u2014and most complex\u2014level achieved ",
+        "text": "returning participant Foster + Partners. Their material per- ",
         "page": 4,
         "order": 64,
         "type": "content"
       },
       {
-        "text": "\u201cthe holy grail in 3D printing,\u201d according to one SME. ",
+        "text": "formance in the \ufb01nal\u2014and most complex\u2014level achieved ",
         "page": 4,
         "order": 65,
         "type": "content"
       },
       {
-        "text": "Branch printed their material horizontally without supports\u2014 ",
+        "text": "\u201cthe holy grail in 3D printing,\u201d according to one SME. ",
         "page": 4,
         "order": 66,
         "type": "content"
       },
       {
-        "text": "something that the NASA SMEs did not think would be ",
+        "text": "Branch printed their material horizontally without supports\u2014 ",
         "page": 4,
         "order": 67,
         "type": "content"
       },
       {
-        "text": "possible with these materials. Their printing system produced ",
+        "text": "something that the NASA SMEs did not think would be ",
         "page": 4,
         "order": 68,
         "type": "content"
       },
       {
-        "text": "3",
+        "text": "possible with these materials. Their printing system produced ",
         "page": 4,
         "order": 69,
         "type": "content"
       },
       {
-        "text": "Material strength tests included the ASTM C39 Standard Test Method ",
+        "text": "3",
         "page": 4,
         "order": 70,
         "type": "content"
       },
       {
-        "text": "for Compressive Strength of Cylindrical Concrete Specimens, ASTM C78 ",
+        "text": "Material strength tests included the ASTM C39 Standard Test Method ",
         "page": 4,
         "order": 71,
         "type": "content"
       },
       {
-        "text": "Standard Test Method for Flexural Strength of Concrete, and a simile of the ",
+        "text": "for Compressive Strength of Cylindrical Concrete Specimens, ASTM C78 ",
         "page": 4,
         "order": 72,
         "type": "content"
       },
       {
-        "text": "ASTM C143 Standard Test Method for Slump of Hydraulic-Cement Concrete. ",
+        "text": "Standard Test Method for Flexural Strength of Concrete, and a simile of the ",
         "page": 4,
         "order": 73,
         "type": "content"
       },
       {
-        "text": "5 ",
+        "text": "ASTM C143 Standard Test Method for Slump of Hydraulic-Cement Concrete. ",
         "page": 4,
         "order": 74,
         "type": "content"
       },
       {
-        "text": "not the right kind of crowd because they were ",
+        "text": "5 ",
         "page": 4,
         "order": 75,
         "type": "content"
       },
       {
-        "text": ". . .",
+        "text": "not the right kind of crowd because they were ",
         "page": 4,
         "order": 76,
         "type": "content"
       },
       {
-        "text": "involved with small scale 3D printing. And what ",
+        "text": ". . .",
         "page": 4,
         "order": 77,
         "type": "content"
       },
       {
-        "text": "we were doing was large scale 3D printing, which ",
+        "text": "involved with small scale 3D printing. And what ",
         "page": 4,
         "order": 78,
         "type": "content"
       },
       {
-        "text": "is a whole different thing. It\u2019s more involved with ",
+        "text": "we were doing was large scale 3D printing, which ",
         "page": 4,
         "order": 79,
         "type": "content"
       },
       {
-        "text": "the construction industry, with civil engineering and ",
+        "text": "is a whole different thing. It\u2019s more involved with ",
         "page": 4,
         "order": 80,
         "type": "content"
       },
       {
-        "text": "construction. After Phase 1, we realized that and we ",
+        "text": "the construction industry, with civil engineering and ",
         "page": 4,
         "order": 81,
         "type": "content"
       },
       {
-        "text": "re-vectored the whole competition to a new target ",
+        "text": "construction. After Phase 1, we realized that and we ",
         "page": 4,
         "order": 82,
         "type": "content"
       },
       {
-        "text": "audience. ",
+        "text": "re-vectored the whole competition to a new target ",
         "page": 4,
         "order": 83,
         "type": "content"
       },
       {
-        "text": "L2 ",
+        "text": "audience. ",
         "page": 4,
         "order": 84,
         "type": "content"
       },
       {
-        "text": "L3 ",
+        "text": "L2 ",
         "page": 4,
         "order": 85,
         "type": "content"
       },
       {
-        "text": "Construction industry refocus ",
+        "text": "L3 ",
         "page": 4,
         "order": 86,
         "type": "content"
       },
       {
-        "text": "Rules released ",
+        "text": "Construction industry refocus ",
         "page": 4,
         "order": 87,
         "type": "content"
       },
       {
-        "text": "Construction industry refocus ",
+        "text": "Rules released ",
         "page": 4,
         "order": 88,
         "type": "content"
       },
       {
-        "text": "Participants produced high performing ",
+        "text": "Construction industry refocus ",
         "page": 4,
         "order": 89,
         "type": "content"
       },
       {
-        "text": "L1 ",
+        "text": "Participants produced high performing ",
         "page": 4,
         "order": 90,
         "type": "content"
       },
       {
-        "text": "Rules formulation ",
+        "text": "L1 ",
         "page": 4,
         "order": 91,
         "type": "content"
       },
       {
-        "text": "L2 ",
+        "text": "Rules formulation ",
         "page": 4,
         "order": 92,
         "type": "content"
       },
       {
-        "text": "3",
+        "text": "L2 ",
         "page": 4,
         "order": 93,
         "type": "content"
       },
       {
-        "text": ". ",
+        "text": "3",
         "page": 4,
         "order": 94,
         "type": "content"
       },
       {
-        "text": "L3 ",
+        "text": ". ",
         "page": 4,
         "order": 95,
+        "type": "content"
+      },
+      {
+        "text": "L3 ",
+        "page": 4,
+        "order": 96,
         "type": "content"
       },
       {

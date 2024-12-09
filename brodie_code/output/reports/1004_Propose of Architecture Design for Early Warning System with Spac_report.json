@@ -3,19 +3,9 @@
     "pages": 8,
     "heading_hierarchy": {
       "heading_counts": {
-        "1": 3,
-        "2": 75,
-        "4": 20,
-        "3": 6
+        "1": 3
       },
-      "skipped_levels": [
-        "H2 to H4",
-        "H2 to H4",
-        "H2 to H4",
-        "H2 to H4",
-        "H2 to H4",
-        "H2 to H4"
-      ]
+      "skipped_levels": []
     },
     "tables": 1,
     "reading_order": [
@@ -41,664 +31,664 @@
         "text": "Abstract",
         "page": 0,
         "order": 3,
-        "type": "heading"
-      },
-      {
-        "text": "\u2014The purpose of this research is to design ",
-        "page": 0,
-        "order": 4,
-        "type": "heading"
-      },
-      {
-        "text": "B",
-        "page": 0,
-        "order": 5,
-        "type": "heading"
-      },
-      {
-        "text": "................................................................. 8  ",
-        "page": 0,
-        "order": 6,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "the architecture of an early warning system with ",
         "page": 0,
-        "order": 7,
-        "type": "heading"
+        "order": 4,
+        "type": "content"
       },
       {
         "text": "Global Navigation Satellite System (GNSS) and ",
         "page": 0,
-        "order": 8,
-        "type": "heading"
-      },
-      {
-        "text": "1.",
-        "page": 0,
-        "order": 9,
-        "type": "heading"
-      },
-      {
-        "text": "I",
-        "page": 0,
-        "order": 10,
-        "type": "heading"
+        "order": 5,
+        "type": "content"
       },
       {
         "text": "terrestrial infrastructure for improving  coverage ",
         "page": 0,
-        "order": 11,
-        "type": "heading"
+        "order": 6,
+        "type": "content"
       },
       {
         "text": "of disaster information dissemination. In the ",
         "page": 0,
-        "order": 12,
-        "type": "heading"
+        "order": 7,
+        "type": "content"
       },
       {
         "text": "proposed architecture, necessary segments and ",
         "page": 0,
-        "order": 13,
-        "type": "heading"
+        "order": 8,
+        "type": "content"
       },
       {
         "text": "information flow are identified to introduce an ",
         "page": 0,
-        "order": 14,
-        "type": "heading"
+        "order": 9,
+        "type": "content"
       },
       {
         "text": "early warning system to target areas which lack ",
         "page": 0,
-        "order": 15,
-        "type": "heading"
+        "order": 10,
+        "type": "content"
       },
       {
         "text": "public alert distribution. It can be adapted ",
         "page": 0,
-        "order": 16,
-        "type": "heading"
+        "order": 11,
+        "type": "content"
       },
       {
         "text": "worldwide by combining GNSS satellite and ",
         "page": 0,
-        "order": 17,
-        "type": "heading"
+        "order": 12,
+        "type": "content"
       },
       {
         "text": "terrestrial infrastructure. At the beginning of a ",
         "page": 0,
-        "order": 18,
-        "type": "heading"
+        "order": 13,
+        "type": "content"
       },
       {
         "text": "disaster, information will be sent from the agency ",
         "page": 0,
-        "order": 19,
-        "type": "heading"
+        "order": 14,
+        "type": "content"
       },
       {
         "text": "via GNSS to widely used terrestrial infrastructure, ",
         "page": 0,
-        "order": 20,
-        "type": "heading"
+        "order": 15,
+        "type": "content"
       },
       {
         "text": "such as sirens and public vehicles,  thus allowing ",
         "page": 0,
-        "order": 21,
-        "type": "heading"
+        "order": 16,
+        "type": "content"
       },
       {
         "text": "users to receive disaster information even when the ",
         "page": 0,
-        "order": 22,
-        "type": "heading"
+        "order": 17,
+        "type": "content"
       },
       {
         "text": "ground ",
         "page": 0,
-        "order": 23,
-        "type": "heading"
-      },
-      {
-        "text": "network ",
-        "page": 0,
-        "order": 24,
-        "type": "heading"
-      },
-      {
-        "text": "has ",
-        "page": 0,
-        "order": 25,
-        "type": "heading"
-      },
-      {
-        "text": "been ",
-        "page": 0,
-        "order": 26,
-        "type": "heading"
-      },
-      {
-        "text": "damaged. ",
-        "page": 0,
-        "order": 27,
-        "type": "heading"
-      },
-      {
-        "text": "The ",
-        "page": 0,
-        "order": 28,
-        "type": "heading"
+        "order": 18,
+        "type": "content"
       },
       {
         "text": "effectiveness of the proposed architecture is ",
         "page": 0,
-        "order": 29,
-        "type": "heading"
+        "order": 19,
+        "type": "content"
       },
       {
         "text": "examined in terms of redundancy, interoperability, ",
         "page": 0,
-        "order": 30,
-        "type": "heading"
+        "order": 20,
+        "type": "content"
       },
       {
         "text": "and ",
         "page": 0,
-        "order": 31,
-        "type": "heading"
-      },
-      {
-        "text": "multi-hazard ",
-        "page": 0,
-        "order": 32,
-        "type": "heading"
-      },
-      {
-        "text": "response ",
-        "page": 0,
-        "order": 33,
-        "type": "heading"
-      },
-      {
-        "text": "by ",
-        "page": 0,
-        "order": 34,
-        "type": "heading"
-      },
-      {
-        "text": "Geographic ",
-        "page": 0,
-        "order": 35,
-        "type": "heading"
+        "order": 21,
+        "type": "content"
       },
       {
         "text": "Information System (GIS) simulation using an ",
         "page": 0,
-        "order": 36,
-        "type": "heading"
+        "order": 22,
+        "type": "content"
       },
       {
         "text": "open-source format data of public bus in a coastal ",
         "page": 0,
-        "order": 37,
-        "type": "heading"
+        "order": 23,
+        "type": "content"
       },
       {
         "text": "area of Japan. Results show that the coverage of ",
         "page": 0,
-        "order": 38,
-        "type": "heading"
+        "order": 24,
+        "type": "content"
       },
       {
         "text": "information dissemination is improved. Thus, the ",
         "page": 0,
-        "order": 39,
-        "type": "heading"
+        "order": 25,
+        "type": "content"
       },
       {
         "text": "proposed architecture can be adapted to target ",
         "page": 0,
-        "order": 40,
-        "type": "heading"
+        "order": 26,
+        "type": "content"
       },
       {
         "text": "areas as an early warning system. ",
         "page": 0,
-        "order": 41,
-        "type": "heading"
-      },
-      {
-        "text": "T",
-        "page": 0,
-        "order": 42,
-        "type": "heading"
-      },
-      {
-        "text": "C",
-        "page": 0,
-        "order": 43,
-        "type": "heading"
+        "order": 27,
+        "type": "content"
       },
       {
         "text": "1.",
         "page": 0,
-        "order": 44,
-        "type": "heading"
+        "order": 28,
+        "type": "content"
       },
       {
         "text": "I",
         "page": 0,
-        "order": 45,
-        "type": "heading"
+        "order": 29,
+        "type": "content"
       },
       {
-        "text": "....................................................... 1 ",
+        "text": "NTRODUCTION",
         "page": 0,
-        "order": 46,
-        "type": "heading"
+        "order": 30,
+        "type": "content"
       },
       {
         "text": "2.",
         "page": 0,
-        "order": 47,
-        "type": "heading"
+        "order": 31,
+        "type": "content"
       },
       {
         "text": "P",
         "page": 0,
-        "order": 48,
-        "type": "heading"
+        "order": 32,
+        "type": "content"
       },
       {
-        "text": "A",
+        "text": "ROPOSED",
         "page": 0,
-        "order": 49,
-        "type": "heading"
-      },
-      {
-        "text": "................................... 2 ",
-        "page": 0,
-        "order": 50,
-        "type": "heading"
+        "order": 33,
+        "type": "content"
       },
       {
         "text": "3.",
         "page": 0,
-        "order": 51,
-        "type": "heading"
+        "order": 34,
+        "type": "content"
       },
       {
         "text": "S",
         "page": 0,
+        "order": 35,
+        "type": "content"
+      },
+      {
+        "text": "IMULATION",
+        "page": 0,
+        "order": 36,
+        "type": "content"
+      },
+      {
+        "text": "4.",
+        "page": 0,
+        "order": 37,
+        "type": "content"
+      },
+      {
+        "text": "R",
+        "page": 0,
+        "order": 38,
+        "type": "content"
+      },
+      {
+        "text": "ESULTS",
+        "page": 0,
+        "order": 39,
+        "type": "content"
+      },
+      {
+        "text": "5.",
+        "page": 0,
+        "order": 40,
+        "type": "content"
+      },
+      {
+        "text": "D",
+        "page": 0,
+        "order": 41,
+        "type": "content"
+      },
+      {
+        "text": "ISCUSSION",
+        "page": 0,
+        "order": 42,
+        "type": "content"
+      },
+      {
+        "text": "6.",
+        "page": 0,
+        "order": 43,
+        "type": "content"
+      },
+      {
+        "text": "S",
+        "page": 0,
+        "order": 44,
+        "type": "content"
+      },
+      {
+        "text": "UMMARY",
+        "page": 0,
+        "order": 45,
+        "type": "content"
+      },
+      {
+        "text": "R",
+        "page": 0,
+        "order": 46,
+        "type": "content"
+      },
+      {
+        "text": "EFERENCES",
+        "page": 0,
+        "order": 47,
+        "type": "content"
+      },
+      {
+        "text": "brilliant-crystal68@keio.jp,  madoka.nakajima@sdm.keio.ac.jp,  kohtake@sdm.keio.ac.jp  ",
+        "page": 0,
+        "order": 48,
+        "type": "content"
+      },
+      {
+        "text": "\u2014The purpose of this research is to design ",
+        "page": 0,
+        "order": 49,
+        "type": "content"
+      },
+      {
+        "text": "network ",
+        "page": 0,
+        "order": 50,
+        "type": "content"
+      },
+      {
+        "text": "multi-hazard ",
+        "page": 0,
+        "order": 51,
+        "type": "content"
+      },
+      {
+        "text": "A",
+        "page": 0,
         "order": 52,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "............................................................ 4 ",
         "page": 0,
         "order": 53,
-        "type": "heading"
-      },
-      {
-        "text": "4.",
-        "page": 0,
-        "order": 54,
-        "type": "heading"
-      },
-      {
-        "text": "R",
-        "page": 0,
-        "order": 55,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": ".................................................................. 5 ",
         "page": 0,
-        "order": 56,
-        "type": "heading"
-      },
-      {
-        "text": "5.",
-        "page": 0,
-        "order": 57,
-        "type": "heading"
-      },
-      {
-        "text": "D",
-        "page": 0,
-        "order": 58,
-        "type": "heading"
+        "order": 54,
+        "type": "content"
       },
       {
         "text": "............................................................. 5 ",
         "page": 0,
-        "order": 59,
-        "type": "heading"
-      },
-      {
-        "text": "6.",
-        "page": 0,
-        "order": 60,
-        "type": "heading"
-      },
-      {
-        "text": "S",
-        "page": 0,
-        "order": 61,
-        "type": "heading"
+        "order": 55,
+        "type": "content"
       },
       {
         "text": "................................................................ 6 ",
         "page": 0,
-        "order": 62,
-        "type": "heading"
-      },
-      {
-        "text": "R",
-        "page": 0,
-        "order": 63,
-        "type": "heading"
+        "order": 56,
+        "type": "content"
       },
       {
         "text": "............................................................... 7 ",
         "page": 0,
+        "order": 57,
+        "type": "content"
+      },
+      {
+        "text": "has ",
+        "page": 0,
+        "order": 58,
+        "type": "content"
+      },
+      {
+        "text": "response ",
+        "page": 0,
+        "order": 59,
+        "type": "content"
+      },
+      {
+        "text": "T",
+        "page": 0,
+        "order": 60,
+        "type": "content"
+      },
+      {
+        "text": "C",
+        "page": 0,
+        "order": 61,
+        "type": "content"
+      },
+      {
+        "text": "ABLE OF",
+        "page": 0,
+        "order": 62,
+        "type": "content"
+      },
+      {
+        "text": "....................................................... 1 ",
+        "page": 0,
+        "order": 63,
+        "type": "content"
+      },
+      {
+        "text": "RCHITECTURE",
+        "page": 0,
         "order": 64,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "Akihiko Nishino,  Madoka Nakajima,  Naohiko Kohtake ",
         "page": 0,
         "order": 65,
-        "type": "heading"
-      },
-      {
-        "text": "Keio University ",
-        "page": 0,
-        "order": 66,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "4-1-1 Hiyoshi, Kohoku-ku, Yokohama ",
         "page": 0,
-        "order": 67,
-        "type": "heading"
+        "order": 66,
+        "type": "content"
       },
       {
-        "text": "Kanagawa, 223-8526, Japan ",
+        "text": "been ",
+        "page": 0,
+        "order": 67,
+        "type": "content"
+      },
+      {
+        "text": "damaged. ",
         "page": 0,
         "order": 68,
-        "type": "heading"
+        "type": "content"
       },
       {
-        "text": "8145-564-2580 ",
+        "text": "by ",
         "page": 0,
         "order": 69,
-        "type": "heading"
-      },
-      {
-        "text": "brilliant-crystal68@keio.jp,  madoka.nakajima@sdm.keio.ac.jp,  kohtake@sdm.keio.ac.jp  ",
-        "page": 0,
-        "order": 70,
-        "type": "heading"
-      },
-      {
-        "text": "IOGRAPHY",
-        "page": 0,
-        "order": 71,
-        "type": "heading"
-      },
-      {
-        "text": "NTRODUCTION ",
-        "page": 0,
-        "order": 72,
-        "type": "heading"
-      },
-      {
-        "text": "ABLE OF",
-        "page": 0,
-        "order": 73,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "ONTENTS ",
         "page": 0,
-        "order": 74,
-        "type": "heading"
+        "order": 70,
+        "type": "content"
       },
       {
-        "text": "NTRODUCTION",
+        "text": "................................... 2 ",
+        "page": 0,
+        "order": 71,
+        "type": "content"
+      },
+      {
+        "text": "Keio University ",
+        "page": 0,
+        "order": 72,
+        "type": "content"
+      },
+      {
+        "text": "Kanagawa, 223-8526, Japan ",
+        "page": 0,
+        "order": 73,
+        "type": "content"
+      },
+      {
+        "text": "Geographic ",
+        "page": 0,
+        "order": 74,
+        "type": "content"
+      },
+      {
+        "text": "8145-564-2580 ",
         "page": 0,
         "order": 75,
-        "type": "heading"
+        "type": "content"
       },
       {
-        "text": "ROPOSED",
+        "text": "B",
         "page": 0,
         "order": 76,
-        "type": "heading"
+        "type": "content"
       },
       {
-        "text": "RCHITECTURE",
+        "text": "IOGRAPHY",
         "page": 0,
         "order": 77,
-        "type": "heading"
-      },
-      {
-        "text": "IMULATION",
-        "page": 0,
-        "order": 78,
-        "type": "heading"
-      },
-      {
-        "text": "ESULTS",
-        "page": 0,
-        "order": 79,
-        "type": "heading"
-      },
-      {
-        "text": "ISCUSSION",
-        "page": 0,
-        "order": 80,
-        "type": "heading"
-      },
-      {
-        "text": "UMMARY",
-        "page": 0,
-        "order": 81,
-        "type": "heading"
-      },
-      {
-        "text": "EFERENCES",
-        "page": 0,
-        "order": 82,
-        "type": "heading"
+        "type": "content"
       },
       {
         "text": "In recent years, large-scale disasters have occurred ",
         "page": 0,
-        "order": 83,
+        "order": 78,
         "type": "content"
       },
       {
         "text": "frequently around the world. Consequently, great ",
         "page": 0,
-        "order": 84,
+        "order": 79,
         "type": "content"
       },
       {
         "text": "attention has been paid to early warning systems. ",
         "page": 0,
-        "order": 85,
+        "order": 80,
         "type": "content"
       },
       {
         "text": "According to the Sendai Framework for Disaster Risk ",
         "page": 0,
-        "order": 86,
+        "order": 81,
         "type": "content"
       },
       {
         "text": "Reduction 2015-2030, the availability of and access to ",
         "page": 0,
-        "order": 87,
+        "order": 82,
         "type": "content"
       },
       {
         "text": "multi-hazard early warning systems and disaster risk ",
         "page": 0,
-        "order": 88,
+        "order": 83,
         "type": "content"
       },
       {
         "text": "information should be increased. Some indicators ",
         "page": 0,
-        "order": 89,
+        "order": 84,
         "type": "content"
       },
       {
         "text": "defined included the number of countries that have a ",
         "page": 0,
-        "order": 90,
+        "order": 85,
         "type": "content"
       },
       {
         "text": "multi-hazard monitoring and forecasting system, as ",
         "page": 0,
-        "order": 91,
+        "order": 86,
         "type": "content"
       },
       {
         "text": "well as the number of people per 100,000 population ",
         "page": 0,
-        "order": 92,
+        "order": 87,
         "type": "content"
       },
       {
         "text": "that are covered by early warning information through ",
         "page": 0,
-        "order": 93,
+        "order": 88,
         "type": "content"
       },
       {
         "text": "local governments or through national dissemination ",
         "page": 0,
-        "order": 94,
+        "order": 89,
+        "type": "content"
+      },
+      {
+        "text": "The ",
+        "page": 0,
+        "order": 90,
         "type": "content"
       },
       {
         "text": "mechanisms [1].  However, countries most vulnerable ",
         "page": 0,
-        "order": 95,
+        "order": 91,
         "type": "content"
       },
       {
         "text": "to the impact of disasters often have the lowest early ",
         "page": 0,
-        "order": 96,
+        "order": 92,
         "type": "content"
       },
       {
         "text": "warning capabilities. In the case of earthquakes, only a ",
         "page": 0,
-        "order": 97,
+        "order": 93,
         "type": "content"
       },
       {
         "text": "few countries have public alert distribution where the ",
         "page": 0,
-        "order": 98,
+        "order": 94,
         "type": "content"
       },
       {
         "text": "alerts are broadcast through multiple channels such as ",
         "page": 0,
-        "order": 99,
+        "order": 95,
         "type": "content"
       },
       {
         "text": "smartphones, while many earthquake-prone regions ",
         "page": 0,
-        "order": 100,
+        "order": 96,
         "type": "content"
       },
       {
         "text": "have limited alert distribution, some of which are still ",
         "page": 0,
-        "order": 101,
+        "order": 97,
         "type": "content"
       },
       {
         "text": "under construction [2]. Therefore, there is a need for ",
         "page": 0,
-        "order": 102,
+        "order": 98,
         "type": "content"
       },
       {
         "text": "cooperative strategies and frameworks to develop a ",
         "page": 0,
-        "order": 103,
+        "order": 99,
         "type": "content"
       },
       {
         "text": "multi-hazard early warning system in",
         "page": 0,
-        "order": 104,
+        "order": 100,
         "type": "content"
       },
       {
         "text": "capacity countries [3]. ",
         "page": 0,
-        "order": 105,
+        "order": 101,
         "type": "content"
       },
       {
         "text": "One of the challenges in achieving this goal is ",
         "page": 0,
-        "order": 106,
+        "order": 102,
         "type": "content"
       },
       {
         "text": "improving the dissemination network, especially to ",
         "page": 0,
-        "order": 107,
+        "order": 103,
         "type": "content"
       },
       {
         "text": "ensure redundancy, interoperability, and a multi- ",
         "page": 0,
-        "order": 108,
+        "order": 104,
         "type": "content"
       },
       {
         "text": "hazard response capability [4]. Development of ground ",
         "page": 0,
-        "order": 109,
+        "order": 105,
         "type": "content"
       },
       {
         "text": "communication networks is needed, but these may be ",
         "page": 0,
-        "order": 110,
+        "order": 106,
         "type": "content"
       },
       {
         "text": "damaged when a large-scale disaster happens. When ",
         "page": 0,
-        "order": 111,
+        "order": 107,
         "type": "content"
       },
       {
         "text": "this occurs, people may not be able to get required ",
         "page": 0,
-        "order": 112,
+        "order": 108,
         "type": "content"
       },
       {
         "text": "1 ",
+        "page": 0,
+        "order": 109,
+        "type": "content"
+      },
+      {
+        "text": "................................................................. 8  ",
+        "page": 0,
+        "order": 110,
+        "type": "content"
+      },
+      {
+        "text": "1.",
+        "page": 0,
+        "order": 111,
+        "type": "content"
+      },
+      {
+        "text": "I",
+        "page": 0,
+        "order": 112,
+        "type": "content"
+      },
+      {
+        "text": "NTRODUCTION ",
         "page": 0,
         "order": 113,
         "type": "content"
@@ -710,721 +700,721 @@
         "type": "content"
       },
       {
-        "text": "2.",
-        "page": 1,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": "P",
-        "page": 1,
-        "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": "A",
-        "page": 1,
-        "order": 2,
-        "type": "heading"
-      },
-      {
-        "text": "ROPOSED",
-        "page": 1,
-        "order": 3,
-        "type": "heading"
-      },
-      {
-        "text": "RCHITECTURE ",
-        "page": 1,
-        "order": 4,
-        "type": "heading"
-      },
-      {
         "text": "information such as a disaster alerts or evacuation ",
         "page": 1,
-        "order": 5,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "orders. The usage of satellite systems, which would ",
         "page": 1,
-        "order": 6,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "not be affected under those circumstances, will ",
         "page": 1,
-        "order": 7,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "therefore provide better means of communication. One ",
         "page": 1,
-        "order": 8,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "of the potential tools in this scenario is a satellite ",
         "page": 1,
-        "order": 9,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "phone using communication satellites. However, ",
         "page": 1,
-        "order": 10,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "satellite mobile phones are not widely used by ",
         "page": 1,
-        "order": 11,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "individuals, so it is not appropriate as a means of ",
         "page": 1,
-        "order": 12,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "providing information to everyone. On the other hand, ",
         "page": 1,
-        "order": 13,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "technology that provides mobile phones which have ",
         "page": 1,
-        "order": 14,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "Global Navigation Satellite System (GNSS) receivers ",
         "page": 1,
-        "order": 15,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "with information from satellites directly has attracted ",
         "page": 1,
-        "order": 16,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "attention. ",
         "page": 1,
-        "order": 17,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "Ongoing research about  methods of distributing ",
         "page": 1,
-        "order": 18,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "disaster information by superimposing the information ",
         "page": 1,
-        "order": 19,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "on the augmentation signal of the GNSS satellite exists. ",
         "page": 1,
-        "order": 20,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "In this approach, the information can be distributed to ",
         "page": 1,
-        "order": 21,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "GNSS receivers. These receivers are widely used in, ",
         "page": 1,
-        "order": 22,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "for example, mobile phones, and many people will ",
         "page": 1,
-        "order": 23,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "thus be able to obtain information in this way. The ",
         "page": 1,
-        "order": 24,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "concept design of disaster notification messaging ",
         "page": 1,
-        "order": 25,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "services based on Global Navigation System (GPS) ",
         "page": 1,
-        "order": 26,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "has been discussed [5]. Europe has been working on ",
         "page": 1,
-        "order": 27,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "alert message services using GNSS, proceeding with a ",
         "page": 1,
-        "order": 28,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "standardization activity to define an alert message ",
         "page": 1,
-        "order": 29,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "protocol within the frames of European Geostationary ",
         "page": 1,
-        "order": 30,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "Navigation Overlay Service (EGNOS) and Galileo [6]. ",
         "page": 1,
-        "order": 31,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "In Japan, investigations on transmitting alert message ",
         "page": 1,
-        "order": 32,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "to mobile phones with GNSS functionality using the ",
         "page": 1,
-        "order": 33,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "augmentation signal of the Japanese Quasi Zenith ",
         "page": 1,
-        "order": 34,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "Satellite System (QZSS) are underway [7]. ",
         "page": 1,
-        "order": 35,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "In this study, we propose an architecture of an early ",
         "page": 1,
-        "order": 36,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "warning system that combines GNSS and terrestrial ",
         "page": 1,
-        "order": 37,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "infrastructure for improving coverage of information ",
         "page": 1,
-        "order": 38,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "dissemination at the beginning of a large disaster. In ",
         "page": 1,
-        "order": 39,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "our architecture, terrestrial infrastructure such as a ",
         "page": 1,
-        "order": 40,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "siren and public vehicle, receives an alert message ",
         "page": 1,
-        "order": 41,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "from GNSS and delivers it automatically. People will ",
         "page": 1,
-        "order": 42,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "be able to receive the information through our system, ",
         "page": 1,
-        "order": 43,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "even those without a mobile phone. The architecture ",
         "page": 1,
-        "order": 44,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "integrating GNSS and terrestrial infrastructure, both of ",
         "page": 1,
-        "order": 45,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "which can be used worldwide, also helps to introduce ",
         "page": 1,
-        "order": 46,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "early warning systems, especially to places which need ",
         "page": 1,
-        "order": 47,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "but still do not have them. Combining space and ",
         "page": 1,
-        "order": 48,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "terrestrial ",
         "page": 1,
-        "order": 49,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "interoperability and multi-hazard response, and can ",
         "page": 1,
-        "order": 50,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "help to introduce more early warning systems around ",
         "page": 1,
-        "order": 51,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "the world. As a first step, we evaluated the ",
         "page": 1,
-        "order": 52,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "effectiveness of our architecture in terms of coverage ",
         "page": 1,
-        "order": 53,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "of ",
         "page": 1,
-        "order": 54,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "Information System (GIS) simulation using the open- ",
         "page": 1,
-        "order": 55,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "source data from the public bus network in a coastal ",
         "page": 1,
-        "order": 56,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "networks ",
         "page": 1,
-        "order": 57,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "information ",
         "page": 1,
-        "order": 58,
+        "order": 53,
         "type": "content"
       },
       {
         "text": "dissemination ",
         "page": 1,
-        "order": 59,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "achieves ",
         "page": 1,
-        "order": 60,
+        "order": 55,
         "type": "content"
       },
       {
         "text": "by ",
         "page": 1,
-        "order": 61,
+        "order": 56,
         "type": "content"
       },
       {
         "text": "redundancy, ",
         "page": 1,
-        "order": 62,
+        "order": 57,
         "type": "content"
       },
       {
         "text": "Geospatial ",
         "page": 1,
-        "order": 63,
+        "order": 58,
         "type": "content"
       },
       {
         "text": "area in Japan where the existing outdoor siren system ",
         "page": 1,
-        "order": 64,
+        "order": 59,
         "type": "content"
       },
       {
         "text": "cannot ",
         "page": 1,
-        "order": 65,
+        "order": 60,
         "type": "content"
       },
       {
         "text": "dissemination. ",
         "page": 1,
-        "order": 66,
+        "order": 61,
         "type": "content"
       },
       {
         "text": "The proposed architecture is shown in figure 1. As a ",
         "page": 1,
-        "order": 67,
+        "order": 62,
         "type": "content"
       },
       {
         "text": "result of comparative analysis of several early warning ",
         "page": 1,
-        "order": 68,
+        "order": 63,
         "type": "content"
       },
       {
         "text": "system architectures such as a Tornado Warning ",
         "page": 1,
-        "order": 69,
+        "order": 64,
         "type": "content"
       },
       {
         "text": "System in United States [8] and the J-Alert System in ",
         "page": 1,
-        "order": 70,
+        "order": 65,
         "type": "content"
       },
       {
         "text": "Japan [9], four main subsystems are identified: ",
         "page": 1,
-        "order": 71,
+        "order": 66,
         "type": "content"
       },
       {
         "text": "Information ",
         "page": 1,
-        "order": 72,
+        "order": 67,
         "type": "content"
       },
       {
         "text": "Agency, Disaster Manager in Administrative, and ",
         "page": 1,
-        "order": 73,
+        "order": 68,
         "type": "content"
       },
       {
         "text": "Service Provider. The interface between the above ",
         "page": 1,
-        "order": 74,
+        "order": 69,
         "type": "content"
       },
       {
         "text": "four subsystems and a satellite segment is identified ",
         "page": 1,
-        "order": 75,
+        "order": 70,
         "type": "content"
       },
       {
         "text": "based on previous research [10]: GNSS, GNSS Master ",
         "page": 1,
-        "order": 76,
+        "order": 71,
         "type": "content"
       },
       {
         "text": "Control Center. ",
         "page": 1,
-        "order": 77,
+        "order": 72,
         "type": "content"
       },
       {
         "text": "One of the features of the proposed architecture is the ",
         "page": 1,
-        "order": 78,
+        "order": 73,
         "type": "content"
       },
       {
         "text": "utilization of terrestrial infrastructure as a means of ",
         "page": 1,
-        "order": 79,
+        "order": 74,
         "type": "content"
       },
       {
         "text": "broadcasting disaster information. The advantage of ",
         "page": 1,
-        "order": 80,
+        "order": 75,
         "type": "content"
       },
       {
         "text": "using terrestrial infrastructure is that the infrastructure ",
         "page": 1,
-        "order": 81,
+        "order": 76,
         "type": "content"
       },
       {
         "text": "is set or moves near many people such that it typically ",
         "page": 1,
-        "order": 82,
+        "order": 77,
         "type": "content"
       },
       {
         "text": "delivers information widely, rapidly, and with ",
         "page": 1,
-        "order": 83,
+        "order": 78,
         "type": "content"
       },
       {
         "text": "certainty at the onset of a disaster. Some sirens or ",
         "page": 1,
-        "order": 84,
+        "order": 79,
         "type": "content"
       },
       {
         "text": "public vehicles already have their own battery and the ",
         "page": 1,
-        "order": 85,
+        "order": 80,
         "type": "content"
       },
       {
         "text": "system will thus work even when the ground ",
         "page": 1,
-        "order": 86,
+        "order": 81,
         "type": "content"
       },
       {
         "text": "communication infrastructure is damaged in the ",
         "page": 1,
-        "order": 87,
+        "order": 82,
         "type": "content"
       },
       {
         "text": "disaster. We assume that the cost of setting and ",
         "page": 1,
-        "order": 88,
+        "order": 83,
         "type": "content"
       },
       {
         "text": "managing this system will be lower than that of other ",
         "page": 1,
-        "order": 89,
+        "order": 84,
         "type": "content"
       },
       {
         "text": "early warning systems outside of buildings siren.  This ",
         "page": 1,
-        "order": 90,
+        "order": 85,
         "type": "content"
       },
       {
         "text": "is because only the receiver and conversion program is ",
         "page": 1,
-        "order": 91,
+        "order": 86,
         "type": "content"
       },
       {
         "text": "newly needed to attach to existing terrestrial ",
         "page": 1,
-        "order": 92,
+        "order": 87,
         "type": "content"
       },
       {
         "text": "infrastructure in our architecture. ",
         "page": 1,
-        "order": 93,
+        "order": 88,
         "type": "content"
       },
       {
         "text": "The information flow in the proposed architecture is ",
         "page": 1,
-        "order": 94,
+        "order": 89,
         "type": "content"
       },
       {
         "text": "shown below. After the disaster happens, the ",
         "page": 1,
-        "order": 95,
+        "order": 90,
         "type": "content"
       },
       {
         "text": "information ",
         "page": 1,
-        "order": 96,
+        "order": 91,
         "type": "content"
       },
       {
         "text": "information and sends it to the alert distribution ",
         "page": 1,
-        "order": 97,
+        "order": 92,
         "type": "content"
       },
       {
         "text": "organization. The organization creates an alert ",
         "page": 1,
-        "order": 98,
+        "order": 93,
         "type": "content"
       },
       {
         "text": "message from the information and sends it to the ",
         "page": 1,
-        "order": 99,
+        "order": 94,
         "type": "content"
       },
       {
         "text": "service provider, the disaster manager in the ",
         "page": 1,
-        "order": 100,
+        "order": 95,
         "type": "content"
       },
       {
         "text": "administration, and the GNSS master control station. ",
         "page": 1,
-        "order": 101,
+        "order": 96,
         "type": "content"
       },
       {
         "text": "The control station converts the message into data and ",
         "page": 1,
-        "order": 102,
+        "order": 97,
         "type": "content"
       },
       {
         "text": "sends it to the GNSS satellite, and it is then distributed ",
         "page": 1,
-        "order": 103,
+        "order": 98,
         "type": "content"
       },
       {
         "text": "to the terrestrial infrastructure. The received data is ",
         "page": 1,
-        "order": 104,
+        "order": 99,
         "type": "content"
       },
       {
         "text": "converted into the alert message and automatically ",
         "page": 1,
-        "order": 105,
+        "order": 100,
         "type": "content"
       },
       {
         "text": "distributed. People can receive the message even if the ",
         "page": 1,
-        "order": 106,
+        "order": 101,
         "type": "content"
       },
       {
         "text": "ground network has been damaged or they do not have ",
         "page": 1,
-        "order": 107,
+        "order": 102,
         "type": "content"
       },
       {
         "text": "an individual device such as a smartphone. The ",
         "page": 1,
-        "order": 108,
+        "order": 103,
         "type": "content"
       },
       {
         "text": "segments and networks of the architecture are ",
         "page": 1,
-        "order": 109,
+        "order": 104,
         "type": "content"
       },
       {
         "text": "adaptable to target areas that need early warning ",
         "page": 1,
-        "order": 110,
+        "order": 105,
         "type": "content"
       },
       {
         "text": "systems so that redundancy is ensured through both ",
         "page": 1,
-        "order": 111,
+        "order": 106,
         "type": "content"
       },
       {
         "text": "space and terrestrial networks, interoperability is  ",
         "page": 1,
-        "order": 112,
+        "order": 107,
         "type": "content"
       },
       {
         "text": "2 ",
         "page": 1,
-        "order": 113,
+        "order": 108,
         "type": "content"
       },
       {
         "text": "fully ",
         "page": 1,
-        "order": 114,
+        "order": 109,
+        "type": "content"
+      },
+      {
+        "text": "2.",
+        "page": 1,
+        "order": 110,
         "type": "content"
       },
       {
         "text": "cover ",
         "page": 1,
-        "order": 115,
+        "order": 111,
+        "type": "content"
+      },
+      {
+        "text": "P",
+        "page": 1,
+        "order": 112,
+        "type": "content"
+      },
+      {
+        "text": "ROPOSED",
+        "page": 1,
+        "order": 113,
         "type": "content"
       },
       {
         "text": "Collection ",
         "page": 1,
-        "order": 116,
+        "order": 114,
         "type": "content"
       },
       {
         "text": "collection ",
         "page": 1,
-        "order": 117,
+        "order": 115,
         "type": "content"
       },
       {
         "text": "the ",
         "page": 1,
-        "order": 118,
+        "order": 116,
         "type": "content"
       },
       {
         "text": "area ",
+        "page": 1,
+        "order": 117,
+        "type": "content"
+      },
+      {
+        "text": "A",
+        "page": 1,
+        "order": 118,
+        "type": "content"
+      },
+      {
+        "text": "RCHITECTURE ",
         "page": 1,
         "order": 119,
         "type": "content"
@@ -1508,313 +1498,313 @@
         "type": "content"
       },
       {
-        "text": "3.",
-        "page": 3,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": "S",
-        "page": 3,
-        "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": "IMULATION ",
-        "page": 3,
-        "order": 2,
-        "type": "heading"
-      },
-      {
         "text": "ensured by the worldwide coverage of GNSS and ",
         "page": 3,
-        "order": 3,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "multi-hazard response is ensured by various kinds of ",
         "page": 3,
-        "order": 4,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "terrestrial infrastructure. Therefore, the proposed ",
         "page": 3,
-        "order": 5,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "architecture can bring about the introduction of early ",
         "page": 3,
-        "order": 6,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "warning system to target areas by overcoming the ",
         "page": 3,
-        "order": 7,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "challenge of improving the dissemination network.  ",
         "page": 3,
-        "order": 8,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "In order to evaluate the effectiveness of the proposed ",
         "page": 3,
-        "order": 9,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "architecture, we first made a prototype system (Figure ",
         "page": 3,
-        "order": 10,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "2). This prototype mainly focuses on the segments of ",
         "page": 3,
-        "order": 11,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "GNSS and terrestrial infrastructure, and is to be used ",
         "page": 3,
-        "order": 12,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "in Japan. This system consists of three segments: ",
         "page": 3,
-        "order": 13,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "dissemination, receiving and satellite segments. The ",
         "page": 3,
-        "order": 14,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "dissemination segment is composed of the Information ",
         "page": 3,
-        "order": 15,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "Collection Agency (e.g., Japan Meteorological Agency ",
         "page": 3,
-        "order": 16,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "and Local Governments), the Alert Delivery Agency, ",
         "page": 3,
-        "order": 17,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "the GNSS Master Control Center, the Monitor Center, ",
         "page": 3,
-        "order": 18,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "and the Tracking Center. The Monitor Center and the ",
         "page": 3,
-        "order": 19,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "Tracking Center are part of GNSS. The dissemination ",
         "page": 3,
-        "order": 20,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "segment transmits alert messages to the satellite ",
         "page": 3,
-        "order": 21,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "segment in the following order. First, the Information ",
         "page": 3,
-        "order": 22,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "Collection Agency gathers disaster information ",
         "page": 3,
-        "order": 23,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "released by the Meteorological Agency and local ",
         "page": 3,
-        "order": 24,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "governments. Second, the Alert Delivery Agency ",
         "page": 3,
-        "order": 25,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "converts the disaster information to an alert message ",
         "page": 3,
-        "order": 26,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "for dissemination by GNSS in the selected message ",
         "page": 3,
-        "order": 27,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "format. The Alert Delivery Agency decides the ",
         "page": 3,
-        "order": 28,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "distribution schedule for providing the information and ",
         "page": 3,
-        "order": 29,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "transmits the alert message to the GNSS Master ",
         "page": 3,
-        "order": 30,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "Control Station. Third, the GNSS Master Control ",
         "page": 3,
-        "order": 31,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "Station collects the Monitor Center results and ",
         "page": 3,
-        "order": 32,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "generates a navigation message. The GNSS Master ",
         "page": 3,
-        "order": 33,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "Control Station uplinks both the navigation message ",
         "page": 3,
-        "order": 34,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "and alert message to GNSS via the Tracking Center. ",
         "page": 3,
-        "order": 35,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "The ",
         "page": 3,
-        "order": 36,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "augmentation signal with the navigation message and ",
         "page": 3,
-        "order": 37,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "the superimposed alert message are generated and then ",
         "page": 3,
-        "order": 38,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "transmitted to the receiving segment. In a prototype ",
         "page": 3,
-        "order": 39,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "system, we focus on QZSS as the main part of GNSS. ",
         "page": 3,
-        "order": 40,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "The receiving segment is based on terrestrial ",
         "page": 3,
-        "order": 41,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "infrastructure equipped with GNSS receivers capable ",
         "page": 3,
-        "order": 42,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "of receiving the augmentation signal. We assume two ",
         "page": 3,
-        "order": 43,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "types of terrestrial infrastructure: moving objects such ",
         "page": 3,
-        "order": 44,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "as public vehicles and dispersively distributed objects ",
         "page": 3,
-        "order": 45,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "such as vending machine. The receiver receives the ",
         "page": 3,
-        "order": 46,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "data of the augmentation signal and position ",
         "page": 3,
-        "order": 47,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "information from GNSS. The augmentation signal ",
         "page": 3,
-        "order": 48,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "contains the alert message, which is decoded by a ",
         "page": 3,
-        "order": 49,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "decoding program and converted to a voice message. ",
         "page": 3,
-        "order": 50,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "satellite ",
+        "page": 3,
+        "order": 48,
+        "type": "content"
+      },
+      {
+        "text": "3.",
+        "page": 3,
+        "order": 49,
+        "type": "content"
+      },
+      {
+        "text": "S",
+        "page": 3,
+        "order": 50,
+        "type": "content"
+      },
+      {
+        "text": "IMULATION ",
         "page": 3,
         "order": 51,
         "type": "content"
@@ -2204,685 +2194,685 @@
         "type": "content"
       },
       {
-        "text": "4.",
-        "page": 4,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": "R",
-        "page": 4,
-        "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": "5.",
-        "page": 4,
-        "order": 2,
-        "type": "heading"
-      },
-      {
-        "text": "D",
-        "page": 4,
-        "order": 3,
-        "type": "heading"
-      },
-      {
-        "text": "ESULTS ",
-        "page": 4,
-        "order": 4,
-        "type": "heading"
-      },
-      {
-        "text": "ISCUSSION ",
-        "page": 4,
-        "order": 5,
-        "type": "heading"
-      },
-      {
         "text": "Wakayama city as a target area that should be ",
         "page": 4,
-        "order": 6,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "introduced early warning system by adapting the ",
         "page": 4,
-        "order": 7,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "proposed architecture.  ",
         "page": 4,
-        "order": 8,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "Figure 3 shows the result of GIS simulation. Positions ",
         "page": 4,
-        "order": 9,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "of all sirens in Wakayama city are visualized as ",
         "page": 4,
-        "order": 10,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "colored dots. Red colored dots mean an analog method ",
         "page": 4,
-        "order": 11,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "sirens and blue means the digital method  sirens. The ",
         "page": 4,
-        "order": 12,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "difference between the two methods means the ",
         "page": 4,
-        "order": 13,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "difference in frequency of audio information broadcast ",
         "page": 4,
-        "order": 14,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "from each siren. GTFS data input to ArcGIS is ",
         "page": 4,
-        "order": 15,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "visualized as green lines indicating the route of a ",
         "page": 4,
-        "order": 16,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "public bus and green points indicating the position of ",
         "page": 4,
-        "order": 17,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "each bus stop. Each circle shows the information ",
         "page": 4,
-        "order": 18,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "dissemination area from each siren. There are some ",
         "page": 4,
-        "order": 19,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "blank areas without information dissemination from a ",
         "page": 4,
-        "order": 20,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "siren. We can say that an early warning system has not ",
         "page": 4,
-        "order": 21,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "yet been introduced in the blank areas. There are bus ",
         "page": 4,
-        "order": 22,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "routes and bus stops in the blank area. It means that a ",
         "page": 4,
-        "order": 23,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "public bus as terrestrial infrastructure may be an ",
         "page": 4,
-        "order": 24,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "effective means of information dissemination as part ",
         "page": 4,
-        "order": 25,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "of an early warning system. When a large disaster ",
         "page": 4,
-        "order": 26,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "occurs in this city, all public buses will stop moving so ",
         "page": 4,
-        "order": 27,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "that they can be additional sirens to improve the ",
         "page": 4,
-        "order": 28,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "coverage of information dissemination under the ",
         "page": 4,
-        "order": 29,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "proposed architecture. The results also shows that this ",
         "page": 4,
-        "order": 30,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "simulation using GIS software and open data format, ",
         "page": 4,
-        "order": 31,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "Figure 3. Simulation Result of information dissemination from siren and public bus route in Wakayama city  ",
         "page": 4,
-        "order": 32,
+        "order": 26,
+        "type": "content"
+      },
+      {
+        "text": "4.",
+        "page": 4,
+        "order": 27,
+        "type": "content"
+      },
+      {
+        "text": "R",
+        "page": 4,
+        "order": 28,
+        "type": "content"
+      },
+      {
+        "text": "ESULTS ",
+        "page": 4,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "can be adapted to other areas where the same kinds of ",
         "page": 4,
-        "order": 33,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "data are acquired, so that the effectiveness of the ",
         "page": 4,
-        "order": 34,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "proposed architecture is similarly verified in the target ",
         "page": 4,
-        "order": 35,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "areas. ",
         "page": 4,
-        "order": 36,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "We also confirmed that the alert message was actually ",
         "page": 4,
-        "order": 37,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "received, and the voice message was broadcast ",
         "page": 4,
-        "order": 38,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "automatically by demonstration of the prototype using ",
         "page": 4,
-        "order": 39,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "QZSS satellite. After showing demonstration of the ",
         "page": 4,
-        "order": 40,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "proposed architecture, some stakeholders of disaster ",
         "page": 4,
-        "order": 41,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "management agency in target areas gave  feedback ",
         "page": 4,
-        "order": 42,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "stating that this architecture would be useful for ",
         "page": 4,
-        "order": 43,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "introducing an early warning to their countries while ",
         "page": 4,
-        "order": 44,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "some subsystems in the architecture do not exist yet. ",
         "page": 4,
-        "order": 45,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "Combining the results of simulation and demonstration, ",
         "page": 4,
-        "order": 46,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "it can be said that the proposed architecture can ",
         "page": 4,
-        "order": 47,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "adapted to the target areas and that it works effectively ",
         "page": 4,
-        "order": 48,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "as an early warning system.  ",
         "page": 4,
-        "order": 49,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "Simulation revealed where the disaster information ",
         "page": 4,
-        "order": 50,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "broadcasting coverage area can be improved using a ",
         "page": 4,
-        "order": 51,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "public bus in the proposed architecture. The ",
         "page": 4,
-        "order": 52,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "effectiveness of using a bus in this instance is limited ",
         "page": 4,
-        "order": 53,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "by the route and time of travel in a day. We will ",
         "page": 4,
-        "order": 54,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "continue the simulation to calculate the time-series ",
         "page": 4,
-        "order": 55,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "change of the coverage rate of information distribution ",
         "page": 4,
-        "order": 56,
+        "order": 53,
         "type": "content"
       },
       {
         "text": "according to the bus operation by using GTFS- ",
         "page": 4,
-        "order": 57,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "5 ",
         "page": 4,
+        "order": 55,
+        "type": "content"
+      },
+      {
+        "text": "5.",
+        "page": 4,
+        "order": 56,
+        "type": "content"
+      },
+      {
+        "text": "D",
+        "page": 4,
+        "order": 57,
+        "type": "content"
+      },
+      {
+        "text": "ISCUSSION ",
+        "page": 4,
         "order": 58,
         "type": "content"
       },
       {
-        "text": "6.",
-        "page": 5,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": "S",
-        "page": 5,
-        "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": "UMMARY ",
-        "page": 5,
-        "order": 2,
-        "type": "heading"
-      },
-      {
         "text": "Realtime data. After identifying the blank area or ",
         "page": 5,
-        "order": 3,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "blank time of information transmission in the area, we ",
         "page": 5,
-        "order": 4,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "can ",
         "page": 5,
-        "order": 5,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "infrastructure should be applied including existing one ",
         "page": 5,
-        "order": 6,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "such as other types of vehicle or additional ones such ",
         "page": 5,
-        "order": 7,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "as drones. The GTFS format we used this simulation is ",
         "page": 5,
-        "order": 8,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "widely used worldwide, meaning that we can apply ",
         "page": 5,
-        "order": 9,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "this simulation to target areas in other countries. We ",
         "page": 5,
-        "order": 10,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "will simulate the proposed architecture in another ",
         "page": 5,
-        "order": 11,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "Asian and Oceania countries to identify appropriate ",
         "page": 5,
-        "order": 12,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "terrestrial infrastructure in the areas, and then test the ",
         "page": 5,
-        "order": 13,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "prototype in actual areas by using QZSS and other ",
         "page": 5,
-        "order": 14,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "GNSS satellites. In the test, all flow of information in ",
         "page": 5,
-        "order": 15,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "the proposed architecture will be demonstrated by both ",
         "page": 5,
-        "order": 16,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "space and terrestrial networks so that the three defined ",
         "page": 5,
-        "order": 17,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "requirements of redundancy, interoperability and ",
         "page": 5,
-        "order": 18,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "multi-hazard response can be validated. It may ",
         "page": 5,
-        "order": 19,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "encourage consideration of realistic actions to ",
         "page": 5,
-        "order": 20,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "introduce an early warning system to the target area. ",
         "page": 5,
-        "order": 21,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "From the result of the simulation it appears that ",
         "page": 5,
-        "order": 22,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "terrestrial infrastructure should be controlled according ",
         "page": 5,
-        "order": 23,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "to its position so as to avoid congestion of information ",
         "page": 5,
-        "order": 24,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "dissemination. In the proposed architecture, an ",
         "page": 5,
-        "order": 25,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "additional function of automatic control of terrestrial ",
         "page": 5,
-        "order": 26,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "infrastructure based on its position data acquired by ",
         "page": 5,
-        "order": 27,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "GNSS may be needed. In an real life situations, ",
         "page": 5,
-        "order": 28,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "messages broadcast from sirens are sometimes ",
         "page": 5,
-        "order": 29,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "affected by buildings or mountains, so 3D modeling ",
         "page": 5,
-        "order": 30,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "will be required as part of the GIS simulation. ",
         "page": 5,
-        "order": 31,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "Additionally, mobile data is needed to visualize the ",
         "page": 5,
-        "order": 32,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "flow of people outside buildings. We will collaborate ",
         "page": 5,
-        "order": 33,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "other institutes in target areas to acquire data for this ",
         "page": 5,
-        "order": 34,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "simulation and also to discuss a prototype test. The ",
         "page": 5,
-        "order": 35,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "feedback we got from some agencies shows that the ",
         "page": 5,
-        "order": 36,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "communication and collaboration between agencies is ",
         "page": 5,
-        "order": 37,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "strongly needed in the proposed architecture, including ",
         "page": 5,
-        "order": 38,
+        "order": 35,
         "type": "content"
       },
       {
         "text": "across countries, especially in case of large disasters. ",
         "page": 5,
-        "order": 39,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "The proposed architecture will finally be validated in ",
         "page": 5,
-        "order": 40,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "some target areas by clarifying how many people in ",
         "page": 5,
-        "order": 41,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "the areas can get more disaster information and what ",
         "page": 5,
-        "order": 42,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "kind of collaboration with each institute should be ",
         "page": 5,
-        "order": 43,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "realized to introduce an early warning system to the ",
         "page": 5,
-        "order": 44,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "areas.  ",
         "page": 5,
-        "order": 45,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "In order to improve the coverage of the disaster ",
         "page": 5,
-        "order": 46,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "information distribution, we designed the architecture ",
         "page": 5,
-        "order": 47,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "of early warning system combining GNSS and ",
         "page": 5,
-        "order": 48,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "terrestrial infrastructure. In the architecture, segments ",
         "page": 5,
-        "order": 49,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "and information were identified to introduce an early ",
         "page": 5,
-        "order": 50,
+        "order": 47,
         "type": "content"
       },
       {
         "text": "warning system to the target areas which need, but still ",
         "page": 5,
-        "order": 51,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "discuss ",
         "page": 5,
-        "order": 52,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "what ",
         "page": 5,
-        "order": 53,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "other ",
+        "page": 5,
+        "order": 51,
+        "type": "content"
+      },
+      {
+        "text": "6.",
+        "page": 5,
+        "order": 52,
+        "type": "content"
+      },
+      {
+        "text": "S",
+        "page": 5,
+        "order": 53,
+        "type": "content"
+      },
+      {
+        "text": "UMMARY ",
         "page": 5,
         "order": 54,
         "type": "content"
@@ -2987,7 +2977,19 @@
         "text": "R",
         "page": 6,
         "order": 0,
-        "type": "heading"
+        "type": "table_cell"
+      },
+      {
+        "text": "EFERENCES ",
+        "page": 6,
+        "order": 0,
+        "type": "table_cell"
+      },
+      {
+        "text": "[1] Sendai Framework Indicators ",
+        "page": 6,
+        "order": 0,
+        "type": "content"
       },
       {
         "text": "[3] Haigh, Richard, Dilanthi Amaratunga, and Kinkini ",
@@ -3248,481 +3250,469 @@
         "type": "table_cell"
       },
       {
-        "text": "EFERENCES ",
-        "page": 6,
-        "order": 1,
-        "type": "heading"
-      },
-      {
-        "text": "[1] Sendai Framework Indicators ",
-        "page": 6,
-        "order": 2,
-        "type": "content"
-      },
-      {
         "text": "https://www.preventionweb.net/sendai- ",
         "page": 6,
-        "order": 3,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "framework/sendai-framework-monitor/indicators ",
         "page": 6,
-        "order": 4,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "[2] Lima-Paris Acton Agenda ",
         "page": 6,
-        "order": 5,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "http://newsroom.unfccc.int/lpaa/resilience/climate- ",
         "page": 6,
-        "order": 6,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "risk-and-early-warning-systems-initiative- ",
         "page": 6,
-        "order": 7,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "strengthening-the-systems-at-the-heart-of-resilience/ ",
         "page": 6,
-        "order": 8,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "Hemachandra, \u201cA capacity analysis framework for ",
         "page": 6,
-        "order": 9,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "1139-1146, 2018. ",
         "page": 6,
-        "order": 10,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "[4] Golnaraghi, Maryam, \u201cAn Overview: Building a ",
         "page": 6,
-        "order": 11,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "global knowledge base of lessons learned from good ",
         "page": 6,
-        "order": 12,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "pp. 1-8, 2012. ",
         "page": 6,
-        "order": 13,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "[5] Burwell, Alan C. \u201cGlobal Positioning System ",
         "page": 6,
-        "order": 14,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "[6] Ventura-Traveset, Javier, Ankit Raj Mathur, and ",
         "page": 6,
-        "order": 15,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "Communication Messages through Satellite Based ",
         "page": 6,
-        "order": 16,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "Augmentation Systems for GNSS: The ESA ALIVE ",
         "page": 6,
-        "order": 17,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "Concept.\u201d 2007. ",
         "page": 6,
-        "order": 18,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "[7] Iwaizumi, Daisuke, Shota Iino, and Naohiko ",
         "page": 6,
-        "order": 19,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "Promptness of an Augmentation-Signal-Based Early ",
         "page": 6,
-        "order": 20,
+        "order": 18,
         "type": "content"
       },
       {
         "text": "Warning System Using Multiple Satellites of the ",
         "page": 6,
-        "order": 21,
+        "order": 19,
         "type": "content"
       },
       {
         "text": "QZSS ",
         "page": 6,
-        "order": 22,
+        "order": 20,
         "type": "content"
       },
       {
         "text": "Conference on Future Computational Technologies",
         "page": 6,
-        "order": 23,
+        "order": 21,
         "type": "content"
       },
       {
         "text": "2015. ",
         "page": 6,
-        "order": 24,
+        "order": 22,
         "type": "content"
       },
       {
         "text": "[8] Durage, Samanthi W., S. C. Wirasinghe, and Janaka ",
         "page": 6,
-        "order": 25,
+        "order": 23,
         "type": "content"
       },
       {
         "text": "Ruwanpura, \"Comparison of the Canadian and US ",
         "page": 6,
-        "order": 26,
+        "order": 24,
         "type": "content"
       },
       {
         "text": "tornado detection and warning systems.\"",
         "page": 6,
-        "order": 27,
+        "order": 25,
         "type": "content"
       },
       {
         "text": "Hazards",
         "page": 6,
-        "order": 28,
+        "order": 26,
         "type": "content"
       },
       {
         "text": "[9] Masamichi Nishizawa, et al. \u201cJ-ALERT System and ",
         "page": 6,
-        "order": 29,
+        "order": 27,
         "type": "content"
       },
       {
         "text": "Evacuation Information.\u201d",
         "page": 6,
-        "order": 30,
+        "order": 28,
         "type": "content"
       },
       {
         "text": "and Communication Research",
         "page": 6,
-        "order": 31,
+        "order": 29,
         "type": "content"
       },
       {
         "text": "[10] Ventura-Traveset, Javier, Ankit Raj Mathur, and ",
         "page": 6,
-        "order": 32,
+        "order": 30,
         "type": "content"
       },
       {
         "text": "Felix Toran, \u201cProvision of Emergency ",
         "page": 6,
-        "order": 33,
+        "order": 31,
         "type": "content"
       },
       {
         "text": "Communication Messages through Satellite Based ",
         "page": 6,
-        "order": 34,
+        "order": 32,
         "type": "content"
       },
       {
         "text": "Augmentation Systems for GNSS: The ESA ALIVE ",
         "page": 6,
-        "order": 35,
+        "order": 33,
         "type": "content"
       },
       {
         "text": "Concept.\u201d 2007. ",
         "page": 6,
-        "order": 36,
+        "order": 34,
         "type": "content"
       },
       {
         "text": "Constellation.\u201d",
         "page": 6,
-        "order": 37,
+        "order": 35,
         "type": "content"
       },
       {
         "text": ", Vol. 66.1, pp. 117-137, 2013. ",
         "page": 6,
-        "order": 38,
+        "order": 36,
         "type": "content"
       },
       {
         "text": "2015 ",
         "page": 6,
-        "order": 39,
+        "order": 37,
         "type": "content"
       },
       {
         "text": "Journal of Information ",
         "page": 6,
-        "order": 40,
+        "order": 38,
         "type": "content"
       },
       {
         "text": "35.1, 2017. ",
         "page": 6,
-        "order": 41,
+        "order": 39,
         "type": "content"
       },
       {
         "text": "coastal ",
         "page": 6,
-        "order": 42,
+        "order": 40,
         "type": "content"
       },
       {
         "text": "warning ",
         "page": 6,
-        "order": 43,
+        "order": 41,
         "type": "content"
       },
       {
         "text": "International ",
         "page": 6,
-        "order": 44,
+        "order": 42,
         "type": "content"
       },
       {
         "text": "Natural ",
         "page": 6,
-        "order": 45,
+        "order": 43,
         "type": "content"
       },
       {
         "text": "[12] Hiroshi Goto, Mitsuo Takezawa, \u201cStudy on ",
         "page": 6,
-        "order": 46,
+        "order": 44,
         "type": "content"
       },
       {
         "text": "[13] Toru Futagami, Syouhei Omoto, \u201cThe ",
         "page": 6,
-        "order": 47,
+        "order": 45,
         "type": "content"
       },
       {
         "text": "[14] Sillem, S, \u201cWarning citizens Influencing self- ",
         "page": 6,
-        "order": 48,
+        "order": 46,
         "type": "content"
       },
       {
         "text": "and ",
         "page": 6,
-        "order": 49,
+        "order": 47,
         "type": "content"
       },
       {
         "text": ", ",
         "page": 6,
-        "order": 50,
+        "order": 48,
         "type": "content"
       },
       {
         "text": "7 ",
         "page": 6,
-        "order": 51,
+        "order": 49,
         "type": "content"
       },
       {
         "text": "\u201cConstructing a Routable Transit Network from a ",
         "page": 6,
-        "order": 52,
+        "order": 50,
         "type": "content"
       },
       {
         "text": "2016. ",
         "page": 6,
-        "order": 53,
+        "order": 51,
         "type": "content"
       },
       {
         "text": "Institute of Fisheries Infrastructures and ",
         "page": 6,
-        "order": 54,
+        "order": 52,
         "type": "content"
       },
       {
         "text": "maintenance and the subject of transmission system ",
         "page": 6,
-        "order": 55,
+        "order": 53,
         "type": "content"
       },
       {
         "text": "for disaster prevention plan in a tsunami evacuation ",
         "page": 6,
-        "order": 56,
+        "order": 54,
         "type": "content"
       },
       {
         "text": "advisory area: A case study on Uwakai coast 5 city ",
         "page": 6,
-        "order": 57,
+        "order": 55,
         "type": "content"
       },
       {
         "text": "No. 2, pp. 174-181, 2012. ",
         "page": 6,
-        "order": 58,
+        "order": 56,
         "type": "content"
       },
       {
         "text": "reliance in emergencies.\u201d 2010.                    ",
         "page": 6,
-        "order": 59,
+        "order": 57,
         "type": "content"
-      },
-      {
-        "text": "B",
-        "page": 7,
-        "order": 0,
-        "type": "heading"
-      },
-      {
-        "text": "IOGRAPHY  ",
-        "page": 7,
-        "order": 1,
-        "type": "heading"
       },
       {
         "text": "research associate at the Keio University since 2017. ",
         "page": 7,
-        "order": 2,
+        "order": 0,
         "type": "content"
       },
       {
         "text": "His current research interests include application of ",
         "page": 7,
-        "order": 3,
+        "order": 1,
         "type": "content"
       },
       {
         "text": "space technology and geographical information system ",
         "page": 7,
-        "order": 4,
+        "order": 2,
         "type": "content"
       },
       {
         "text": "for disaster management.  ",
         "page": 7,
-        "order": 5,
+        "order": 3,
         "type": "content"
       },
       {
         "text": "Kogyo, a GIS consulting company in Japan. And he has ",
         "page": 7,
-        "order": 6,
+        "order": 4,
         "type": "content"
       },
       {
         "text": "been working as a part-time lecturer since 2008 at the ",
         "page": 7,
-        "order": 7,
+        "order": 5,
         "type": "content"
       },
       {
         "text": "Hosei University and a project associate professor the ",
         "page": 7,
-        "order": 8,
+        "order": 6,
         "type": "content"
       },
       {
         "text": "Keio University since 2015. His specialties are the ",
         "page": 7,
-        "order": 9,
+        "order": 7,
         "type": "content"
       },
       {
         "text": "design of GIS and a location-based service, and ",
         "page": 7,
-        "order": 10,
+        "order": 8,
         "type": "content"
       },
       {
         "text": "management. Recently he is interested in indoor ",
         "page": 7,
-        "order": 11,
+        "order": 9,
         "type": "content"
       },
       {
         "text": "location-based services and big data analysis.  ",
         "page": 7,
-        "order": 12,
+        "order": 10,
         "type": "content"
       },
       {
         "text": "Space Agency and user interface at Sony Computer ",
         "page": 7,
-        "order": 13,
+        "order": 11,
         "type": "content"
       },
       {
         "text": "Science Laboratories as a visiting researcher. He is ",
         "page": 7,
-        "order": 14,
+        "order": 12,
         "type": "content"
       },
       {
         "text": "currently a Professor with the Graduate School of ",
         "page": 7,
-        "order": 15,
+        "order": 13,
         "type": "content"
       },
       {
         "text": "System Design and Management, Keio University and ",
         "page": 7,
-        "order": 16,
+        "order": 14,
         "type": "content"
       },
       {
         "text": "an Adjunct Professor of Asian Institute of Technology. ",
         "page": 7,
-        "order": 17,
+        "order": 15,
         "type": "content"
       },
       {
         "text": "He is a steering committee member of Multi-GNSS ",
         "page": 7,
-        "order": 18,
+        "order": 16,
         "type": "content"
       },
       {
         "text": "Asia consortium and an adviser of Quasi-Zenith ",
         "page": 7,
-        "order": 19,
+        "order": 17,
         "type": "content"
       },
       {
         "text": "Satellite System Business Innovation Council.  ",
+        "page": 7,
+        "order": 18,
+        "type": "content"
+      },
+      {
+        "text": "B",
+        "page": 7,
+        "order": 19,
+        "type": "content"
+      },
+      {
+        "text": "IOGRAPHY  ",
         "page": 7,
         "order": 20,
         "type": "content"
