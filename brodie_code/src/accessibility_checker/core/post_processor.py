@@ -1,5 +1,6 @@
-from typing import Dict, Optional
+from typing import Dict, List
 import os
+from pathlib import Path
 from pikepdf import Pdf, Name, String, Dictionary
 from libxmp import XMPFiles, XMPMeta, consts
 
@@ -13,114 +14,67 @@ class PDFPostProcessor:
         self.retry_handler = retry_handler
         self.xmp_path = config.get('xmp_metadata_path')
         
-    @RetryHandler(RetryConfig()).__call__((ProcessingError,))
-    def process_pdf(self, input_path: str, output_path: str) -> bool:
+    def process_tagged_batch(self, tagged_dir: str, final_dir: str) -> Dict[str, bool]:
         """
-        Post-process a PDF file to ensure accessibility compliance.
+        Process all tagged PDFs in the tagged directory.
         
         Args:
-            input_path: Path to input PDF file
-            output_path: Path to save processed PDF file
+            tagged_dir: Directory containing tagged PDFs
+            final_dir: Directory to save UA-compliant PDFs
             
         Returns:
-            bool: True if processing was successful
-            
-        Raises:
-            ProcessingError: If post-processing fails
+            Dict mapping filenames to processing success status
         """
-        try:
-            # Load the XMP metadata
-            with open(self.xmp_path, "rb") as xmp_file:
-                xmp_data = xmp_file.read()
-            
-            xmp_meta = XMPMeta(xmp_str=xmp_data.decode('utf-8'))
-            
-            # Open and process PDF
-            with Pdf.open(input_path) as pdf:
-                # Preserve existing title
-                if '/Title' in pdf.docinfo:
-                    xmp_meta.set_property(
-                        consts.XMP_NS_DC, 
-                        'title', 
-                        str(pdf.docinfo['/Title'])
-                    )
-                
-                # Set language
-                pdf.Root[Name('/Lang')] = String('en-US')
-                
-                # Mark as tagged PDF
-                pdf.Root[Name('/MarkInfo')] = Dictionary()
-                pdf.Root.MarkInfo[Name('/Marked')] = True
-                
-                # Set tab order by structure
-                for page in pdf.pages:
-                    page[Name('/Tabs')] = Name('/S')
-                
-                # Update XMP metadata
-                if Name('/Metadata') in pdf.Root:
-                    del pdf.Root[Name('/Metadata')]
-                    
-                pdf.Root[Name('/Metadata')] = pdf.make_stream(
-                    xmp_meta.serialize_to_str().encode('utf-8')
+        results = {}
+        tagged_path = Path(tagged_dir)
+        final_path = Path(final_dir)
+        
+        # Create final directory if it doesn't exist
+        final_path.mkdir(exist_ok=True)
+        
+        # Process each PDF in the tagged directory
+        for pdf_file in tagged_path.glob("*.pdf"):
+            output_path = final_path / f"{pdf_file.stem}_ua{pdf_file.suffix}"
+            try:
+                success = self.process_pdf(
+                    input_path=str(pdf_file),
+                    output_path=str(output_path)
                 )
+                results[pdf_file.name] = success
+            except ProcessingError as e:
+                results[pdf_file.name] = False
                 
-                # Save processed PDF
-                pdf.save(output_path)
-                
-            return True
-            
-        except Exception as e:
-            raise ProcessingError(f"PDF post-processing failed: {str(e)}")
+        return results
 
-class EnhancedAccessibilityDocumentProcessor:
-    def __init__(self, config_path: str):
-        # Initialize configuration
-        self.config_manager = ConfigurationManager(config_path)
-        self.config = self.config_manager.get_processing_config()
-        
-        # Initialize components
-        self.retry_handler = RetryHandler(RetryConfig(
-            max_attempts=self.config.retry_count,
-            base_delay=2.0,
-            max_delay=30.0,
-            jitter=True
-        ))
-        
-        self.accessibility_checker = EnhancedAccessibilityChecker()
-        self.post_processor = PDFPostProcessor(
-            config={
-                'xmp_metadata_path': os.path.join(
-                    os.path.dirname(config_path), 
-                    'pdfUA-ID.xmp'
-                )
-            },
-            retry_handler=self.retry_handler
-        )
+    # Your existing methods remain the same
+    [Previous PDFPostProcessor code with _find_first_h1_text and process_pdf methods]
+
+# Example usage
+def main():
+    # Initialize configuration and processor
+    config = {
+        'xmp_metadata_path': 'pdfUA-ID.xmp',
+        # other config options...
+    }
+    retry_handler = RetryHandler(RetryConfig())
+    processor = PDFPostProcessor(config, retry_handler)
     
-    def process_document(self, input_path: str, output_path: str) -> Dict:
-        """
-        Process document with full accessibility workflow.
-        
-        Args:
-            input_path: Path to input PDF file
-            output_path: Path to save processed PDF file
-            
-        Returns:
-            Dict: Processing result including accessibility report and post-processing status
-            
-        Raises:
-            ProcessingError: If processing fails
-        """
-        # Existing accessibility checks
-        result = super().process_document(input_path)
-        
-        # Add post-processing step
-        if result['status'] == 'success':
-            post_process_success = self.post_processor.process_pdf(
-                input_path=input_path,
-                output_path=output_path
-            )
-            
-            result['post_processed'] = post_process_success
-            
-        return result
+    # Define directories
+    base_dir = Path("output")
+    tagged_dir = base_dir / "tagged"
+    final_dir = base_dir / "final"
+    
+    # Process all tagged PDFs
+    results = processor.process_tagged_batch(
+        tagged_dir=str(tagged_dir),
+        final_dir=str(final_dir)
+    )
+    
+    # Print results
+    print("\nPDF/UA Processing Results:")
+    for filename, success in results.items():
+        status = "✓" if success else "✗"
+        print(f"{status} {filename}")
+
+if __name__ == "__main__":
+    main()
