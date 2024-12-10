@@ -1,132 +1,159 @@
+#!/usr/bin/env python3
+import os
 from pathlib import Path
-from pikepdf import Pdf, Name, String, Dictionary
-from libxmp import XMPFiles, XMPMeta, consts
-import logging
+import pikepdf
 
-class PDFPostProcessor:
-    def __init__(self, config: dict, retry_handler):
-        self.config = config
-        self.retry_handler = retry_handler
-        self.xmp_path = config.get('xmp_metadata_path')
-        self.logger = logging.getLogger(__name__)
-        
-        # Configure logging
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(message)s')
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
-        self.logger.setLevel(logging.INFO)
+def set_pdf_language(pdf_path, language="en-US"):
+    """Set PDF language."""
+    with pikepdf.open(pdf_path, allow_overwriting_input=True) as pdf:
+        pdf.Root['/Lang'] = pikepdf.String(language)
+        pdf.save(pdf_path)
+        print(f"Set reading language to {language} for: {pdf_path}")
 
-    def process_pdf(self, input_path: str, output_path: str) -> bool:
-        """Process PDF file with libxmp for metadata handling."""
-        try:
-            print(f"\nProcessing {input_path}")
-            
-            # Load the XMP metadata from template
-            with open(self.xmp_path, "rb") as xmp_file:
-                xmp_data = xmp_file.read()
-            
-            # Create XMPMeta object from template
-            xmp_meta = XMPMeta(xmp_str=xmp_data.decode('utf-8'))
-            
-            with Pdf.open(input_path) as pdf:
-                print("PDF opened successfully")
-                print("PDF Root keys:", [str(k) for k in pdf.Root.keys()])
-                
-                # Set language
-                print("Setting language...")
-                pdf.Root[Name('/Lang')] = String('en-US')
-                
-                # Set MarkInfo
-                print("Setting MarkInfo...")
-                mark_info = Dictionary()
-                mark_info[Name('/Marked')] = True
-                pdf.Root[Name('/MarkInfo')] = mark_info
-                print("MarkInfo created and set")
-                
-                # Set tab order
-                print("Setting tab order...")
-                for page in pdf.pages:
-                    page[Name('/Tabs')] = Name('/S')
-                
-                # Handle document info
-                print("Setting document info...")
-                if hasattr(pdf, 'docinfo') and pdf.docinfo.get('/Title'):
-                    xmp_meta.set_property(
-                        consts.XMP_NS_DC,
-                        'title',
-                        str(pdf.docinfo['/Title'])
-                    )
-                
-                # Update XMP metadata
-                print("Creating metadata...")
-                try:
-                    # First update using XMPFiles
-                    xmpfile = XMPFiles(file_path=input_path, open_forupdate=True)
-                    xmpfile.put_xmp(xmp_meta)
-                    xmpfile.close_file()
-                    
-                    # Then ensure it's properly set in the PDF
-                    if Name('/Metadata') in pdf.Root:
-                        del pdf.Root[Name('/Metadata')]
-                    
-                    pdf.Root[Name('/Metadata')] = pdf.make_stream(
-                        xmp_meta.serialize_to_str().encode('utf-8'),
+def set_initial_view_title(pdf_path):
+    """Set initial view to show document title."""
+    with pikepdf.open(pdf_path, allow_overwriting_input=True) as pdf:
+        if '/ViewerPreferences' not in pdf.Root:
+            pdf.Root['/ViewerPreferences'] = pdf.make_indirect({})
+        pdf.Root['/ViewerPreferences']['/DisplayDocTitle'] = True
+        pdf.save(pdf_path)
+        print(f"Set Initial View to show document title for: {pdf_path}")
+
+def mark_pdf_as_tagged(pdf_path):
+    """Mark PDF as tagged."""
+    with pikepdf.open(pdf_path, allow_overwriting_input=True) as pdf:
+        if '/MarkInfo' not in pdf.Root:
+            pdf.Root['/MarkInfo'] = pdf.make_indirect({})
+        pdf.Root['/MarkInfo']['/Marked'] = True
+        pdf.save(pdf_path)
+        print(f"Marked as tagged PDF: {pdf_path}")
+
+def append_xmp_to_multiple_pdfs(pdf_folder, xmp_file):
+    """Append XMP metadata to PDFs."""
+    if not os.path.exists(xmp_file):
+        print(f"Error: XMP file not found: {xmp_file}")
+        return False
+
+    print(f"\nReading XMP template from: {xmp_file}")
+    try:
+        with open(xmp_file, 'r', encoding='utf-8') as xmp:
+            pdfua_content = xmp.read()
+            # Extract just the PDF/UA description part
+            start = pdfua_content.find("<rdf:Description")
+            end = pdfua_content.find("</rdf:Description>", start)
+            if start != -1 and end != -1:
+                pdfua_description = pdfua_content[start:end + 20]
+            else:
+                print("Error: Could not find PDF/UA description in template")
+                return False
+    except Exception as e:
+        print(f"Error reading XMP template: {e}")
+        return False
+
+    for pdf_file in os.listdir(pdf_folder):
+        if pdf_file.endswith(".pdf"):
+            pdf_path = os.path.join(pdf_folder, pdf_file)
+            print(f"\nProcessing: {pdf_path}")
+
+            try:
+                with pikepdf.open(pdf_path, allow_overwriting_input=True) as pdf:
+                    # Get existing metadata, keeping only the content within rdf:RDF
+                    existing_metadata = ""
+                    if pdf.Root.get('/Metadata'):
+                        metadata_bytes = pdf.Root.Metadata.read_bytes().decode('utf-8')
+                        start = metadata_bytes.find("<rdf:Description")
+                        if start != -1:
+                            end = metadata_bytes.find("</rdf:Description>", start)
+                            if end != -1:
+                                existing_metadata = metadata_bytes[start:end + 20]
+
+                    # Combine metadata
+                    metadata = f"""<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.2-c001 63.139439, 2010/09/27-13:37:26        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      {existing_metadata}
+      {pdfua_description}
+   </rdf:RDF>
+</x:xmpmeta>
+<?xpacket end="w"?>"""
+
+                    # Set the metadata stream
+                    pdf.Root['/Metadata'] = pdf.make_stream(
+                        metadata.encode('utf-8'),
                         {
-                            Name('/Type'): Name('/Metadata'),
-                            Name('/Subtype'): Name('/XML')
+                            '/Type': pikepdf.Name('/Metadata'),
+                            '/Subtype': pikepdf.Name('/XML')
                         }
                     )
-                    print("Metadata updated successfully")
+                    pdf.save()
+                    print(f"Successfully processed: {pdf_file}")
                     
-                except Exception as meta_error:
-                    print(f"Metadata error: {str(meta_error)}")
-                    print("Continuing without metadata modification...")
-                
-                # Save the PDF
-                print(f"Saving PDF to {output_path}...")
-                pdf.save(output_path)
-                print(f"Successfully saved to {output_path}")
-            
-            return True
-            
-        except Exception as e:
-            print(f"Error processing PDF: {str(e)}")
-            raise
-
-    def process_tagged_batch(self, tagged_dir: str, final_dir: str) -> dict:
-        """Process batch of tagged PDFs."""
-        results = {}
-        tagged_path = Path(tagged_dir)
-        final_path = Path(final_dir)
-        
-        final_path.mkdir(parents=True, exist_ok=True)
-        
-        print(f"\nProcessing PDFs from: {tagged_path}")
-        print(f"Saving results to: {final_path}")
-        
-        pdf_files = list(tagged_path.glob("*.pdf"))
-        if not pdf_files:
-            print(f"No PDF files found in {tagged_path}")
-            return results
-        
-        for pdf_file in pdf_files:
-            output_path = final_path / f"{pdf_file.stem}_ua{pdf_file.suffix}"
-            try:
-                success = self.process_pdf(
-                    input_path=str(pdf_file),
-                    output_path=str(output_path)
-                )
-                results[pdf_file.name] = success
             except Exception as e:
-                print(f"Error processing {pdf_file.name}: {str(e)}")
-                results[pdf_file.name] = False
+                print(f"Error processing {pdf_file}: {e}")
+                return False
+
+    return True
+
+def batch_process_pdfs(tagged_dir, final_dir, xmp_path):
+    """Process all PDFs in the tagged directory."""
+    print(f"\nStarting batch processing...")
+    print(f"Tagged directory: {tagged_dir}")
+    print(f"Final directory: {final_dir}")
+
+    # Create output directory
+    os.makedirs(final_dir, exist_ok=True)
+
+    # Process each PDF
+    for pdf_file in os.listdir(tagged_dir):
+        if pdf_file.endswith(".pdf"):
+            input_path = os.path.join(tagged_dir, pdf_file)
+            output_filename = f"{Path(pdf_file).stem}_ua.pdf"
+            output_path = os.path.join(final_dir, output_filename)
+
+            print(f"\nProcessing: {pdf_file}")
+
+            # Copy and process the PDF
+            with pikepdf.open(input_path) as pdf:
+                pdf.save(output_path)
+
+            # Apply each modification
+            set_pdf_language(output_path)
+            set_initial_view_title(output_path)
+            mark_pdf_as_tagged(output_path)
+
+    # Append XMP metadata to all processed PDFs
+    append_xmp_to_multiple_pdfs(final_dir, xmp_path)
+
+def main():
+    # Get the directory this script is in
+    current_dir = Path(__file__).resolve().parent
+    project_root = current_dir.parent.parent.parent
+    
+    # Define paths relative to project root
+    tagged_dir = project_root / "output" / "tagged"
+    final_dir = project_root / "output" / "final"
+    xmp_path = project_root / "pdfUA-ID.xmp"
+    
+    print(f"Project root: {project_root}")
+    print(f"Tagged directory: {tagged_dir}")
+    print(f"Final directory: {final_dir}")
+    print(f"XMP template path: {xmp_path}")
+    
+    # Verify paths exist
+    if not tagged_dir.exists():
+        print(f"Error: Tagged directory not found at {tagged_dir}")
+        return
         
-        print("\nProcessing Summary:")
-        success_count = sum(1 for success in results.values() if success)
-        print(f"Total files processed: {len(results)}")
-        print(f"Successfully processed: {success_count}")
-        print(f"Failed: {len(results) - success_count}")
-        
-        return results
+    if not xmp_path.exists():
+        print(f"Error: XMP template not found at {xmp_path}")
+        return
+
+    # Process the PDFs
+    batch_process_pdfs(
+        str(tagged_dir),
+        str(final_dir),
+        str(xmp_path)
+    )
+
+if __name__ == "__main__":
+    main()
