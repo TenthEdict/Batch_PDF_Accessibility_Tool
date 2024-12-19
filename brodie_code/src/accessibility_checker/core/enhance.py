@@ -372,3 +372,112 @@ class EnhancedAccessibilityChecker:
                 for v in self.violations
             ]
         }
+
+    def check_heading_structure(self, doc: fitz.Document) -> List[AccessibilityViolation]:
+        heading_levels = []
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            blocks = page.get_text("dict")["blocks"]
+            for block in blocks:
+                if block.get("type") == 0:  # text block
+                    font_size = block.get("font_size", 0)
+                    is_bold = block.get("font", "").lower().find("bold") >= 0
+                    
+                    # Determine heading level based on font size and style
+                    if font_size > 20: level = 1
+                    elif font_size > 18 and is_bold: level = 2
+                    elif font_size > 16 and is_bold: level = 3
+                    elif font_size > 14 and is_bold: level = 4
+                    elif font_size > 12 and is_bold: level = 5
+                    elif font_size > 10 and is_bold: level = 6
+                    else: continue
+                    
+                    heading_levels.append((level, page_num))
+        
+        # Check for proper nesting
+        violations = []
+        prev_level = 0
+        for level, page_num in heading_levels:
+            if level > prev_level + 1:
+                violations.append(AccessibilityViolation(
+                    type=ViolationType.INCORRECT_HEADING_ORDER,
+                    location=f"Page {page_num}",
+                    description=f"Heading level skipped from {prev_level} to {level}",
+                    wcag_criterion="1.3.1",
+                    severity="Error",
+                    suggestion=f"Use proper heading order - level {prev_level + 1} should come before level {level}"
+                ))
+            prev_level = level
+        return violations
+
+    def check_color_contrast(self, doc: fitz.Document) -> List[AccessibilityViolation]:
+        violations = []
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            blocks = page.get_text("dict")["blocks"]
+            for block in blocks:
+                if block.get("type") == 0:  # text block
+                    text_color = block.get("color")
+                    bg_color = self._get_background_color(page, block["bbox"])
+                    
+                    if text_color and bg_color:
+                        contrast_ratio = self._calculate_contrast_ratio(text_color, bg_color)
+                        min_ratio = 4.5  # WCAG AA standard for normal text
+                        
+                        if contrast_ratio < min_ratio:
+                            violations.append(AccessibilityViolation(
+                                type=ViolationType.LOW_COLOR_CONTRAST,
+                                location=f"Page {page_num}",
+                                description=f"Contrast ratio {contrast_ratio:.2f}:1 is below minimum {min_ratio}:1",
+                                wcag_criterion="1.4.3",
+                                severity="Error",
+                                suggestion=f"Increase contrast between text and background"
+                            ))
+        return violations
+
+    def _calculate_contrast_ratio(self, fg: tuple, bg: tuple) -> float:
+        def luminance(rgb):
+            rgb = [c/255 for c in rgb]
+            rgb = [c/12.92 if c <= 0.03928 else ((c+0.055)/1.055)**2.4 for c in rgb]
+            return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
+        
+        l1 = luminance(fg)
+        l2 = luminance(bg)
+        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+
+    def check_table_structure(self, doc: fitz.Document) -> List[AccessibilityViolation]:
+        violations = []
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            tables = self._detect_tables(page)
+            
+            for table_idx, table in enumerate(tables):
+                # Check for header cells
+                has_headers = False
+                has_complex_structure = False
+                row_headers = []
+                col_headers = []
+                
+                cells = table.get("cells", [])
+                if cells:
+                    # Check first row for column headers
+                    first_row = [c for c in cells if c["row"] == 0]
+                    has_headers = any(c.get("is_header", False) for c in first_row)
+                    
+                    # Check for row headers in first column
+                    first_col = [c for c in cells if c["col"] == 0]
+                    has_row_headers = any(c.get("is_header", False) for c in first_col)
+                    
+                    # Check for complex structure (spans)
+                    spans = any(c.get("colspan", 1) > 1 or c.get("rowspan", 1) > 1 for c in cells)
+                    
+                    if spans and not (has_headers and has_row_headers):
+                        violations.append(AccessibilityViolation(
+                            type=ViolationType.COMPLEX_TABLE,
+                            location=f"Page {page_num}",
+                            description="Complex table structure without proper headers",
+                            wcag_criterion="1.3.1",
+                            severity="Error",
+                            suggestion="Add proper row and column headers for complex table structure"
+                        ))
+        return violations

@@ -1,11 +1,11 @@
 import time
 from functools import wraps
-from typing import Type, Tuple, Callable, Optional, Dict
+from typing import Type, Tuple, Callable, Optional, Dict, List
 import logging
 from datetime import datetime
 import random
 import numpy as np  # Add this import
-from ..core.enhance import EnhancedAccessibilityChecker
+from ..core.enhance import EnhancedAccessibilityChecker, AccessibilityViolation
 import fitz 
 
 class RetryableError(Exception):
@@ -148,5 +148,106 @@ class EnhancedAccessibilityDocumentProcessor:
             return result
         except Exception as e:
             raise OCRError(f"OCR failed: {str(e)}")
+
+    def check_document(self, doc: fitz.Document) -> List[AccessibilityViolation]:
+        """Perform comprehensive accessibility check on the document."""
+        self.violations = []
         
+        # Check document-level properties
+        self._check_document_properties(doc)
+        
+        # Add new comprehensive checks
+        self.violations.extend(self.check_heading_structure(doc))
+        self.violations.extend(self.check_color_contrast(doc))
+        self.violations.extend(self.check_table_structure(doc))
+        
+        return self.violations
+
+class WCAGTestRunner:
+    """Base class for running WCAG compliance tests"""
+    def __init__(self, doc: fitz.Document, accessibility_checker: EnhancedAccessibilityChecker):
+        self.doc = doc
+        self.checker = accessibility_checker
+        self.violations = []
+
+    @staticmethod
+    def calculate_luminance(rgb: Tuple[float, float, float]) -> float:
+        rgb_norm = [c/255 for c in rgb]
+        rgb_adj = [c/12.92 if c <= 0.03928 else ((c+0.055)/1.055)**2.4 for c in rgb_norm]
+        return 0.2126 * rgb_adj[0] + 0.7152 * rgb_adj[1] + 0.0722 * rgb_adj[2]
+
+    @staticmethod
+    def calculate_contrast_ratio(fg: Tuple[float, float, float], bg: Tuple[float, float, float]) -> float:
+        l1 = WCAGTestRunner.calculate_luminance(fg)
+        l2 = WCAGTestRunner.calculate_luminance(bg)
+        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+
+    def retry_with_backoff(self, func: Callable, *args, **kwargs):
+        config = RetryConfig()
+        for attempt in range(config.max_attempts):
+            try:
+                return func(*args, **kwargs)
+            except RetryableError as e:
+                if attempt == config.max_attempts - 1:
+                    raise
+                delay = min(
+                    config.base_delay * (config.exponential_base ** attempt),
+                    config.max_delay
+                )
+                if config.jitter:
+                    delay *= random.uniform(0.5, 1.5)
+                time.sleep(delay)
+        return None
+
+class HeadingAnalyzer(WCAGTestRunner):
+    def analyze_headings(self) -> List[Dict]:
+        heading_structure = []
+        prev_level = 0
+        
+        for page_num in range(len(self.doc)):
+            page = self.doc[page_num]
+            blocks = page.get_text("dict")["blocks"]
+            
+            def analyze_block(block):
+                if block["type"] == 0:  # text block
+                    font_info = block.get("font", "")
+                    font_size = block.get("font_size", 0)
+                    text = block.get("text", "").strip()
+                    
+                    if not text:
+                        return None
+                        
+                    level = self._determine_heading_level(font_size, font_info)
+                    if level:
+                        return {
+                            "level": level,
+                            "text": text,
+                            "page": page_num + 1,
+                            "bbox": block["bbox"]
+                        }
+                return None
+            
+            page_headings = filter(None, [analyze_block(b) for b in blocks])
+            heading_structure.extend(page_headings)
+            
+        return heading_structure
+
+    def _determine_heading_level(self, font_size: float, font_info: str) -> Optional[int]:
+        # Font size thresholds for heading levels
+        thresholds = {
+            1: 20,
+            2: 18,
+            3: 16,
+            4: 14,
+            5: 12,
+            6: 10
+        }
+        
+        is_bold = "bold" in font_info.lower()
+        
+        for level, threshold in thresholds.items():
+            if font_size >= threshold and (level == 1 or is_bold):
+                return level
+        
+        return None
 
