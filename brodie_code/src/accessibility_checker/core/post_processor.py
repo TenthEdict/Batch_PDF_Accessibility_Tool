@@ -28,6 +28,63 @@ def mark_pdf_as_tagged(pdf_path):
         pdf.save(pdf_path)
         print(f"Marked as tagged PDF: {pdf_path}")
 
+def ensure_fonts_embedded(pdf_path):
+    """Ensure all fonts are embedded in the PDF."""
+    with pikepdf.open(pdf_path, allow_overwriting_input=True) as pdf:
+        fonts_to_embed = set()
+        
+        # Scan through all pages for unembedded fonts
+        for page in pdf.pages:
+            if '/Resources' not in page:
+                continue
+                
+            resources = page['/Resources']
+            if '/Font' not in resources:
+                continue
+                
+            font_dict = resources['/Font']
+            
+            # Check each font in the page
+            for font_name, font_obj in font_dict.items():
+                if not isinstance(font_obj, pikepdf.Dictionary):
+                    continue
+                    
+                # Check if font is already embedded
+                is_embedded = False
+                if '/FontDescriptor' in font_obj:
+                    descriptor = font_obj['/FontDescriptor']
+                    if any(f'/FontFile{i}' in descriptor for i in ['', '2', '3']):
+                        is_embedded = True
+                
+                if not is_embedded:
+                    fonts_to_embed.add(font_name)
+        
+        # Handle unembedded fonts
+        if fonts_to_embed:
+            print(f"Found {len(fonts_to_embed)} unembedded fonts in: {pdf_path}")
+            
+            for font_name in fonts_to_embed:
+                try:
+                    # For each unembedded font, substitute with Helvetica
+                    for page in pdf.pages:
+                        if '/Resources' in page and '/Font' in page['/Resources']:
+                            font_dict = page['/Resources']['/Font']
+                            if font_name in font_dict:
+                                font_obj = font_dict[font_name]
+                                # Replace with Helvetica
+                                font_obj['/BaseFont'] = pikepdf.Name('/Helvetica')
+                                font_obj['/Subtype'] = pikepdf.Name('/Type1')
+                                # Remove FontDescriptor if present
+                                if '/FontDescriptor' in font_obj:
+                                    del font_obj['/FontDescriptor']
+                except Exception as e:
+                    print(f"Warning: Could not process font {font_name}: {e}")
+            
+            pdf.save(pdf_path)
+            print(f"Replaced unembedded fonts with Helvetica in: {pdf_path}")
+        else:
+            print(f"All fonts are properly embedded in: {pdf_path}")
+
 def append_xmp_to_multiple_pdfs(pdf_folder, xmp_file):
     """Append XMP metadata to PDFs."""
     if not os.path.exists(xmp_file):
@@ -120,6 +177,7 @@ def batch_process_pdfs(tagged_dir, final_dir, xmp_path):
             set_pdf_language(output_path)
             set_initial_view_title(output_path)
             mark_pdf_as_tagged(output_path)
+            ensure_fonts_embedded(output_path)  # Add font embedding step
 
     # Append XMP metadata to all processed PDFs
     append_xmp_to_multiple_pdfs(final_dir, xmp_path)
