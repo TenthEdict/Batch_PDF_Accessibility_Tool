@@ -1,8 +1,0 @@
-services:
-  pdf-accessibility:
-    image: schipp0/pdf-accessibility:latest
-    volumes:
-      - ./input:/app/input
-      - ./output:/app/output
-    environment:
-      - PYTHONUNBUFFERED=1

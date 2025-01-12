@@ -14,22 +14,30 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libtesseract-dev \
     tesseract-ocr \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set pip configurations
 ENV PIP_DEFAULT_TIMEOUT=300
 ENV PIP_RETRIES=10
 
-# Install base Python packages first
-COPY requirements.txt ./
+# Install numpy 1.x first to ensure compatibility
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir numpy pandas pytesseract Pillow
+    pip install --no-cache-dir 'numpy<2.0.0'
+
+# Install base Python packages
+COPY requirements.txt ./
+RUN pip install --no-cache-dir pandas pytesseract Pillow
 
 # Install OpenCV based on architecture
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-        pip install --no-cache-dir opencv-python-headless; \
+        pip install --no-cache-dir opencv-python-headless==4.8.0.76; \
     else \
-        pip install --no-cache-dir opencv-python; \
+        pip install --no-cache-dir opencv-python==4.8.0.76; \
     fi
 
 # Install remaining Python dependencies

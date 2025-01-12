@@ -177,17 +177,18 @@ class BatchPDFProcessor:
         
         return stats
 
+    # Add to batch.py
+
     def process_directory(self) -> pd.DataFrame:
-        """
-        Process all PDF files in the input directory.
+        """Process all PDF files in the input directory."""
+        # Add debug logging
+        logging.info(f"Looking for PDFs in: {self.input_dir}")
         
-        Returns:
-            DataFrame containing processing statistics
-        """
-        # Get list of PDF files
+        # Get list of PDF files with debug
         pdf_files = list(self.input_dir.glob("*.pdf"))
-        total_files = len(pdf_files)
+        logging.info(f"Found {len(pdf_files)} PDF files: {[p.name for p in pdf_files]}")
         
+        total_files = len(pdf_files)
         if total_files == 0:
             logging.warning("No PDF files found in input directory")
             return pd.DataFrame()
@@ -195,22 +196,28 @@ class BatchPDFProcessor:
         logging.info(f"Starting batch processing of {total_files} PDF files")
         
         # Process files with progress bar
-        with concurrent.futures.ProcessPoolExecutor(max_workers=self.max_workers) as executor:
-            futures = {executor.submit(self.process_single_pdf, pdf_path): pdf_path 
-                      for pdf_path in pdf_files}
-            
-            with tqdm(total=total_files, desc="Processing PDFs") as pbar:
-                for future in concurrent.futures.as_completed(futures):
-                    pdf_path = futures[future]
-                    try:
-                        stats = future.result()
-                        self.processing_stats[pdf_path.name] = stats
-                    except Exception as e:
-                        logging.error(f"Error processing {pdf_path.name}: {str(e)}")
-                    pbar.update(1)
+        processed_stats = []
+        for pdf_path in pdf_files:
+            try:
+                logging.info(f"Processing file: {pdf_path}")
+                stats = self.process_single_pdf(pdf_path)
+                processed_stats.append(stats)
+                logging.info(f"Completed processing: {pdf_path}")
+            except Exception as e:
+                logging.error(f"Error processing {pdf_path.name}: {str(e)}")
+                processed_stats.append({
+                    'filename': pdf_path.name,
+                    'status': 'failed',
+                    'errors': [str(e)]
+                })
         
-        # Create summary report
-        return self.create_summary_report()
+        # Create DataFrame from processed stats
+        if processed_stats:
+            df = pd.DataFrame(processed_stats)
+            df.set_index('filename', inplace=True)
+            return df
+        else:
+            return pd.DataFrame()
 
     def create_summary_report(self) -> pd.DataFrame:
         """
@@ -278,21 +285,30 @@ class BatchPDFProcessor:
         
         logging.info(f"Batch processing complete. Reports saved to {self.reports_dir}")
         return df
-    
+
 def main():
-    # Example usage
-    input_dir = "path/to/pdf/directory"
-    output_dir = "path/to/output/directory"
+    input_dir = Path("/app/input")
+    output_dir = Path("/app/output")
     
-    processor = BatchPDFProcessor(input_dir, output_dir)
-    summary_df = processor.process_directory()
-    
-    # Print summary statistics
-    print("\nProcessing Summary:")
-    print(f"Total files processed: {len(summary_df)}")
-    print(f"Successfully processed: {sum(summary_df['status'] == 'success')}")
-    print(f"Failed: {sum(summary_df['status'] == 'failed')}")
-    print(f"\nOutput files located in: {output_dir}")
+    try:
+        processor = BatchPDFProcessor(str(input_dir), str(output_dir))
+        summary_df = processor.process_directory()
+        
+        print("\nProcessing Summary:")
+        total_files = len(summary_df)
+        print(f"Total files processed: {total_files}")
+        
+        if not summary_df.empty:
+            print("\nProcessed files:")
+            for idx, row in summary_df.iterrows():
+                print(f"  - {idx}")
+                print(f"    Size: {row.get('size_mb', 'N/A')} MB")
+                print(f"    Status: {row.get('status', 'N/A')}")
+                if errors := row.get('errors'):
+                    print(f"    Errors: {errors}")
+    except Exception as e:
+        logging.error(f"Error in main process: {str(e)}")
+        raise
 
 if __name__ == "__main__":
     main()
