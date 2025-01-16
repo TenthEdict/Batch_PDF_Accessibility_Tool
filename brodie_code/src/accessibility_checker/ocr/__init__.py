@@ -1,3 +1,6 @@
-from .processor import OCRProcessor, OCRResult
+# src/accessibility_checker/ocr/__init__.py
 
-__all__ = ['OCRProcessor', 'OCRResult']
+from .processor import OCRProcessor, OCRResult
+from .adaptive_config import AdaptiveOCRConfig, DocumentCharacteristics
+
+__all__ = ['OCRProcessor', 'OCRResult', 'AdaptiveOCRConfig', 'DocumentCharacteristics']

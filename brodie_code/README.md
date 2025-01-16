@@ -94,3 +94,17 @@ Results are organized in the `output` directory structure.
 - If Tesseract isn't found: Verify PATH includes `C:\Program Files\Tesseract-OCR`
 - If MuPDF isn't found: Add MuPDF installation directory to PATH
 - Command prompt might require admin privileges for first run
+
+
+## Using container.sh
+```bash
+# Original behavior (process PDFs)
+./container.sh process
+
+
+# Run post-processing
+./container.sh post-process
+
+# Get a shell (original behavior)
+./container.sh /bin/bash
+```

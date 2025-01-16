@@ -19,6 +19,11 @@ RUN apt-get update && apt-get install -y \
     libsm6 \
     libxext6 \
     libxrender1 \
+    poppler-utils \
+    poppler-data \
+    libpoppler-dev \
+    libpoppler-cpp-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Set pip configurations
@@ -31,7 +36,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Install base Python packages
 COPY requirements.txt ./
-RUN pip install --no-cache-dir pandas pytesseract Pillow
+RUN pip install --no-cache-dir pandas pytesseract Pillow pdf2image
 
 # Install OpenCV based on architecture
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
@@ -52,8 +57,13 @@ RUN mkdir -p input output/corrections output/reports output/processed_pdfs \
     output/logs output/ocr_results output/tagged output/final && \
     pip install -e .
 
+# Create and configure entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Set volume for input/output
 VOLUME ["/app/input", "/app/output"]
 
-# Set the default command to run the PDF processor
-CMD ["python", "-m", "accessibility_checker.core.batch"]
+# Use entrypoint script to handle different commands
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["process"]

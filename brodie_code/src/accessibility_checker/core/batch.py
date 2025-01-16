@@ -11,6 +11,7 @@ from tqdm import tqdm
 from ..core.document import AccessibilityDocumentProcessor  # Changed from .accessibility
 from ..ocr.processor import OCRProcessor
 from ..utils.retry import RetryHandler, OCRError, OCRTimeoutError
+from ..ocr.adaptive_config import AdaptiveOCRConfig
 
 class BatchPDFProcessor:
     def __init__(
@@ -19,7 +20,8 @@ class BatchPDFProcessor:
         output_dir: str, 
         max_workers: int = 4,
         ocr_processor: Optional[OCRProcessor] = None,
-        retry_handler: Optional[RetryHandler] = None
+        retry_handler: Optional[RetryHandler] = None,
+        config: Dict[str, any] = None
     ):
         """
         Initialize batch processor for PDF accessibility checking.
@@ -37,7 +39,9 @@ class BatchPDFProcessor:
         self.ocr_processor = ocr_processor
         self.retry_handler = retry_handler
         self.processing_stats: Dict[str, Dict] = {}
-        
+        self.adaptive_config = AdaptiveOCRConfig(config or {})
+        self.document_configs = {}
+
         # Create output directories
         self.corrections_dir = self.output_dir / "corrections"
         self.reports_dir = self.output_dir / "reports"
@@ -90,6 +94,22 @@ class BatchPDFProcessor:
         
         processor = None
         try:
+            # Analyze document and get optimal configuration
+            characteristics = self.adaptive_config.analyze_document(str(pdf_path))
+            optimal_config = self.adaptive_config.get_optimal_config(characteristics)
+            
+            # Store configuration for this document
+            self.document_configs[pdf_path.name] = optimal_config
+            
+            # Update OCR processor configuration
+            if self.ocr_processor:
+                self.ocr_processor.update_config(optimal_config)
+            
+            # Log the optimized configuration
+            logging.info(f"Optimized OCR configuration for {pdf_path.name}:")
+            logging.info(f"PSM Mode: {optimal_config.get('psm')}")
+            logging.info(f"Preprocessing: {optimal_config.get('preprocessing', {})}")
+            logging.info(f"Other settings: {optimal_config}")
             # Create output paths
             base_name = pdf_path.stem
             corrections_path = self.corrections_dir / f"{base_name}_corrections.json"
@@ -110,6 +130,19 @@ class BatchPDFProcessor:
             processor.detect_tables()
             processor.analyze_reading_order()
             
+            # Save configuration and characteristics with results
+            stats['ocr_config'] = optimal_config
+            stats['document_characteristics'] = {
+                'text_density': characteristics.avg_text_density,
+                'font_size': characteristics.avg_font_size,
+                'has_math': characteristics.has_math_content,
+                'has_tables': characteristics.has_tables,
+                'quality_score': characteristics.image_quality_score,
+                'script': characteristics.language_script,
+                'complexity': characteristics.layout_complexity,
+                'skew_angle': characteristics.skew_angle
+            }
+
             # Save the processed PDF
             try:
                 processor.doc.save(str(processed_path))

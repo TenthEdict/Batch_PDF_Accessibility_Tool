@@ -1,5 +1,7 @@
+# src/accessibility_checker/ocr/processor.py
+
 import logging
-from typing import Dict, List, Tuple, Optional, Literal
+from typing import Dict, List, Tuple, Optional, Literal, Any
 import numpy as np
 from PIL import Image
 import pytesseract
@@ -28,33 +30,46 @@ class OCRProcessor:
             retry_handler: Optional[RetryHandler] = None,
             timeout: int = 30
         ):
-            """
-            Initialize OCR processor.
-            
-            Args:
-                config: Optional OCRConfig object containing OCR configuration
-                retry_handler: Optional retry handler for error recovery
-                timeout: Maximum time in seconds for OCR processing
-            """
-            self.logger = logging.getLogger(__name__)
-            self.config = config
-            self.retry_handler = retry_handler
-            self.timeout = timeout
-            self.last_confidence = 0.0
-            
-            # Default OCR configurations
-            self.text_config = {
-                'language': config.language if config else 'eng',
-                'psm': config.psm if config else 3,
-                'oem': config.oem if config else 3,
-                'tessedit_char_whitelist': config.char_whitelist if config else 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}"\'-',
-                'preserve_interword_spaces': '1',
-            }
-            
-            # Add any additional parameters from config
-            if config and config.additional_params:
-                self.text_config.update(config.additional_params)
+        """
+        Initialize OCR processor.
+        
+        Args:
+            config: Optional OCRConfig object containing OCR configuration
+            retry_handler: Optional retry handler for error recovery
+            timeout: Maximum time in seconds for OCR processing
+        """
+        self.logger = logging.getLogger(__name__)
+        self.config = config
+        self.retry_handler = retry_handler
+        self.timeout = timeout
+        self.last_confidence = 0.0
+        
+        # Default OCR configurations
+        self.text_config = {
+            'language': config.language if config else 'eng',
+            'psm': config.psm if config else 3,
+            'oem': config.oem if config else 3,
+            'tessedit_char_whitelist': config.char_whitelist if config else 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}"\'-',
+            'preserve_interword_spaces': '1',
+        }
+        
+        # Add any additional parameters from config
+        if config and config.additional_params:
+            self.text_config.update(config.additional_params)
 
+    def update_config(self, new_config: Dict[str, Any]) -> None:
+        """Update OCR configuration with new settings."""
+        self.text_config.update(new_config)
+        
+        # Update specific configurations
+        if 'preprocessing' in new_config:
+            self.preprocessing_config = new_config['preprocessing']
+        
+        if 'deskew' in new_config:
+            self.enable_deskew = new_config['deskew']
+        
+        # Log configuration update
+        self.logger.info(f"Updated OCR configuration: {new_config}")
 
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:
         """

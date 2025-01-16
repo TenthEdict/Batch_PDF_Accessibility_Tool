@@ -1,0 +1,43 @@
+[Your Name]
+[Your Address]
+[City, State ZIP]
+[Email]
+[Phone]
+
+[Date]
+
+Search Committee
+Purdue University Libraries
+504 West State Street
+West Lafayette, IN 47907
+
+Dear Search Committee,
+
+I am writing to express my strong interest in the Course Reserves Coordinator position at Purdue University Libraries. As a current Library Assistant at Purdue with experience in student supervision, documentation creation, and library systems management, I am excited about the opportunity to contribute to the libraries' mission of persistent innovation in discovery and learning.
+
+My current role has prepared me exceptionally well for this position. I have demonstrated expertise in:
+
+• Creating and Maintaining Documentation: I have developed comprehensive staff tutorials for ePubs PDF documents and implemented standardized procedures through Docker containerization, showcasing my ability to create clear, accessible training materials.
+
+• Systems and Technology: Working with Alma has given me hands-on experience with library management systems. I have also leveraged Excel PowerQuery and Tableau to analyze and present library usage data, demonstrating my technical adaptability and analytical skills.
+
+• Student Supervision and Training: In my role as Student Supervisor, I have experience hiring, training, and managing student workers, ensuring consistent service quality while fostering their professional development.
+
+• Project Coordination: I successfully led the implementation of accessibility standards for library documents, coordinating with multiple stakeholders and managing complex workflows to ensure timely completion.
+
+My recent completion of the Big Ten Academic Alliance's "Cultivating Belonging: Library Accessibility Essentials" program reflects my commitment to creating an inclusive environment that serves all library patrons. Additionally, my ongoing pursuit of an MS in Industrial-Organizational Psychology enhances my ability to effectively manage and develop student workers.
+
+What particularly excites me about this role is the opportunity to shape the course reserves service at Purdue Libraries while mentoring student workers. Having worked in multiple roles within the Libraries system, I understand the importance of efficient course reserves management to student success and faculty support.
+
+I am particularly drawn to the position's emphasis on:
+• Coordinating and standardizing processes
+• Training and developing student workers
+• Implementing and assessing new procedures
+• Fostering an environment of inclusive excellence
+
+I am confident that my combination of technical skills, leadership experience, and dedication to student success makes me an ideal candidate for this position. I look forward to discussing how I can contribute to Purdue University Libraries' persistent pursuit of excellence in library services and student support.
+
+Thank you for considering my application.
+
+Sincerely,
+[Your Name]
