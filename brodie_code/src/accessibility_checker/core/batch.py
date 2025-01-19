@@ -1,3 +1,5 @@
+# src/accessibility_checker/core/batch.py
+
 import os
 from pathlib import Path
 import concurrent.futures
@@ -8,7 +10,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 import pandas as pd
 from tqdm import tqdm
-from ..core.document import AccessibilityDocumentProcessor  # Changed from .accessibility
+from ..core.document import AccessibilityDocumentProcessor
 from ..ocr.processor import OCRProcessor
 from ..utils.retry import RetryHandler, OCRError, OCRTimeoutError
 from ..ocr.adaptive_config import AdaptiveOCRConfig
@@ -42,24 +44,31 @@ class BatchPDFProcessor:
         self.adaptive_config = AdaptiveOCRConfig(config or {})
         self.document_configs = {}
 
+        # Base output directories
+        self.dir_types = {
+            "corrections": "corrections",
+            "reports": "reports",
+            "processed": "processed_pdfs",
+            "logs": "logs",
+            "ocr": "ocr_results"
+        }
+
         # Create output directories
-        self.corrections_dir = self.output_dir / "corrections"
-        self.reports_dir = self.output_dir / "reports"
-        self.processed_dir = self.output_dir / "processed_pdfs"
-        self.logs_dir = self.output_dir / "logs"
-        self.ocr_dir = self.output_dir / "ocr_results"  # New directory for OCR results
-        
-        for directory in [self.corrections_dir, self.reports_dir, 
-                         self.processed_dir, self.logs_dir, self.ocr_dir]:
-            directory.mkdir(parents=True, exist_ok=True)
+        self.create_base_output_dirs()
         
         # Set up logging
         self.setup_logging()
 
+    def create_base_output_dirs(self):
+        """Create base output directory structure."""
+        for dir_type in self.dir_types.values():
+            base_dir = self.output_dir / dir_type
+            base_dir.mkdir(parents=True, exist_ok=True)
+
     def setup_logging(self):
         """Configure logging for the batch process."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_file = self.logs_dir / f"batch_process_{timestamp}.log"
+        log_file = self.output_dir / "logs" / f"batch_process_{timestamp}.log"
         
         logging.basicConfig(
             level=logging.INFO,
@@ -70,19 +79,33 @@ class BatchPDFProcessor:
             ]
         )
 
-    def process_single_pdf(self, pdf_path: Path) -> Dict:
+    def get_output_subdirs(self, input_file: Path) -> Dict[str, Path]:
         """
-        Process a single PDF file and return statistics.
+        Get output subdirectories for a given input file, maintaining the subdirectory structure.
+        """
+        # Get the relative path from input_dir to the file's parent directory
+        try:
+            rel_path = input_file.parent.relative_to(self.input_dir)
+        except ValueError:
+            # If the file is directly in the input directory, use an empty path
+            rel_path = Path()
         
-        Args:
-            pdf_path: Path to the PDF file
+        # Create dictionary of output directories
+        output_dirs = {}
+        for dir_type, dir_name in self.dir_types.items():
+            # Create full path including subdirectory structure
+            full_path = self.output_dir / dir_name / rel_path
+            full_path.mkdir(parents=True, exist_ok=True)
+            output_dirs[dir_type] = full_path
             
-        Returns:
-            Dict containing processing statistics
-        """
+        return output_dirs
+
+    def process_single_pdf(self, pdf_path: Path) -> Dict:
+        """Process a single PDF file and return statistics."""
         start_time = time.time()
         stats = {
             'filename': pdf_path.name,
+            'subdirectory': str(pdf_path.parent.relative_to(self.input_dir)),
             'size_mb': pdf_path.stat().st_size / (1024 * 1024),
             'status': 'failed',
             'errors': [],
@@ -94,56 +117,34 @@ class BatchPDFProcessor:
         
         processor = None
         try:
+            # Get output directories for this file
+            output_dirs = self.get_output_subdirs(pdf_path)
+            
+            # Create output paths
+            base_name = pdf_path.stem
+            corrections_path = output_dirs['corrections'] / f"{base_name}_corrections.json"
+            report_path = output_dirs['reports'] / f"{base_name}_report.json"
+            processed_path = output_dirs['processed'] / f"{base_name}_processed.pdf"
+            ocr_results_path = output_dirs['ocr'] / f"{base_name}_ocr_results.json"
+            
             # Analyze document and get optimal configuration
             characteristics = self.adaptive_config.analyze_document(str(pdf_path))
             optimal_config = self.adaptive_config.get_optimal_config(characteristics)
             
-            # Store configuration for this document
-            self.document_configs[pdf_path.name] = optimal_config
-            
-            # Update OCR processor configuration
-            if self.ocr_processor:
-                self.ocr_processor.update_config(optimal_config)
-            
-            # Log the optimized configuration
-            logging.info(f"Optimized OCR configuration for {pdf_path.name}:")
-            logging.info(f"PSM Mode: {optimal_config.get('psm')}")
-            logging.info(f"Preprocessing: {optimal_config.get('preprocessing', {})}")
-            logging.info(f"Other settings: {optimal_config}")
-            # Create output paths
-            base_name = pdf_path.stem
-            corrections_path = self.corrections_dir / f"{base_name}_corrections.json"
-            report_path = self.reports_dir / f"{base_name}_report.json"
-            processed_path = self.processed_dir / f"{base_name}_processed.pdf"
-            ocr_results_path = self.ocr_dir / f"{base_name}_ocr_results.json"
-            
-            # Process the PDF
+            # Initialize document processor
             processor = AccessibilityDocumentProcessor(
                 str(pdf_path),
                 ocr_processor=self.ocr_processor,
                 retry_handler=self.retry_handler
             )
             
-            # Extract and analyze document structure
+            # Process document
             processor.extract_text_with_positions()
             processor.detect_headings()
             processor.detect_tables()
             processor.analyze_reading_order()
             
-            # Save configuration and characteristics with results
-            stats['ocr_config'] = optimal_config
-            stats['document_characteristics'] = {
-                'text_density': characteristics.avg_text_density,
-                'font_size': characteristics.avg_font_size,
-                'has_math': characteristics.has_math_content,
-                'has_tables': characteristics.has_tables,
-                'quality_score': characteristics.image_quality_score,
-                'script': characteristics.language_script,
-                'complexity': characteristics.layout_complexity,
-                'skew_angle': characteristics.skew_angle
-            }
-
-            # Save the processed PDF
+            # Save processed PDF
             try:
                 processor.doc.save(str(processed_path))
                 logging.info(f"Saved processed PDF to: {processed_path}")
@@ -151,19 +152,16 @@ class BatchPDFProcessor:
                 stats['warnings'].append(f"Failed to save processed PDF: {str(e)}")
                 logging.warning(f"Could not save processed PDF for {pdf_path.name}: {str(e)}")
             
-            # Verify text with OCR if processor is available
-            ocr_stats = {}
+            # OCR processing
             if self.ocr_processor:
                 try:
                     ocr_results = processor.verify_text_with_ocr()
                     stats['ocr_applied'] = True
-                    ocr_stats = {
+                    stats['ocr_stats'] = {
                         'pages_processed': len(ocr_results),
-                        'confidence_scores': [],
-                        'processing_time': 0
+                        'confidence_scores': []
                     }
                     
-                    # Save OCR results
                     with open(ocr_results_path, 'w', encoding='utf-8') as f:
                         json.dump(ocr_results, f, indent=2)
                         
@@ -175,25 +173,18 @@ class BatchPDFProcessor:
             processor.export_accessibility_report(str(report_path))
             processor.export_corrections(str(corrections_path))
             
-            # Collect statistics
-            stats['stats'] = {
-                'num_pages': len(processor.doc),
-                'num_tables': len(processor.tables),
-                'num_headings': sum(1 for elem in processor.text_elements 
-                                if elem.heading_level is not None),
-                'num_corrections': sum(len(corr) for corr in processor.corrections.values()),
-                'processing_time': time.time() - start_time
-            }
-            
-            stats['ocr_stats'] = ocr_stats
-            
-            # Add warnings for potential issues
-            if stats['stats']['num_headings'] == 0:
-                stats['warnings'].append("No headings detected")
-            if any(len(corr) > 10 for corr in processor.corrections.values()):
-                stats['warnings'].append("High number of corrections needed on some pages")
-                
-            stats['status'] = 'success'
+            # Update statistics
+            stats.update({
+                'status': 'success',
+                'stats': {
+                    'num_pages': len(processor.doc),
+                    'num_tables': len(processor.tables),
+                    'num_headings': sum(1 for elem in processor.text_elements 
+                                      if elem.heading_level is not None),
+                    'num_corrections': sum(len(corr) for corr in processor.corrections.values()),
+                    'processing_time': time.time() - start_time
+                }
+            })
             
         except Exception as e:
             stats['status'] = 'failed'
@@ -201,8 +192,7 @@ class BatchPDFProcessor:
             logging.error(f"Error processing {pdf_path.name}: {str(e)}")
             
         finally:
-            # Clean up: close the document
-            if processor and processor.doc:
+            if processor and hasattr(processor, 'doc'):
                 try:
                     processor.doc.close()
                 except Exception as e:
@@ -210,29 +200,23 @@ class BatchPDFProcessor:
         
         return stats
 
-    # Add to batch.py
-
     def process_directory(self) -> pd.DataFrame:
-        """Process all PDF files in the input directory."""
-        # Add debug logging
-        logging.info(f"Looking for PDFs in: {self.input_dir}")
+        """Process all PDF files in the input directory and its subdirectories."""
+        # Find all PDF files recursively
+        pdf_files = list(self.input_dir.rglob("*.pdf"))
         
-        # Get list of PDF files with debug
-        pdf_files = list(self.input_dir.glob("*.pdf"))
-        logging.info(f"Found {len(pdf_files)} PDF files: {[p.name for p in pdf_files]}")
+        logging.info(f"Found {len(pdf_files)} PDF files in {self.input_dir} and its subdirectories")
         
-        total_files = len(pdf_files)
-        if total_files == 0:
-            logging.warning("No PDF files found in input directory")
+        if not pdf_files:
+            logging.warning("No PDF files found in input directory or subdirectories")
             return pd.DataFrame()
         
-        logging.info(f"Starting batch processing of {total_files} PDF files")
-        
-        # Process files with progress bar
+        # Process files
         processed_stats = []
-        for pdf_path in pdf_files:
+        for pdf_path in tqdm(pdf_files, desc="Processing PDFs"):
             try:
-                logging.info(f"Processing file: {pdf_path}")
+                rel_path = pdf_path.parent.relative_to(self.input_dir)
+                logging.info(f"Processing file: {pdf_path} (in subdirectory: {rel_path})")
                 stats = self.process_single_pdf(pdf_path)
                 processed_stats.append(stats)
                 logging.info(f"Completed processing: {pdf_path}")
@@ -240,6 +224,7 @@ class BatchPDFProcessor:
                 logging.error(f"Error processing {pdf_path.name}: {str(e)}")
                 processed_stats.append({
                     'filename': pdf_path.name,
+                    'subdirectory': str(pdf_path.parent.relative_to(self.input_dir)),
                     'status': 'failed',
                     'errors': [str(e)]
                 })
@@ -247,98 +232,74 @@ class BatchPDFProcessor:
         # Create DataFrame from processed stats
         if processed_stats:
             df = pd.DataFrame(processed_stats)
-            df.set_index('filename', inplace=True)
+            df.set_index(['subdirectory', 'filename'], inplace=True)
+            
+            # Save summary report
+            self.save_summary_report(df)
+            
             return df
         else:
             return pd.DataFrame()
 
-    def create_summary_report(self) -> pd.DataFrame:
-        """
-        Create a summary report of all processed files.
-        
-        Returns:
-            DataFrame containing processing statistics
-        """
-        # Convert stats to DataFrame
-        df = pd.DataFrame.from_dict(self.processing_stats, orient='index')
-        
-        # Save detailed JSON report
+    def save_summary_report(self, df: pd.DataFrame):
+        """Save a summary report of the processing results."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        detailed_report_path = self.reports_dir / f"batch_summary_{timestamp}.json"
-        with open(detailed_report_path, 'w', encoding='utf-8') as f:
-            json.dump(self.processing_stats, f, indent=2)
+        report_path = self.output_dir / "reports" / f"batch_summary_{timestamp}.xlsx"
         
-        # Save Excel summary
-        excel_path = self.reports_dir / f"batch_summary_{timestamp}.xlsx"
-        with pd.ExcelWriter(excel_path) as writer:
-            # Summary sheet with OCR stats
-            summary_df = df[['status', 'size_mb', 'ocr_applied']].copy()
-            for stat in ['num_pages', 'num_tables', 'num_headings', 'num_corrections']:
-                summary_df[stat] = df['stats'].apply(lambda x: x.get(stat, 0) if isinstance(x, dict) else 0)
-            
-            # Add OCR statistics if available
-            if 'ocr_stats' in df.columns:
-                for stat in ['pages_processed', 'confidence_scores']:
-                    summary_df[f'ocr_{stat}'] = df['ocr_stats'].apply(
-                        lambda x: x.get(stat, None) if isinstance(x, dict) else None
-                    )
-            
-            summary_df.to_excel(writer, sheet_name='Summary')
-            
-            # Warnings sheet
-            warnings_df = pd.DataFrame({
-                'filename': df.index,
-                'warnings': df['warnings'].apply(lambda x: '\n'.join(x) if isinstance(x, list) else '')
-            })
-            warnings_df = warnings_df[warnings_df['warnings'] != '']
-            warnings_df.to_excel(writer, sheet_name='Warnings', index=False)
+        with pd.ExcelWriter(report_path) as writer:
+            # Summary sheet
+            summary_df = df.reset_index()
+            summary_df.to_excel(writer, sheet_name='Summary', index=False)
             
             # Errors sheet
-            errors_df = pd.DataFrame({
-                'filename': df.index,
-                'errors': df['errors'].apply(lambda x: '\n'.join(x) if isinstance(x, list) else '')
-            })
-            errors_df = errors_df[errors_df['errors'] != '']
-            errors_df.to_excel(writer, sheet_name='Errors', index=False)
+            errors_df = summary_df[summary_df['status'] == 'failed'][
+                ['subdirectory', 'filename', 'errors']
+            ]
+            if not errors_df.empty:
+                errors_df.to_excel(writer, sheet_name='Errors', index=False)
             
-            # OCR Results sheet if applicable
-            if df['ocr_applied'].any():
-                ocr_df = pd.DataFrame({
-                    'filename': df.index,
-                    'ocr_applied': df['ocr_applied'],
-                    'ocr_pages_processed': df['ocr_stats'].apply(
-                        lambda x: x.get('pages_processed', 0) if isinstance(x, dict) else 0
-                    ),
-                    'avg_confidence': df['ocr_stats'].apply(
-                        lambda x: sum(x.get('confidence_scores', [0])) / len(x.get('confidence_scores', [1]))
-                        if isinstance(x, dict) and x.get('confidence_scores') else 0
-                    )
-                })
-                ocr_df.to_excel(writer, sheet_name='OCR Results', index=False)
-        
-        logging.info(f"Batch processing complete. Reports saved to {self.reports_dir}")
-        return df
+            # Warnings sheet
+            warnings_df = summary_df[summary_df['warnings'].apply(len) > 0][
+                ['subdirectory', 'filename', 'warnings']
+            ]
+            if not warnings_df.empty:
+                warnings_df.to_excel(writer, sheet_name='Warnings', index=False)
 
 def main():
+    # Use Docker container paths directly
     input_dir = Path("/app/input")
     output_dir = Path("/app/output")
+    
+    print(f"Looking for PDFs in: {input_dir}")
+    print(f"Current directory structure:")
+    os.system(f"ls -R {input_dir}")
     
     try:
         processor = BatchPDFProcessor(str(input_dir), str(output_dir))
         summary_df = processor.process_directory()
         
         print("\nProcessing Summary:")
-        total_files = len(summary_df)
-        print(f"Total files processed: {total_files}")
+        print(f"Total files processed: {len(summary_df)}")
         
         if not summary_df.empty:
-            print("\nProcessed files:")
-            for idx, row in summary_df.iterrows():
-                print(f"  - {idx}")
-                print(f"    Size: {row.get('size_mb', 'N/A')} MB")
-                print(f"    Status: {row.get('status', 'N/A')}")
-                if errors := row.get('errors'):
-                    print(f"    Errors: {errors}")
+            success_count = sum(summary_df['status'] == 'success')
+            failed_count = sum(summary_df['status'] == 'failed')
+            print(f"Successfully processed: {success_count}")
+            print(f"Failed: {failed_count}")
+            
+            print("\nProcessed files by subdirectory:")
+            for (subdir, filename), row in summary_df.iterrows():
+                print(f"  {subdir}/{filename}: {row['status']}")
+                if row['errors']:
+                    print(f"    Errors: {row['errors']}")
+                
+            print(f"\nOutput files located in: {output_dir}")
+            
+        else:
+            print("\nNo files were processed.")
+            print(f"Input directory: {input_dir}")
+            print("Please ensure PDF files are present in the input directory or its subdirectories")
+            
     except Exception as e:
         logging.error(f"Error in main process: {str(e)}")
         raise
