@@ -17,12 +17,13 @@ docker image prune -f
 
 # Ensure script permissions
 echo "Setting permissions..."
-chmod +x docker-entrypoint.sh
-chmod +x container.sh
+chmod +x shell_scripts/docker-entrypoint.sh
+chmod +x shell_scripts/container.sh
+
 
 # Fix any line ending issues
 echo "Fixing line endings..."
-tr -d '\r' < ../docker-entrypoint.sh > ../docker-entrypoint.tmp && mv ../docker-entrypoint.tmp ../docker-entrypoint.sh
+tr -d '\r' < shell_scripts/docker-entrypoint.sh > shell_scripts/docker-entrypoint.tmp && mv shell_scripts/docker-entrypoint.tmp shell_scripts/docker-entrypoint.sh
 
 # Clean output directory
 echo "Cleaning output directory..."

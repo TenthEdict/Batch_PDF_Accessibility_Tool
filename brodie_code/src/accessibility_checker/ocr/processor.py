@@ -132,13 +132,20 @@ class OCRProcessor:
             config = ' '.join([f'-c {k}={v}' for k, v in self.text_config.items()])
             config += f' --psm {self.text_config["psm"]} --oem {self.text_config["oem"]}'
             
-            # Perform OCR
-            ocr_data = pytesseract.image_to_data(
-                processed_image,
-                lang=self.text_config['language'],
-                config=config,
-                output_type=pytesseract.Output.DICT
-            )
+            try:
+                ocr_data = pytesseract.image_to_data(
+                    processed_image,
+                    lang=self.text_config['language'],
+                    config=config,
+                    output_type=pytesseract.Output.DICT
+                )
+            except pytesseract.TesseractError as e:
+                self.logger.error(f"Tesseract OCR error: {e}")
+                raise OCRError(f"Tesseract OCR error: {e}")
+            except Exception as e:
+                self.logger.error(f"Unexpected OCR processing failure: {e}")
+                raise OCRError(f"Unexpected OCR processing failure: {e}")
+
             
             # Extract confidence scores
             confidences = [float(conf) for conf in ocr_data['conf'] if conf != '-1']
