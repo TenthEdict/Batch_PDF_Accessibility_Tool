@@ -19,6 +19,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+!src/accessibility_checker/build
 eggs/
 parts/
 bin/
@@ -46,7 +47,3 @@ Thumbs.db
 *.swp
 *.swo
 *~
-
-# things to explictly keep
-!src/accessibility_checker/build/
-!src/accessibility_checker/build/process.py
