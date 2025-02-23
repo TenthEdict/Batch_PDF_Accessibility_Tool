@@ -40,74 +40,98 @@ class AdaptiveOCRConfig:
         }
         
     def analyze_document(self, pdf_path: str) -> DocumentCharacteristics:
-        """Analyze document characteristics to determine optimal OCR settings."""
+        """Analyze document characteristics with improved error handling and detection."""
         try:
             # Convert first few pages to images for analysis
-            pages = convert_from_path(pdf_path, first_page=1, last_page=3)
+            pages = convert_from_path(pdf_path, first_page=1, last_page=min(5, self._get_page_count(pdf_path)))
             
-            # Initialize aggregated metrics
-            total_text_density = 0
-            total_font_size = 0
-            total_complexity = 0
+            metrics = {
+                'text_density': [],
+                'font_size': [],
+                'quality': [],
+                'complexity': [],
+                'skew': []
+            }
+            
             math_content_detected = False
             tables_detected = False
-            total_quality = 0
-            total_skew = 0
             
-            # Process each page
             for page in pages:
-                # Convert PIL image to OpenCV format
-                img_np = cv2.cvtColor(np.array(page), cv2.COLOR_RGB2BGR)
-                gray = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
-                
-                # Calculate text density
-                _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-                text_density = np.sum(binary == 0) / binary.size
-                total_text_density += text_density
-                
-                # Estimate font size using connected components
-                components = cv2.connectedComponentsWithStats(cv2.bitwise_not(binary), 4, cv2.CV_32S)
-                if components[0] > 1:  # If components found
-                    heights = components[2][1:, cv2.CC_STAT_HEIGHT]  # Skip background
-                    avg_height = np.median(heights[heights < np.percentile(heights, 95)])
-                    total_font_size += avg_height
-                
-                # Detect math content using symbol density
-                math_symbols = self._detect_math_symbols(gray)
-                math_content_detected = math_content_detected or math_symbols
-                
-                # Detect tables using line detection
-                tables = self._detect_tables(gray)
-                tables_detected = tables_detected or tables
-                
-                # Calculate image quality score
-                quality = self._calculate_image_quality(gray)
-                total_quality += quality
-                
-                # Calculate layout complexity
-                complexity = self._calculate_layout_complexity(gray)
-                total_complexity += complexity
-                
-                # Calculate skew angle
-                skew = self._calculate_skew_angle(gray)
-                total_skew += abs(skew)
+                try:
+                    # Convert PIL image to OpenCV format
+                    img_np = cv2.cvtColor(np.array(page), cv2.COLOR_RGB2BGR)
+                    gray = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
+                    
+                    # Calculate metrics for this page
+                    page_metrics = self._calculate_page_metrics(gray)
+                    for key in metrics:
+                        if key in page_metrics:
+                            metrics[key].append(page_metrics[key])
+                    
+                    # Update content detection flags
+                    if self._detect_math_symbols(gray):
+                        math_content_detected = True
+                    if self._detect_tables(gray):
+                        tables_detected = True
+                        
+                except Exception as e:
+                    self.logger.warning(f"Error analyzing page: {str(e)}")
+                    continue
             
-            num_pages = len(pages)
+            # Calculate aggregate metrics
             return DocumentCharacteristics(
-                avg_text_density=total_text_density / num_pages,
-                avg_font_size=total_font_size / num_pages,
+                avg_text_density=np.mean(metrics['text_density']) if metrics['text_density'] else 0,
+                avg_font_size=np.mean(metrics['font_size']) if metrics['font_size'] else 0,
                 has_math_content=math_content_detected,
                 has_tables=tables_detected,
-                image_quality_score=total_quality / num_pages,
+                image_quality_score=np.mean(metrics['quality']) if metrics['quality'] else 0,
                 language_script=self._detect_primary_script(pages[0]),
-                layout_complexity=total_complexity / num_pages,
-                skew_angle=total_skew / num_pages
+                layout_complexity=np.mean(metrics['complexity']) if metrics['complexity'] else 0,
+                skew_angle=np.mean(metrics['skew']) if metrics['skew'] else 0
             )
             
         except Exception as e:
             self.logger.error(f"Error analyzing document: {str(e)}")
             raise
+
+    def _calculate_page_metrics(self, image: np.ndarray) -> Dict[str, float]:
+        """Calculate comprehensive page metrics."""
+        metrics = {}
+        
+        try:
+            # Calculate text density
+            _, binary = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            metrics['text_density'] = np.sum(binary == 0) / binary.size
             
+            # Estimate font size using connected components
+            components = cv2.connectedComponentsWithStats(cv2.bitwise_not(binary), 4, cv2.CV_32S)
+            if components[0] > 1:
+                heights = components[2][1:, cv2.CC_STAT_HEIGHT]
+                metrics['font_size'] = np.median(heights[heights < np.percentile(heights, 95)])
+            
+            # Calculate image quality
+            metrics['quality'] = self._calculate_image_quality(image)
+            
+            # Calculate layout complexity
+            metrics['complexity'] = self._calculate_layout_complexity(image)
+            
+            # Calculate skew angle
+            metrics['skew'] = abs(self._calculate_skew_angle(image))
+            
+        except Exception as e:
+            self.logger.warning(f"Error calculating page metrics: {str(e)}")
+            
+        return metrics
+
+    def _get_page_count(self, pdf_path: str) -> int:
+        """Get the total number of pages in the PDF."""
+        try:
+            with fitz.open(pdf_path) as doc:
+                return len(doc)
+        except Exception as e:
+            self.logger.error(f"Error getting page count: {str(e)}")
+            return 1  # Default to 1 page if we can't determine the count        
+  
     def get_optimal_config(self, characteristics: DocumentCharacteristics) -> Dict[str, Any]:
         """Generate optimal OCR configuration based on document characteristics."""
         config = self.base_config.copy()

@@ -2,8 +2,8 @@
 
 # Get the directory where the script is located
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-INPUT_DIR="$SCRIPT_DIR/input"
-OUTPUT_DIR="$SCRIPT_DIR/output"
+INPUT_DIR="$SCRIPT_DIR/00input"
+OUTPUT_DIR="$SCRIPT_DIR/00output"
 
 # List of main output directories to preserve
 MAIN_DIRS=(

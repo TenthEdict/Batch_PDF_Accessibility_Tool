@@ -36,7 +36,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Install base Python packages
 COPY requirements.txt ./
-RUN pip install --no-cache-dir pandas pytesseract Pillow pdf2image
+RUN pip install --no-cache-dir pandas pytesseract Pillow pdf2image anthropic>=0.18.0
 
 # Install OpenCV based on architecture
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
@@ -49,12 +49,19 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
-COPY setup.py config.yaml pdfUA-ID.xmp ./
+COPY setup.py config.yaml pdfUA-ID.xmp key.txt ./
 COPY src/ ./src/
 
 # Create directories and install project
-RUN mkdir -p input output/corrections output/reports output/processed_pdfs \
-    output/logs output/ocr_results output/tagged output/final && \
+RUN mkdir -p input \
+    output/corrections \
+    output/reports \
+    output/processed_pdfs \
+    output/logs \
+    output/ocr_results \
+    output/tagged \
+    output/final \
+    output/analysis && \
     pip install -e .
 
 # Create and configure entrypoint script

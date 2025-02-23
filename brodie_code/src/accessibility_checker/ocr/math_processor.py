@@ -119,8 +119,7 @@ class MathOCRProcessor:
             area >= 200  # Minimum area
         )
 
-    def _merge_regions(self, regions: List[Tuple[int, int, int, int]]) 
-                     -> List[Tuple[int, int, int, int]]:
+    def _merge_regions(self, regions: List[Tuple[int, int, int, int]])  -> List[Tuple[int, int, int, int]]:
         """Merge overlapping regions."""
         if not regions:
             return []
@@ -151,8 +150,7 @@ class MathOCRProcessor:
         merged.append(tuple(current))
         return merged
 
-    def _process_region(self, image: np.ndarray, region: Tuple[int, int, int, int]) 
-                      -> Optional[MathRegion]:
+    def _process_region(self, image: np.ndarray, region: Tuple[int, int, int, int]) -> Optional[MathRegion]:
         """Process a detected math region."""
         x, y, w, h = region
         roi = image[y:y+h, x:x+w]

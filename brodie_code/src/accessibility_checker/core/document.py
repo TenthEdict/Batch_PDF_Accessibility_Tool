@@ -275,13 +275,18 @@ class AccessibilityDocumentProcessor:
                 page.insert_text(rect.tl, element.text, fontsize=element.font_size)
 
     def extract_text_with_positions(self):
+        """Extract text with improved error handling and OCR triggering."""
+        total_blocks = 0
+        
         for page_num in range(len(self.doc)):
             page = self.doc[page_num]
             text_dict = page.get_text("dict")
             
             if not text_dict or "blocks" not in text_dict:
+                self.logger.warning(f"No text blocks found on page {page_num + 1}")
                 continue
                 
+            page_blocks = 0
             for block in text_dict["blocks"]:
                 if "lines" not in block:
                     continue
@@ -290,45 +295,87 @@ class AccessibilityDocumentProcessor:
                     if "spans" not in line:
                         continue
                         
-                    last_x = None
-                    
                     for span in line.get("spans", []):
-                        if not span or "bbox" not in span:
-                            continue
+                        if self._process_span(span, page_num):
+                            page_blocks += 1
                             
-                        bbox = span["bbox"]
-                        if not bbox or len(bbox) != 4:
-                            continue
-                            
-                        x0, y0, x1, y1 = bbox
-                        text = span.get("text", "").strip()
-                        
-                        if not text:
-                            continue
-                        
-                        # Add space based on x position
-                        if last_x is not None and x0 - last_x > span.get("size", 0) * 0.3:
-                            text = " " + text
-                        
-                        element = TextElement(
-                            text=text,
-                            x=x0,
-                            y=y0,
-                            width=x1 - x0,
-                            height=y1 - y0,
-                            font_size=span.get("size", 12),
-                            font_name=span.get("font", ""),
-                            is_bold="Bold" in span.get("font", ""),
-                            page_num=page_num
-                        )
-                        
-                        self.text_elements.append(element)
-                        last_x = x1
-                        
-                    # Add space after each line
-                    if self.text_elements:
-                        self.text_elements[-1].text += " "      
+            if page_blocks == 0:
+                self.logger.warning(f"No processable text found on page {page_num + 1}")
+            total_blocks += page_blocks
             
+        if total_blocks == 0:
+            self.logger.error("No text content extracted from document")
+            if self.enable_ocr and self.ocr_processor:
+                self.logger.info("Attempting OCR processing")
+                self._force_ocr_processing()
+            else:
+                raise ProcessingError("Document appears to be scanned/image-based and OCR is not enabled")
+
+    def _force_ocr_processing(self):
+        """Force OCR processing on the entire document."""
+        try:
+            # Convert PDF to images
+            images = convert_from_path(self.pdf_path)
+            
+            for page_num, image in enumerate(images):
+                # Convert PIL image to numpy array
+                image_np = np.array(image)
+                
+                # Process with OCR
+                if self.ocr_processor:
+                    ocr_results = self.ocr_processor.process_page(image_np, page_num)
+                    
+                    # Create text elements from OCR results
+                    for result in ocr_results:
+                        if hasattr(result, 'text') and result.text.strip():
+                            x0, y0, x1, y1 = result.bbox
+                            element = TextElement(
+                                text=result.text,
+                                x=x0,
+                                y=y0,
+                                width=x1 - x0,
+                                height=y1 - y0,
+                                font_size=12,  # Default size
+                                font_name="OCR-Extracted",
+                                is_bold=False,
+                                page_num=page_num,
+                                confidence=result.confidence
+                            )
+                            self.text_elements.append(element)
+                            
+        except Exception as e:
+            raise OCRError(f"OCR processing failed: {str(e)}")
+
+    def _process_span(self, span, page_num):
+        """Process a single text span."""
+        if not span or "bbox" not in span:
+            return False
+            
+        bbox = span["bbox"]
+        if not bbox or len(bbox) != 4:
+            return False
+            
+        x0, y0, x1, y1 = bbox
+        text = span.get("text", "").strip()
+        
+        if not text:
+            return False
+        
+        element = TextElement(
+            text=text,
+            x=x0,
+            y=y0,
+            width=x1 - x0,
+            height=y1 - y0,
+            font_size=span.get("size", 12),
+            font_name=span.get("font", ""),
+            is_bold="Bold" in span.get("font", ""),
+            page_num=page_num
+        )
+        
+        self.text_elements.append(element)
+        return True       
+   
     def detect_headings(self):
         """
         Improved heading detection with stricter criteria.

@@ -101,11 +101,10 @@ class BatchPDFProcessor:
         return output_dirs
 
     def process_single_pdf(self, pdf_path: Path) -> Dict:
-        """Process a single PDF file and return statistics."""
+        """Process a single PDF file with improved error handling and OCR support."""
         start_time = time.time()
         stats = {
             'filename': pdf_path.name,
-            'subdirectory': str(pdf_path.parent.relative_to(self.input_dir)),
             'size_mb': pdf_path.stat().st_size / (1024 * 1024),
             'status': 'failed',
             'errors': [],
@@ -117,61 +116,28 @@ class BatchPDFProcessor:
         
         processor = None
         try:
-            # Get output directories for this file
-            output_dirs = self.get_output_subdirs(pdf_path)
-            
-            # Create output paths
-            base_name = pdf_path.stem
-            corrections_path = output_dirs['corrections'] / f"{base_name}_corrections.json"
-            report_path = output_dirs['reports'] / f"{base_name}_report.json"
-            processed_path = output_dirs['processed'] / f"{base_name}_processed.pdf"
-            ocr_results_path = output_dirs['ocr'] / f"{base_name}_ocr_results.json"
-            
-            # Analyze document and get optimal configuration
-            characteristics = self.adaptive_config.analyze_document(str(pdf_path))
-            optimal_config = self.adaptive_config.get_optimal_config(characteristics)
-            
-            # Initialize document processor
+            # Initialize document processor with proper OCR settings
             processor = AccessibilityDocumentProcessor(
                 str(pdf_path),
                 ocr_processor=self.ocr_processor,
-                retry_handler=self.retry_handler
+                retry_handler=self.retry_handler,
+                enable_ocr=True  # Explicitly enable OCR
             )
             
-            # Process document
-            processor.extract_text_with_positions()
+            # Extract text and check if OCR was needed
+            try:
+                processor.extract_text_with_positions()
+            except ProcessingError as e:
+                if "appears to be scanned" in str(e):
+                    stats['warnings'].append("Document appears to be scanned - attempting OCR")
+                    # OCR will be automatically attempted by extract_text_with_positions
+                else:
+                    raise
+                    
+            # Continue with processing
             processor.detect_headings()
             processor.detect_tables()
             processor.analyze_reading_order()
-            
-            # Save processed PDF
-            try:
-                processor.doc.save(str(processed_path))
-                logging.info(f"Saved processed PDF to: {processed_path}")
-            except Exception as e:
-                stats['warnings'].append(f"Failed to save processed PDF: {str(e)}")
-                logging.warning(f"Could not save processed PDF for {pdf_path.name}: {str(e)}")
-            
-            # OCR processing
-            if self.ocr_processor:
-                try:
-                    ocr_results = processor.verify_text_with_ocr()
-                    stats['ocr_applied'] = True
-                    stats['ocr_stats'] = {
-                        'pages_processed': len(ocr_results),
-                        'confidence_scores': []
-                    }
-                    
-                    with open(ocr_results_path, 'w', encoding='utf-8') as f:
-                        json.dump(ocr_results, f, indent=2)
-                        
-                except (OCRError, OCRTimeoutError) as e:
-                    stats['warnings'].append(f"OCR processing issue: {str(e)}")
-                    logging.warning(f"OCR issue for {pdf_path.name}: {str(e)}")
-            
-            # Export reports
-            processor.export_accessibility_report(str(report_path))
-            processor.export_corrections(str(corrections_path))
             
             # Update statistics
             stats.update({
@@ -183,23 +149,25 @@ class BatchPDFProcessor:
                                       if elem.heading_level is not None),
                     'num_corrections': sum(len(corr) for corr in processor.corrections.values()),
                     'processing_time': time.time() - start_time
+                },
+                'ocr_applied': bool(processor.ocr_results),
+                'ocr_stats': {
+                    'pages_processed': len(processor.ocr_results) if processor.ocr_results else 0,
+                    'average_confidence': processor.ocr_processor.get_last_confidence() if processor.ocr_processor else 0
                 }
             })
             
         except Exception as e:
-            stats['status'] = 'failed'
-            stats['errors'].append(str(e))
-            logging.error(f"Error processing {pdf_path.name}: {str(e)}")
+            error_msg = f"Error processing {pdf_path.name}: {str(e)}"
+            stats['errors'].append(error_msg)
+            logging.error(error_msg, exc_info=True)
             
         finally:
             if processor and hasattr(processor, 'doc'):
-                try:
-                    processor.doc.close()
-                except Exception as e:
-                    logging.error(f"Error closing document {pdf_path.name}: {str(e)}")
-        
+                processor.doc.close()
+                
         return stats
-
+   
     def process_directory(self) -> pd.DataFrame:
         """Process all PDF files in the input directory and its subdirectories."""
         # Find all PDF files recursively
