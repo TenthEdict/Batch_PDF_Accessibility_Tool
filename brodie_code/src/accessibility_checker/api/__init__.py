@@ -1,6 +1,3 @@
-from .models import ProcessingResult, main
+from .models import ProcessingResult
 
-__all__ = [
-    'ProcessingResult',
-    'main',
-]
+__all__ = ['ProcessingResult']
