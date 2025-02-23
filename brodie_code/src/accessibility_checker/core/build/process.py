@@ -1,4 +1,4 @@
-# src/accessibility_checker/build/process.py
+# src/accessibility_checker/core/build/process.py
 
 import os
 import asyncio
@@ -6,9 +6,9 @@ import logging
 from pathlib import Path
 from typing import Dict, Optional
 from datetime import datetime
-from ..utils.code_analyzer import CodeAnalyzer
-from ..utils.config import ConfigurationManager
-from ..core.batch import BatchPDFProcessor
+from ...utils.code_analyzer import CodeAnalyzer
+from ...utils.config import ConfigurationManager
+from ..batch import BatchPDFProcessor
 
 class BuildProcess:
     """Manages the enhanced build process including code analysis."""
@@ -24,9 +24,9 @@ class BuildProcess:
         self.config_path = config_path or str(project_root / "config.yaml")
         self.logger = logging.getLogger(__name__)
         
-        # Setup directories
-        self.input_dir = project_root / "input"
-        self.output_dir = project_root / "output"
+        # Use absolute container paths
+        self.input_dir = Path("/app/input")
+        self.output_dir = Path("/app/output")
         self.analysis_dir = self.output_dir / "analysis"
         
         # Create necessary directories
@@ -60,7 +60,7 @@ class BuildProcess:
             analyzer = CodeAnalyzer(self.anthropic_api_key)
             results = await analyzer.analyze_codebase(str(self.project_root))
             
-            # Save analysis results
+            # Save results
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_file = self.analysis_dir / f"code_analysis_{timestamp}.json"
             
@@ -150,9 +150,8 @@ class BuildProcess:
 
 async def main():
     """Main function to run the build process."""
-    # Get project root (3 levels up from this file)
-    current_file = Path(__file__).resolve()
-    project_root = current_file.parent.parent.parent
+    # Use absolute container paths
+    project_root = Path("/app")
     
     # Initialize and run build process
     build_process = BuildProcess(project_root)

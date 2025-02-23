@@ -1,3 +1,5 @@
+# src/accessibility_checker/utils/code_analyzer.py
+
 import os
 from pathlib import Path
 import ast
@@ -6,6 +8,8 @@ from typing import Dict, List, Set, Optional, Tuple
 import pkg_resources
 import re
 from dataclasses import dataclass
+import json
+from datetime import datetime
 
 @dataclass
 class CodeAnalysisConfig:
@@ -13,12 +17,15 @@ class CodeAnalysisConfig:
     ignore_dirs: Set[str] = None
     file_extensions: Set[str] = None
     max_file_size_mb: float = 1.0
+    output_dir: Path = Path("/app/output")  # Add default output directory
 
     def __post_init__(self):
         if self.ignore_dirs is None:
             self.ignore_dirs = {'venv', '__pycache__', '.git', 'node_modules', '.pytest_cache'}
         if self.file_extensions is None:
             self.file_extensions = {'.py', '.yaml', '.yml', '.json', '.sh', '.txt'}
+        # Ensure output directory exists
+        os.makedirs(self.output_dir, exist_ok=True)
 
 class CodeIssue:
     def __init__(self, issue_type: str, location: str, description: str, severity: str):
@@ -38,6 +45,7 @@ class CodeAnalyzer:
     def analyze_codebase(self, root_dir: str) -> Dict:
         """Perform comprehensive codebase analysis."""
         root_path = Path(root_dir)
+        self.logger.info(f"Analyzing codebase at: {root_path}")
         
         # Collect and analyze files
         python_files = self._collect_python_files(root_path)
@@ -54,7 +62,27 @@ class CodeAnalyzer:
             'recommendations': self._generate_recommendations()
         }
         
+        # Save results using container paths
+        self._save_analysis_results(analysis_results)
+        
         return analysis_results
+
+    def _save_analysis_results(self, results: Dict) -> Path:
+        """Save analysis results to output directory."""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        analysis_dir = self.config.output_dir / "analysis"
+        os.makedirs(analysis_dir, exist_ok=True)
+        
+        output_file = analysis_dir / f"code_analysis_{timestamp}.json"
+        
+        try:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(results, f, indent=2)
+            self.logger.info(f"Analysis results saved to: {output_file}")
+            return output_file
+        except Exception as e:
+            self.logger.error(f"Failed to save analysis results: {str(e)}")
+            raise
 
     def _collect_python_files(self, root_path: Path) -> List[Path]:
         """Collect Python files for analysis."""
@@ -68,7 +96,10 @@ class CodeAnalyzer:
         config_patterns = ['*.yaml', '*.yml', '*.json', 'requirements.txt', 'setup.py']
         config_files = []
         for pattern in config_patterns:
-            config_files.extend(root_path.rglob(pattern))
+            config_files.extend([
+                path for path in root_path.rglob(pattern)
+                if not any(ignore_dir in path.parts for ignore_dir in self.config.ignore_dirs)
+            ])
         return config_files
 
     def _analyze_dependencies(self) -> Dict:
@@ -102,11 +133,55 @@ class CodeAnalyzer:
                         f'Missing OCR dependency: {dep}',
                         'high'
                     ))
-                    
         except Exception as e:
             self.logger.error(f"Error analyzing dependencies: {str(e)}")
             
+        # Check for complexity
+        if len(node.body) > 50:
+            self.issues.append(CodeIssue(
+                'complexity_issues',
+                f'Function {node.name}',
+                'Function is too long (>50 lines)',
+                'high'
+            ))
+            
+        self.generic_visit(node)
+                
         return results
+
+async def main():
+    """Main function to run code analysis."""
+    # Get the project root
+    current_file = Path(__file__).resolve()
+    project_root = current_file.parent.parent.parent
+    
+    # Initialize analyzer
+    analyzer = CodeAnalyzer()
+    
+    # Run analysis
+    results = analyzer.analyze_codebase(str(project_root))
+    
+    # Save results
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = project_root / "output" / "analysis" / f"code_analysis_{timestamp}.json"
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2)
+        
+    print("\nAnalysis completed. Found:")
+    print(f"- {len(results['issues'])} issues")
+    print("\nRecommendations:")
+    for rec in results['recommendations']:
+        print(f"- {rec}")
+    
+    print(f"\nDetailed results saved to: {output_file}")
+
+if __name__ == "__main__":
+    import json
+    import asyncio
+    from datetime import datetime
+    asyncio.run(main())
 
     def _analyze_code_quality(self, python_files: List[Path]) -> Dict:
         """Analyze Python code quality."""
@@ -126,11 +201,14 @@ class CodeAnalyzer:
                 analyzer = CodeQualityVisitor()
                 analyzer.visit(tree)
                 
+                # Convert paths for consistent reporting
+                rel_path = self._get_container_path(file_path)
+                
                 # Check for issues
                 if analyzer.issues:
                     for issue in analyzer.issues:
                         results[issue.type].append({
-                            'file': str(file_path),
+                            'file': rel_path,
                             'description': issue.description
                         })
                         self.issues.append(issue)
@@ -157,13 +235,13 @@ class CodeAnalyzer:
                 # Check for common OCR issues
                 if 'pytesseract.image_to_string' in content and 'config=' not in content:
                     results['ocr_config_issues'].append({
-                        'file': str(file_path),
+                        'file': self._get_container_path(file_path),
                         'issue': 'OCR called without configuration parameters'
                     })
                     
                 if 'try' not in content:
                     results['error_handling'].append({
-                        'file': str(file_path),
+                        'file': self._get_container_path(file_path),
                         'issue': 'Missing error handling in OCR processing'
                     })
                     
@@ -199,7 +277,7 @@ class CodeAnalyzer:
                     ]
                     if missing:
                         results['missing_configs'].append({
-                            'file': str(file_path),
+                            'file': self._get_container_path(file_path),
                             'missing': missing
                         })
                         
@@ -224,13 +302,13 @@ class CodeAnalyzer:
                 # Check for security issues
                 if 'os.system(' in content:
                     results['unsafe_operations'].append({
-                        'file': str(file_path),
+                        'file': self._get_container_path(file_path),
                         'issue': 'Use of os.system() is potentially unsafe'
                     })
                     
                 if 'eval(' in content:
                     results['unsafe_operations'].append({
-                        'file': str(file_path),
+                        'file': self._get_container_path(file_path),
                         'issue': 'Use of eval() is unsafe'
                     })
                     
@@ -255,13 +333,13 @@ class CodeAnalyzer:
                     # Check for API best practices
                     if 'max_tokens' not in content:
                         results['anthropic_api_issues'].append({
-                            'file': str(file_path),
+                            'file': self._get_container_path(file_path),
                             'issue': 'Anthropic API called without max_tokens parameter'
                         })
                         
                     if 'try' not in content:
                         results['error_handling'].append({
-                            'file': str(file_path),
+                            'file': self._get_container_path(file_path),
                             'issue': 'Missing error handling in API calls'
                         })
                         
@@ -273,15 +351,35 @@ class CodeAnalyzer:
     def _parse_requirements(self) -> List[str]:
         """Parse requirements.txt file."""
         requirements = []
+        # Use absolute container path
+        req_path = Path("/app/requirements.txt")
+        
         try:
-            with open('requirements.txt', 'r') as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#'):
-                        requirements.append(line)
+            if req_path.exists():
+                with open(req_path, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#'):
+                            requirements.append(line)
+            else:
+                self.logger.warning("requirements.txt not found at: %s", req_path)
         except Exception as e:
             self.logger.error(f"Error parsing requirements.txt: {str(e)}")
         return requirements
+
+    def _get_container_path(self, path: Path) -> str:
+        """Convert path to container-relative path for consistent reporting."""
+        try:
+            if path.is_absolute():
+                # If path is already under /app, leave it as is
+                if str(path).startswith('/app'):
+                    return str(path)
+                # Otherwise, make it relative to /app
+                return f"/app/{path.name}"
+            return f"/app/{path}"
+        except Exception as e:
+            self.logger.warning(f"Error converting path {path}: {str(e)}")
+            return str(path)
 
     def _format_issues(self) -> List[Dict]:
         """Format collected issues."""
@@ -366,6 +464,33 @@ class CodeQualityVisitor(ast.NodeVisitor):
             ))
             
         self.generic_visit(node)
+
+    def verify_ocr_functionality(self) -> Dict:
+        """Verify OCR functionality with a test image."""
+        results = {
+            'status': 'untested',
+            'issues': []
+        }
+        
+        try:
+            # Create a simple test image
+            test_image = Image.new('RGB', (100, 30), color='white')
+            d = ImageDraw.Draw(test_image)
+            d.text((10, 10), "Test OCR", fill='black')
+            
+            # Try OCR
+            try:
+                text = pytesseract.image_to_string(test_image)
+                results['status'] = 'working' if 'test' in text.lower() else 'unreliable'
+            except Exception as e:
+                results['status'] = 'failed'
+                results['issues'].append(f"OCR test failed: {str(e)}")
+                
+        except Exception as e:
+            results['status'] = 'setup_failed'
+            results['issues'].append(f"Could not run OCR test: {str(e)}")
+            
+        return results
 
 async def main():
     """Main function to run code analysis."""

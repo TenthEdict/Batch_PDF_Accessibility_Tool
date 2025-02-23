@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libtesseract-dev \
     tesseract-ocr \
+    tesseract-ocr-eng \ 
+    tesseract-ocr-osd \
     libgl1 \
     libglib2.0-0 \
     libsm6 \
@@ -25,6 +27,10 @@ RUN apt-get update && apt-get install -y \
     libpoppler-cpp-dev \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables for Tesseract
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+ENV PYTHONPATH=/app/src
 
 # Set pip configurations
 ENV PIP_DEFAULT_TIMEOUT=300
@@ -40,13 +46,18 @@ RUN pip install --no-cache-dir pandas pytesseract Pillow pdf2image anthropic>=0.
 
 # Install OpenCV based on architecture
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-        pip install --no-cache-dir opencv-python-headless==4.8.0.76; \
+    pip install --no-cache-dir opencv-python-headless==4.8.0.76; \
     else \
-        pip install --no-cache-dir opencv-python==4.8.0.76; \
+    pip install --no-cache-dir opencv-python==4.8.0.76; \
     fi
 
 # Install remaining Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Verify Tesseract installation
+RUN tesseract --version && \
+    tesseract --list-langs && \
+    python3 -c "import pytesseract; print('Pytesseract version:', pytesseract.get_tesseract_version())"
 
 # Copy project files
 COPY setup.py config.yaml pdfUA-ID.xmp key.txt ./

@@ -13,7 +13,8 @@ async def process_pdf_file(file_path: Path, config: Dict[str, Any] = None) -> Pr
     """Process a single PDF file."""
     try:
         # Initialize configuration and components
-        config_manager = ConfigurationManager("config.yaml")
+        config_path = Path("/app/config.yaml")  # Use absolute container path
+        config_manager = ConfigurationManager(str(config_path))
         processing_config = config_manager.get_processing_config()
         
         retry_handler = RetryHandler(RetryConfig(
@@ -44,12 +45,12 @@ async def process_pdf_file(file_path: Path, config: Dict[str, Any] = None) -> Pr
         processor.detect_tables()
         processor.analyze_reading_order()
 
-        # Generate output paths
-        output_dir = Path("output")
+        # Generate output paths using container paths
+        output_dir = Path("/app/output")
         processed_path = output_dir / "processed_pdfs" / f"{file_path.stem}_processed.pdf"
         report_path = output_dir / "reports" / f"{file_path.stem}_report.json"
 
-        # Create output directories if they don't exist
+        # Ensure output directories exist
         processed_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.parent.mkdir(parents=True, exist_ok=True)
 
