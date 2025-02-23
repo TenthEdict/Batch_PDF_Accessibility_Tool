@@ -46,3 +46,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# things to explictly keep
+!src/accessibility_checker/build/
+!src/accessibility_checker/build/process.py
