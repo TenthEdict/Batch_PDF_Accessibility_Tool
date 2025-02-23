@@ -19,7 +19,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-!src/accessibility_checker/build
+!brodie_code/src/accessibility_checker/build/
 eggs/
 parts/
 bin/

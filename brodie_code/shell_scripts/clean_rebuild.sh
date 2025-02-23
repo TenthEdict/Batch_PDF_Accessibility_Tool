@@ -22,7 +22,7 @@ chmod +x container.sh
 
 # Fix any line ending issues
 echo "Fixing line endings..."
-tr -d '\r' < docker-entrypoint.sh > docker-entrypoint.tmp && mv docker-entrypoint.tmp docker-entrypoint.sh
+tr -d '\r' < ../docker-entrypoint.sh > ../docker-entrypoint.tmp && mv ../docker-entrypoint.tmp ../docker-entrypoint.sh
 
 # Clean output directory
 echo "Cleaning output directory..."
