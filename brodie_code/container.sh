@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Get absolute paths
+# Get absolute paths using current directory
 INPUT_DIR=$(realpath "$(pwd)/input")
 OUTPUT_DIR=$(realpath "$(pwd)/output")
 
@@ -28,23 +28,17 @@ echo "Using directories:"
 echo "Input: $INPUT_DIR"
 echo "Output: $OUTPUT_DIR"
 
+# Clean up any stray containers
+docker ps -a | grep 'pdf-accessibility' | awk '{print $1}' | xargs -r docker rm -f
+
+# Updated volume mounts for all commands
+VOLUME_MOUNTS="-v $INPUT_DIR:/app/input -v $OUTPUT_DIR:/app/output"
+
 case "$CMD" in
-    "interactive")
-        echo "Starting interactive shell..."
-        # Simpler shell launch with explicit bash
-        docker run --rm -it \
-            -v "$INPUT_DIR:/app/input" \
-            -v "$OUTPUT_DIR:/app/output" \
-            -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" \
-            --entrypoint=/bin/bash \
-            pdf-accessibility
-        ;;
-        
     "analyze")
         echo "Running code analysis..."
         docker run --rm \
-            -v "$INPUT_DIR:/app/input" \
-            -v "$OUTPUT_DIR:/app/output" \
+            $VOLUME_MOUNTS \
             -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" \
             pdf-accessibility python3 -m accessibility_checker.utils.code_analyzer
         ;;

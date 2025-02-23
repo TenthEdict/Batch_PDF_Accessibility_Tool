@@ -1,3 +1,0 @@
-[console_scripts]
-pdf-accessibility = accessibility_checker.main:main
-pdf-accessibility-web = accessibility_checker.web.api.main:main

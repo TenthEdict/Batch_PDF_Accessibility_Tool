@@ -17,7 +17,7 @@ class CodeAnalysisConfig:
     ignore_dirs: Set[str] = None
     file_extensions: Set[str] = None
     max_file_size_mb: float = 1.0
-    output_dir: Path = Path("/app/output")  # Add default output directory
+    output_dir: Path = Path("/app/output")
 
     def __post_init__(self):
         if self.ignore_dirs is None:
@@ -25,7 +25,7 @@ class CodeAnalysisConfig:
         if self.file_extensions is None:
             self.file_extensions = {'.py', '.yaml', '.yml', '.json', '.sh', '.txt'}
         # Ensure output directory exists
-        os.makedirs(self.output_dir, exist_ok=True)
+        os.makedirs(self.output_dir / "analysis", exist_ok=True)
 
 class CodeIssue:
     def __init__(self, issue_type: str, location: str, description: str, severity: str):
@@ -135,54 +135,27 @@ class CodeAnalyzer:
                     ))
         except Exception as e:
             self.logger.error(f"Error analyzing dependencies: {str(e)}")
-            
-        # Check for complexity
-        if len(node.body) > 50:
-            self.issues.append(CodeIssue(
-                'complexity_issues',
-                f'Function {node.name}',
-                'Function is too long (>50 lines)',
-                'high'
-            ))
-            
-        self.generic_visit(node)
                 
         return results
 
-async def main():
-    """Main function to run code analysis."""
-    # Get the project root
-    current_file = Path(__file__).resolve()
-    project_root = current_file.parent.parent.parent
-    
-    # Initialize analyzer
-    analyzer = CodeAnalyzer()
-    
-    # Run analysis
-    results = analyzer.analyze_codebase(str(project_root))
-    
-    # Save results
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_file = project_root / "output" / "analysis" / f"code_analysis_{timestamp}.json"
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(results, f, indent=2)
+    def _parse_requirements(self) -> List[str]:
+        """Parse requirements.txt file."""
+        requirements = []
+        req_path = Path("/app/requirements.txt")
         
-    print("\nAnalysis completed. Found:")
-    print(f"- {len(results['issues'])} issues")
-    print("\nRecommendations:")
-    for rec in results['recommendations']:
-        print(f"- {rec}")
+        try:
+            if req_path.exists():
+                with open(req_path, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#'):
+                            requirements.append(line)
+            else:
+                self.logger.warning("requirements.txt not found at: %s", req_path)
+        except Exception as e:
+            self.logger.error(f"Error parsing requirements.txt: {str(e)}")
+        return requirements
     
-    print(f"\nDetailed results saved to: {output_file}")
-
-if __name__ == "__main__":
-    import json
-    import asyncio
-    from datetime import datetime
-    asyncio.run(main())
-
     def _analyze_code_quality(self, python_files: List[Path]) -> Dict:
         """Analyze Python code quality."""
         results = {
@@ -348,25 +321,6 @@ if __name__ == "__main__":
                 
         return results
 
-    def _parse_requirements(self) -> List[str]:
-        """Parse requirements.txt file."""
-        requirements = []
-        # Use absolute container path
-        req_path = Path("/app/requirements.txt")
-        
-        try:
-            if req_path.exists():
-                with open(req_path, 'r') as f:
-                    for line in f:
-                        line = line.strip()
-                        if line and not line.startswith('#'):
-                            requirements.append(line)
-            else:
-                self.logger.warning("requirements.txt not found at: %s", req_path)
-        except Exception as e:
-            self.logger.error(f"Error parsing requirements.txt: {str(e)}")
-        return requirements
-
     def _get_container_path(self, path: Path) -> str:
         """Convert path to container-relative path for consistent reporting."""
         try:
@@ -494,9 +448,8 @@ class CodeQualityVisitor(ast.NodeVisitor):
 
 async def main():
     """Main function to run code analysis."""
-    # Get the project root
-    current_file = Path(__file__).resolve()
-    project_root = current_file.parent.parent.parent
+    # Use container paths
+    project_root = Path("/app")
     
     # Initialize analyzer
     analyzer = CodeAnalyzer()

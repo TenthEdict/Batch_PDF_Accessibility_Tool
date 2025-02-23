@@ -59,12 +59,14 @@ RUN tesseract --version && \
     tesseract --list-langs && \
     python3 -c "import pytesseract; print('Pytesseract version:', pytesseract.get_tesseract_version())"
 
-# Copy project files
+# Update the COPY commands in the Dockerfile
 COPY setup.py config.yaml pdfUA-ID.xmp key.txt ./
+COPY requirements.txt ./ 
 COPY src/ ./src/
 
-# Create directories and install project
-RUN mkdir -p input \
+# Update directory creation
+RUN mkdir -p \
+    input \
     output/corrections \
     output/reports \
     output/processed_pdfs \
@@ -73,11 +75,16 @@ RUN mkdir -p input \
     output/tagged \
     output/final \
     output/analysis && \
+    chown -R root:root input output && \
+    chmod -R 775 input output && \
     pip install -e .
 
-# Create and configure entrypoint script
+# Copy and configure entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Clean up any stray pip files
+RUN rm -f /app/=*
 
 # Set volume for input/output
 VOLUME ["/app/input", "/app/output"]

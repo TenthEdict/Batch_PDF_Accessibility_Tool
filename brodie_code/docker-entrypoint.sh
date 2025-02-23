@@ -1,40 +1,52 @@
 #!/bin/bash
 set -e
 
-# Setup logging
-LOG_DIR="/app/output/logs"
-mkdir -p "$LOG_DIR"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-LOG_FILE="$LOG_DIR/build_${TIMESTAMP}.log"
+ensure_directories() {
+    for dir in "input" \
+              "output/corrections" \
+              "output/reports" \
+              "output/processed_pdfs" \
+              "output/logs" \
+              "output/ocr_results" \
+              "output/tagged" \
+              "output/final" \
+              "output/analysis"; do
+        mkdir -p "/app/$dir"
+        chmod 775 "/app/$dir"
+    done
+}
 
-# Log both to file and console
-exec 1> >(tee -a "$LOG_FILE")
-exec 2> >(tee -a "$LOG_FILE" >&2)
+# Clean up pip files
+cleanup_pip_files() {
+    rm -f /app/=*
+}
+
+# Setup logging
+setup_logging() {
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    LOG_FILE="/app/output/logs/build_${TIMESTAMP}.log"
+    
+    # Ensure parent directory exists
+    mkdir -p "$(dirname "$LOG_FILE")"
+    
+    # Setup logging to both file and console
+    exec 1> >(tee -a "$LOG_FILE")
+    exec 2> >(tee -a "$LOG_FILE" >&2)
+}
 
 echo "Starting process at $(date)"
-echo "Python version: $(python3 --version)"
-echo "Working directory: $(pwd)"
-echo "Contents of /app:"
-ls -la /app
-echo "Contents of /app/input:"
-ls -la /app/input
-echo "Contents of /app/output:"
-ls -la /app/output
+
+# Run initialization
+ensure_directories
+cleanup_pip_files
+setup_logging
 
 # Check for Anthropic API key
 if [ -z "$ANTHROPIC_API_KEY" ]; then
     echo "Warning: ANTHROPIC_API_KEY not set. Code analysis features will be disabled."
-else
-    echo "ANTHROPIC_API_KEY is set"
 fi
 
-# Check for key.txt
-if [ -f "/app/key.txt" ]; then
-    echo "key.txt exists"
-else
-    echo "Warning: key.txt not found"
-fi
-
+# Execute command
 case "$1" in
     "analyze")
         echo "Running code analysis..."
