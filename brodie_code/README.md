@@ -1,110 +1,139 @@
-# PDF Processor for Screen Readable Documents
+# PDF Accessibility Enhancement Tool
 
-Tool for processing PDFs for accessibility workflows and generating detailed reports.
+Tool for automating PDF accessibility improvements through OCR, structural analysis, and intelligent content enhancement.
+
+## Features
+
+- Advanced OCR with adaptive configuration
+- Intelligent document structure analysis
+- Automated accessibility improvements
+- Detailed processing reports
+- Container-based deployment support
 
 ## Requirements
 
 - Python 3.11+
 - Tesseract OCR
-- MuPDF
+- Docker (for containerized deployment)
 
 ### System Dependencies
 
-#### macOS
+#### Local Development Setup
+
 ```bash
-brew install tesseract
-brew install mupdf
-```
+# macOS
+brew install tesseract mupdf
 
-#### Ubuntu/Debian
-```bash
-sudo apt-get install tesseract-ocr
-sudo apt-get install mupdf
-```
-
-#### Windows
-1. Install Tesseract OCR:
-   - Download installer from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
-   - Add to PATH: `C:\Program Files\Tesseract-OCR`
-
-2. Install MuPDF:
-   - Download from [MuPDF website](https://mupdf.com/releases/index.html)
-   - Add installation directory to PATH
-
-## Installation
-
-1. Clone repository:
-```bash
-git clone [repository-url]
-cd [repository-name]
-```
-
-2. Create virtual environment:
-```bash
-# macOS/Linux
-python -m venv venv
-source venv/bin/activate
-
-# Windows
-python -m venv venv
-venv\Scripts\activate
-```
-
-3. Install Python dependencies:
-```bash
-pip install -r requirements.txt
+# Ubuntu/Debian
+sudo apt-get install tesseract-ocr libtesseract-dev mupdf
 ```
 
 ## Project Structure
 ```
 .
-├── input/          # Place PDFs here for processing
-├── output/         # Processed files and reports
-├── src/           
+├── input/                    # Input PDFs for processing
+├── output/                   # Processed outputs
+│   ├── corrections/         # Correction reports
+│   ├── reports/            # Processing reports
+│   ├── processed_pdfs/     # Enhanced PDFs
+│   ├── logs/              # Processing logs
+│   ├── ocr_results/       # OCR output
+│   ├── tagged/           # Tagged PDFs
+│   ├── final/           # Final processed PDFs
+│   └── analysis/       # Analysis reports
+├── shell_scripts/          # Automation scripts
+│   ├── analyze.sh         # Analysis automation
+│   ├── clean_*.sh        # Cleanup utilities
+│   ├── container.sh      # Container management
+│   └── docker-entrypoint.sh  # Container entry point
+├── src/                    # Source code
 │   └── accessibility_checker/
-├── config.yaml     # Configuration settings
-└── requirements.txt
+├── config.yaml             # Configuration settings
+├── Dockerfile             # Container definition
+└── requirements.txt       # Python dependencies
 ```
 
 ## Usage
 
-1. Place PDFs in the `input` directory
-2. Run the processor:
-```bash
-# macOS/Linux
-python src/main.py
+### Docker Container (Recommended)
 
-# Windows
-python src\main.py
+1. Build and run the container:
+```bash
+./shell_scripts/container.sh process
 ```
 
-## Output
+2. For post-processing:
+```bash
+./shell_scripts/container.sh post-process
+```
 
-The tool generates:
-- Processed PDFs with enhanced accessibility
-- Accessibility violation reports
-- OCR results
-- Processing statistics
+3. For interactive shell:
+```bash
+./shell_scripts/container.sh /bin/bash
+```
 
-Results are organized in the `output` directory structure.
+### Local Development
+
+1. Create virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # or `venv\Scripts\activate` on Windows
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+pip install -e .
+```
+
+3. Run processor:
+```bash
+python src/main.py
+```
+
+## Configuration
+
+The `config.yaml` file controls processing behavior:
+
+- OCR settings
+- Adaptive processing parameters
+- Worker configuration
+- Timeout settings
+
+## Output Structure
+
+- `/output/corrections/`: Detailed correction reports
+- `/output/reports/`: Processing summaries
+- `/output/processed_pdfs/`: Enhanced PDFs
+- `/output/logs/`: Processing logs
+- `/output/ocr_results/`: Raw OCR output
+- `/output/tagged/`: Structure-tagged PDFs
+- `/output/final/`: Final processed documents
+- `/output/analysis/`: Analysis reports
+
+## Development
+
+The project uses a modular architecture with components for:
+- OCR processing
+- Document enhancement
+- Accessibility checking
+- Report generation
 
 ## Troubleshooting
 
-### Windows-Specific Issues
-- If Tesseract isn't found: Verify PATH includes `C:\Program Files\Tesseract-OCR`
-- If MuPDF isn't found: Add MuPDF installation directory to PATH
-- Command prompt might require admin privileges for first run
+### Common Issues
 
+1. OCR Quality:
+   - Verify Tesseract installation
+   - Check language packs
+   - Adjust confidence thresholds in config.yaml
 
-## Using container.sh
-```bash
-# Original behavior (process PDFs)
-./container.sh process
+2. Container Issues:
+   - Ensure Docker is running
+   - Check volume mounts
+   - Verify file permissions
 
-
-# Run post-processing
-./container.sh post-process
-
-# Get a shell (original behavior)
-./container.sh /bin/bash
-```
+3. Processing Errors:
+   - Check input PDF format
+   - Verify sufficient disk space
+   - Review logs in output/logs/
