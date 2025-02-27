@@ -40,19 +40,31 @@ ENV PIP_RETRIES=10
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir 'numpy<2.0.0'
 
-# Install base Python packages
+# Install base Python packages with a longer timeout and one-by-one to avoid build issues
 COPY requirements.txt ./
-RUN pip install --no-cache-dir pandas pytesseract Pillow pdf2image anthropic>=0.18.0
+RUN pip install --no-cache-dir --timeout=600 pandas && \
+    pip install --no-cache-dir --timeout=600 pytesseract && \
+    pip install --no-cache-dir --timeout=600 Pillow && \
+    pip install --no-cache-dir --timeout=600 pdf2image && \
+    pip install --no-cache-dir --timeout=600 'anthropic>=0.18.0'
 
 # Install OpenCV based on architecture
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-    pip install --no-cache-dir opencv-python-headless==4.8.0.76; \
+    pip install --no-cache-dir --timeout=600 opencv-python-headless==4.8.0.76; \
     else \
-    pip install --no-cache-dir opencv-python==4.8.0.76; \
+    pip install --no-cache-dir --timeout=600 opencv-python==4.8.0.76; \
     fi
 
-# Install remaining Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install remaining Python dependencies one-by-one for better reliability
+RUN pip install --no-cache-dir --timeout=600 'PyMuPDF>=1.22.5' && \
+    pip install --no-cache-dir --timeout=600 'pandas>=1.5.0' && \
+    pip install --no-cache-dir --timeout=600 'tqdm>=4.62.0' && \
+    pip install --no-cache-dir --timeout=600 'pyyaml>=6.0.0' && \
+    pip install --no-cache-dir --timeout=600 'openpyxl>=3.0.0' && \
+    pip install --no-cache-dir --timeout=600 'pikepdf>=8.3.0' && \
+    pip install --no-cache-dir --timeout=600 'python-xmp-toolkit>=2.0.2' && \
+    pip install --no-cache-dir --timeout=600 'scipy>=1.7.0' && \
+    pip install --no-cache-dir --timeout=600 'scikit-image>=0.18.0'
 
 # Verify Tesseract installation
 RUN tesseract --version && \
@@ -63,6 +75,10 @@ RUN tesseract --version && \
 COPY setup.py config.yaml pdfUA-ID.xmp key.txt ./
 COPY requirements.txt ./ 
 COPY src/ ./src/
+
+# Make sure the Tesseract data directory exists with correct permissions
+RUN mkdir -p "$TESSDATA_PREFIX/configs" "$TESSDATA_PREFIX/historical_words" && \
+    chmod -R 755 "$TESSDATA_PREFIX"
 
 # Update directory creation
 RUN mkdir -p \
@@ -77,7 +93,8 @@ RUN mkdir -p \
     output/analysis && \
     chown -R root:root input output && \
     chmod -R 775 input output && \
-    pip install -e .
+    pip install -e . && \
+    python -m src.accessibility_checker.ocr.setup_historical_resources
 
 # Copy and configure entrypoint script
 COPY shell_scripts/docker-entrypoint.sh /usr/local/bin/

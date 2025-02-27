@@ -32,7 +32,8 @@ mkdir -p output
 
 # Rebuild
 echo "Building new container..."
-docker build --no-cache -t pdf-accessibility .
+# Build with more detailed output
+docker build --no-cache --progress=plain -t pdf-accessibility .
 
 echo "=== Rebuild Complete ==="
 echo "You can now run: ./container.sh analyze"
