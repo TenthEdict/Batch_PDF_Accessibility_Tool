@@ -141,7 +141,9 @@ Document tagging provides a structured representation of content for screen read
 
 1. **Tag Marking**: Sets the `/Marked` flag in the PDF to indicate it contains tags
 2. **Structure Tree**: Creates a `/StructTreeRoot` to hold the document structure
-3. **Document Node**: Establishes a root `/Document` structural element as the base for content
+3. **Minimal Structure**: Establishes the minimal required elements for PDF/UA compliance
+
+> **Note**: The current implementation provides a minimal tag structure that marks the document as tagged but does not create a complete semantic structure. For full accessibility, manual tagging using Adobe Acrobat Pro or similar tools is still required.
 
 ### Semantic Structure
 

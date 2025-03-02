@@ -30,8 +30,11 @@ logger = logging.getLogger(__name__)
 try:
     from validate_accessibility import AccessibilityChecker
 except ImportError:
-    logger.error("Error importing AccessibilityChecker. Make sure validate_accessibility.py is in the same directory.")
-    sys.exit(1)
+    try:
+        from accessibility_tools.validation.validate_accessibility import AccessibilityChecker
+    except ImportError:
+        logger.error("Error importing AccessibilityChecker. Make sure validate_accessibility.py is in the same directory.")
+        sys.exit(1)
 
 def process_pdf(pdf_path: str, detailed: bool = False) -> Dict[str, Any]:
     """

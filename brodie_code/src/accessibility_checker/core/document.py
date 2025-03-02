@@ -297,7 +297,8 @@ class AccessibilityDocumentProcessor:
         if not bbox or len(bbox) != 4:
             return False
         x0, y0, x1, y1 = bbox
-        text = span.get('text', '').strip()
+        # Don't strip text to preserve original spacing
+        text = span.get('text', '')
         if not text:
             return False
         element = TextElement(text=text, x=x0, y=y0, width=x1 - x0, height=

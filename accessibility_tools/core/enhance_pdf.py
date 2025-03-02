@@ -20,11 +20,9 @@ try:
     from PyPDF2 import PdfReader, PdfWriter
     from PyPDF2.generic import NameObject, BooleanObject, TextStringObject, DictionaryObject, ArrayObject
 except ImportError:
-    print("Error: PyPDF2 is not installed. Installing now...")
-    import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "PyPDF2"])
-    from PyPDF2 import PdfReader, PdfWriter
-    from PyPDF2.generic import NameObject, BooleanObject, TextStringObject, DictionaryObject, ArrayObject
+    print("Error: PyPDF2 is not installed. Please install it in your virtual environment:")
+    print("pip install PyPDF2")
+    sys.exit(1)
 
 def enhance_pdf_accessibility(input_path, output_path, title=None, author=None):
     """
