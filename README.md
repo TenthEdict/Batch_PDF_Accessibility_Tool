@@ -2,6 +2,27 @@
 
 A comprehensive toolset for automating PDF accessibility improvements through OCR, structural analysis, and intelligent content enhancement, designed for academic documents and publications.
 
+## 🚀 New: PDF Accessibility Toolkit
+
+We've added a new unified toolkit that provides a simpler interface to all accessibility tools:
+
+```bash
+# Install the toolkit
+pip install -e .
+
+# Use the toolkit
+./accessibility_tools.sh enhance input.pdf output.pdf
+./accessibility_tools.sh validate document.pdf --detailed
+./accessibility_tools.sh batch-enhance input_dir output_dir
+```
+
+See [ACCESSIBILITY_GUIDE.md](ACCESSIBILITY_GUIDE.md) for complete documentation on the new toolkit, including:
+- Document tagging with proper reading order
+- Semantic structure detection (headings, paragraphs, tables)
+- Image accessibility with alt text structures
+- PDF/UA compliance validation
+- Comprehensive accessibility reports
+
 ## Overview
 
 This project provides a robust framework for enhancing PDF documents to meet accessibility standards. It processes scanned and digital PDFs to extract text via OCR, analyze document structure, detect and correct accessibility issues, and produce enhanced, tagged PDFs suitable for screen readers and assistive technologies.
