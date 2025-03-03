@@ -1,0 +1,69 @@
+# syntax=docker/dockerfile:1
+# Use a pre-built image with PDF tools
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set basic environment variables
+ENV PYTHONPATH=/app
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install requirements for PDF processing with advanced OCR capability
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    poppler-utils \
+    libopenjp2-7 \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libpng-dev \
+    libjpeg-dev \
+    libtiff-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies for advanced OCR
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+ 
+# Set environment variables for Tesseract
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+
+# Copy application files
+COPY . /app/
+
+# Setup directories
+RUN mkdir -p \
+    input \
+    output/accessible \
+    output/accessible/historical \
+    output/accessible/adaptive \
+    output/accessible/manuscript \
+    output/reports \
+    output/logs \
+    output/temp \
+    && chmod -R 775 input output
+
+# Create Tesseract configuration directories
+RUN mkdir -p "${TESSDATA_PREFIX}/configs" "${TESSDATA_PREFIX}/tessdata"
+
+# Copy Tesseract configurations for historical documents
+RUN if [ -d "/app/core/ocr/configs" ]; then \
+    cp -r /app/core/ocr/configs/* "${TESSDATA_PREFIX}/configs/" || true; \
+fi
+
+# Copy historical word lists if they exist
+RUN if [ -d "/app/core/ocr/historical_words" ]; then \
+    mkdir -p "${TESSDATA_PREFIX}/historical_words" && \
+    cp -r /app/core/ocr/historical_words/* "${TESSDATA_PREFIX}/historical_words/" || true; \
+fi
+
+# Set volume for input/output
+VOLUME ["/app/input", "/app/output"]
+
+# Default command
+CMD ["python3", "enhance_pdf_advanced.py", "--help"]

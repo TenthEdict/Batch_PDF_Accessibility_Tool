@@ -95,7 +95,7 @@ class OCRProcessor:
             
     def _preprocess_historical_document(self, image: np.ndarray) -> np.ndarray:
         """
-        Specialized preprocessing for historical documents with faded text,
+        Enhanced preprocessing for historical documents with faded text,
         stains, yellowed paper, and other age-related degradation.
         
         Args:
@@ -104,50 +104,99 @@ class OCRProcessor:
         Returns:
             Preprocessed image optimized for historical document OCR
         """
-        self.logger.info("Applying historical document preprocessing pipeline")
+        self.logger.info("Applying enhanced historical document preprocessing pipeline")
         
-        # 1. Enhance contrast to bring out faded text
-        # Create a CLAHE object with higher clip limit for historical documents
-        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-        enhanced = clahe.apply(image)
+        # 1. Apply background normalization to address yellowed paper
+        bg_norm = self._normalize_background(image)
         
-        # 2. Invert colors before thresholding for better text detection
-        # This fixes issues with light text on dark backgrounds
-        inverted = cv2.bitwise_not(enhanced)
+        # 2. Enhance contrast to bring out faded text with higher clip limit
+        clahe = cv2.createCLAHE(clipLimit=4.0, tileGridSize=(16, 16))
+        enhanced = clahe.apply(bg_norm)
         
-        # 3. Apply Otsu thresholding 
-        _, binary = cv2.threshold(
-            inverted, 0, 255, 
-            cv2.THRESH_BINARY + cv2.THRESH_OTSU
+        # 3. Apply bilateral filtering to preserve edges while removing noise
+        # This preserves text edges better than standard denoising
+        bilateral = cv2.bilateralFilter(enhanced, 9, 75, 75)
+        
+        # 4. Apply adaptive thresholding with optimized parameters for historical documents
+        # Smaller block size (7) for more precise local thresholding
+        # Negative C value (-2) increases sensitivity to faint text
+        binary = cv2.adaptiveThreshold(
+            bilateral, 255, 
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+            cv2.THRESH_BINARY, 7, -2
         )
         
-        # 4. Apply specialized historical document denoising
-        # Higher strength denoising to handle age-related noise
-        denoised = cv2.fastNlMeansDenoising(binary, h=10)
+        # 5. Apply morphological operations to enhance character connectivity
+        # Define kernel for morphological operations
+        kernel = np.ones((1, 1), np.uint8)
+        morph = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
         
-        # 5. Additional sharpening to improve character definition
-        # Create a sharpening kernel optimized for faded historical text
+        # 6. Apply specialized historical document denoising
+        denoised = cv2.fastNlMeansDenoising(morph, h=10)
+        
+        # 7. Apply sharpening to enhance character definition
         kernel = np.array([[-1, -1, -1], 
-                           [-1, 9, -1], 
-                           [-1, -1, -1]])
+                          [-1, 9, -1], 
+                          [-1, -1, -1]])
         sharpened = cv2.filter2D(denoised, -1, kernel)
         
-        # 6. Correct skew - historical documents are often warped or skewed
+        # 8. Correct skew - historical documents are often warped or skewed
         angle = self._get_skew_angle(sharpened)
         if abs(angle) > 0.5:
-            processed = self._rotate_image(sharpened, angle)
+            deskewed = self._rotate_image(sharpened, angle)
         else:
-            processed = sharpened
+            deskewed = sharpened
             
-        # 7. Apply adaptive binarization optimized for historical fonts
-        # Uses a smaller block size for more localized thresholding
-        final = cv2.adaptiveThreshold(
-            processed, 255, 
-            cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-            cv2.THRESH_BINARY, 11, 2
-        )
+        # 9. Final enhancement - apply targeted contrast enhancement
+        # This enhances faint characters without amplifying noise
+        final = self._enhance_faint_text(deskewed)
         
         return final
+        
+    def _normalize_background(self, image: np.ndarray) -> np.ndarray:
+        """
+        Normalize document background to address yellowing and staining.
+        
+        Args:
+            image: Grayscale input image
+            
+        Returns:
+            Image with normalized background
+        """
+        # Create a heavily blurred version to estimate background
+        blur_kernel_size = max(21, min(image.shape) // 30)
+        if blur_kernel_size % 2 == 0:
+            blur_kernel_size += 1  # Ensure odd kernel size
+            
+        background = cv2.GaussianBlur(image, (blur_kernel_size, blur_kernel_size), 0)
+        
+        # Subtract background to normalize
+        normalized = cv2.subtract(255, cv2.subtract(255, image, background))
+        
+        return normalized
+        
+    def _enhance_faint_text(self, image: np.ndarray) -> np.ndarray:
+        """
+        Apply targeted enhancement to bring out faint text.
+        
+        Args:
+            image: Binary image with text
+            
+        Returns:
+            Enhanced image with improved visibility of faint text
+        """
+        # Calculate local variance to identify areas with faint text
+        # Higher variance = clearer text, lower variance = potential faint text
+        mean, stddev = cv2.meanStdDev(image)
+        
+        # Apply targeted enhancement based on local statistics
+        enhanced = cv2.convertScaleAbs(image, alpha=1.2, beta=10)
+        
+        # Use morphological operations to strengthen faint characters
+        kernel = np.ones((1, 1), np.uint8)
+        enhanced = cv2.morphologyEx(enhanced, cv2.MORPH_CLOSE, kernel)
+        
+        return enhanced
 
     def process_image(self, image: np.ndarray, timeout: int=30) ->str:
         """

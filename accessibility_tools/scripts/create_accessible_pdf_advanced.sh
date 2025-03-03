@@ -7,6 +7,11 @@
 # Usage: ./create_accessible_pdf_advanced.sh input_pdf [output_pdf] [--title "Title"] [--author "Author"]
 # or
 # Usage: ./create_accessible_pdf_advanced.sh --batch input_dir output_dir
+# 
+# Enhanced with support for historical documents:
+# Usage: ./create_accessible_pdf_advanced.sh input_pdf [output_pdf] --mode historical
+# or
+# Usage: ./create_accessible_pdf_advanced.sh --batch input_dir output_dir --mode historical
 
 set -e
 
@@ -15,7 +20,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 
 # Path to enhancer script
-ENHANCER_SCRIPT="${PROJECT_ROOT}/enhance_pdf_advanced.py"
+ENHANCER_SCRIPT="${PROJECT_ROOT}/core/enhance_pdf_advanced.py"
 
 # Check if enhancer script exists
 if [ ! -f "$ENHANCER_SCRIPT" ]; then
@@ -75,12 +80,41 @@ process_pdf() {
     local output_path="$2"
     shift 2
     
+    # Extract any mode parameter
+    local mode="standard"
+    local other_args=()
+    
+    for arg in "$@"; do
+        if [[ "$arg" == "--mode" ]]; then
+            # Get the mode parameter that follows --mode
+            mode="${@[1]}"
+            shift 2  # Skip both --mode and the actual mode
+        else
+            other_args+=("$arg")
+        fi
+    done
+    
+    # Create mode-specific output subfolder if needed
+    if [[ "$mode" != "standard" ]]; then
+        local output_dir=$(dirname "$output_path")
+        local filename=$(basename "$output_path")
+        local mode_dir="${output_dir}/${mode}"
+        
+        mkdir -p "$mode_dir"
+        output_path="${mode_dir}/${filename}"
+    fi
+    
     # Activate virtual environment
     source "${PROJECT_ROOT}/venv_accessibility/bin/activate"
     
     # Run enhancer script
-    echo "Processing PDF: $input_path"
-    python3 "$ENHANCER_SCRIPT" "$input_path" "$output_path" "$@"
+    echo "Processing PDF: $input_path (Mode: $mode)"
+    
+    if [[ "$mode" != "standard" ]]; then
+        python3 "$ENHANCER_SCRIPT" --mode "$mode" "$input_path" "$output_path" "${other_args[@]}"
+    else
+        python3 "$ENHANCER_SCRIPT" "$input_path" "$output_path" "${other_args[@]}"
+    fi
     
     echo "PDF processing complete."
     echo "Enhanced PDF saved to: $output_path"
@@ -92,12 +126,37 @@ process_directory() {
     local output_dir="$2"
     shift 2
     
+    # Extract any mode parameter
+    local mode="standard"
+    local other_args=()
+    
+    for arg in "$@"; do
+        if [[ "$arg" == "--mode" ]]; then
+            # Get the mode parameter that follows --mode
+            mode="${@[1]}"
+            shift 2  # Skip both --mode and the actual mode
+        else
+            other_args+=("$arg")
+        fi
+    done
+    
+    # Create mode-specific output subfolder if needed
+    if [[ "$mode" != "standard" ]]; then
+        output_dir="${output_dir}/${mode}"
+        mkdir -p "$output_dir"
+    fi
+    
     # Activate virtual environment
     source "${PROJECT_ROOT}/venv_accessibility/bin/activate"
     
     # Run enhancer script in batch mode
-    echo "Processing PDFs in directory: $input_dir"
-    python3 "$ENHANCER_SCRIPT" --batch "$input_dir" "$output_dir" "$@"
+    echo "Processing PDFs in directory: $input_dir (Mode: $mode)"
+    
+    if [[ "$mode" != "standard" ]]; then
+        python3 "$ENHANCER_SCRIPT" --batch --mode "$mode" "$input_dir" "$output_dir" "${other_args[@]}"
+    else
+        python3 "$ENHANCER_SCRIPT" --batch "$input_dir" "$output_dir" "${other_args[@]}"
+    fi
     
     echo "Batch processing complete."
     echo "Enhanced PDFs saved to: $output_dir"
@@ -127,8 +186,14 @@ main() {
         # Single PDF mode
         if [ $# -lt 1 ]; then
             echo "Error: Input PDF file is required."
-            echo "Usage: $0 input_pdf [output_pdf] [--title \"Title\"] [--author \"Author\"]"
-            echo "   or: $0 --batch input_dir output_dir [--title \"Title\"] [--author \"Author\"]"
+            echo "Usage: $0 input_pdf [output_pdf] [--title \"Title\"] [--author \"Author\"] [--mode MODE]"
+            echo "   or: $0 --batch input_dir output_dir [--title \"Title\"] [--author \"Author\"] [--mode MODE]"
+            echo ""
+            echo "Processing Modes:"
+            echo "  --mode standard    Standard OCR processing (default)"
+            echo "  --mode historical  Specialized processing for historical documents"
+            echo "  --mode adaptive    Automatically detect and apply optimal processing"
+            echo "  --mode manuscript  Special mode for handwritten manuscripts"
             exit 1
         fi
         

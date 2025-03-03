@@ -309,12 +309,15 @@ class AdaptiveOCRConfig:
             
     def _detect_historical_document(self, image: Image.Image) -> bool:
         """
-        Detect if a document is historical based on visual characteristics.
+        Enhanced detection of historical documents based on visual characteristics.
         
         This analyzes:
-        - Paper color and condition
+        - Paper color and condition (yellowing, staining)
         - Font characteristics typical of older documents
         - Layout and spacing patterns
+        - Text degradation and fading patterns
+        - Typographical features common in historical documents
+        - Print impression characteristics
         
         Args:
             image: PIL Image object to analyze
@@ -325,40 +328,244 @@ class AdaptiveOCRConfig:
         # Convert to numpy array for OpenCV processing
         img_np = np.array(image)
         img_gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
-        
-        # Check for yellowing/sepia tone characteristic of old paper
         img_hsv = cv2.cvtColor(img_np, cv2.COLOR_RGB2HSV)
         h, s, v = cv2.split(img_hsv)
         
-        # Yellowing characteristics: high hue in yellow range, higher saturation
-        yellow_mask = cv2.inRange(h, 20, 35)  # Yellow hue range
-        yellow_ratio = np.sum(yellow_mask) / (yellow_mask.shape[0] * yellow_mask.shape[1])
+        # 1. Check for paper aging characteristics
+        # ----------------------------------------
         
-        # Calculate average saturation in paper areas
-        # High saturation in light areas suggests yellowing
+        # Yellowing detection: analyze hue distribution in yellow/sepia range
+        yellow_mask1 = cv2.inRange(h, 15, 40)  # Expanded yellow/sepia hue range
+        yellow_ratio1 = np.sum(yellow_mask1) / (yellow_mask1.shape[0] * yellow_mask1.shape[1])
+        
+        # Secondary yellowing check: focus on light areas that should be white in modern docs
         light_areas = cv2.inRange(v, 180, 255)  # Light/paper areas
         if np.sum(light_areas) > 0:
-            avg_saturation = np.mean(s[light_areas > 0])
+            # Check saturation in what should be white areas
+            paper_saturation = np.mean(s[light_areas > 0]) / 255.0
+            # Check hue in light areas - should be neutral in modern docs
+            paper_hue_values = h[light_areas > 0]
+            yellow_hue_in_paper = np.sum((paper_hue_values >= 15) & (paper_hue_values <= 40)) / (paper_hue_values.size or 1)
         else:
-            avg_saturation = 0
-            
-        # Check for uneven text density and spacing (common in old typesetting)
+            paper_saturation = 0
+            yellow_hue_in_paper = 0
+        
+        # 2. Check for staining and aging patterns
+        # ---------------------------------------
+        # Detect non-uniform patterns in background (stains, foxing, etc.)
+        if np.sum(light_areas) > 0:
+            # Calculate local variance in background areas
+            local_var = cv2.Laplacian(v, cv2.CV_64F)
+            light_var = np.std(local_var[light_areas > 0])
+            normalized_light_var = min(1.0, light_var / 50)
+        else:
+            normalized_light_var = 0
+        
+        # 3. Text appearance analysis
+        # --------------------------
+        # Binarize the image to isolate text
         _, binary = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        text_mask = binary == 0  # Text pixels are black (0)
+        
+        # Check for text fading (common in historical documents)
+        if np.sum(text_mask) > 0:
+            text_intensity = img_gray[text_mask]
+            # Higher values indicate more fading
+            text_fading_score = np.mean(text_intensity) / 255.0
+            
+            # Calculate text-to-background contrast (lower in historical documents)
+            bg_intensity = np.mean(img_gray[~text_mask]) if np.sum(~text_mask) > 0 else 127
+            text_intensity_mean = np.mean(text_intensity) if text_intensity.size > 0 else 0
+            contrast_ratio = 1.0 - (abs(bg_intensity - text_intensity_mean) / 255.0)
+        else:
+            text_fading_score = 0.5
+            contrast_ratio = 0.5
+        
+        # 4. Typography analysis
+        # ---------------------
         components = cv2.connectedComponentsWithStats(cv2.bitwise_not(binary), 8)
         
-        # Older documents often have more variance in character spacing
-        if len(components[2]) > 10:  # If we have enough components for analysis
-            positions_x = components[2][1:, cv2.CC_STAT_LEFT]
-            spacing_variance = np.var(np.diff(np.sort(positions_x)))
-            normalized_spacing_var = min(1.0, spacing_variance / 1000)
-        else:
-            normalized_spacing_var = 0
+        # Initialize typography scores
+        normalized_spacing_var = 0
+        letterpress_impression_score = 0
         
-        # Calculate combined historical indicators score
-        historical_score = (yellow_ratio * 0.4) + (min(1.0, avg_saturation/50) * 0.3) + (normalized_spacing_var * 0.3)
+        if len(components[2]) > 10:  # If we have enough components for analysis
+            # Extract character component stats
+            stats = components[2][1:]  # Skip background component
+            positions_x = stats[:, cv2.CC_STAT_LEFT]
+            positions_y = stats[:, cv2.CC_STAT_TOP]
+            widths = stats[:, cv2.CC_STAT_WIDTH]
+            heights = stats[:, cv2.CC_STAT_HEIGHT]
+            
+            # Filter out noise and outliers
+            valid_indices = (widths > 3) & (heights > 5) & (widths < np.mean(widths) * 5) & (heights < np.mean(heights) * 5)
+            if np.sum(valid_indices) > 5:
+                # Analyze character spacing (more irregular in historical prints)
+                valid_positions_x = positions_x[valid_indices]
+                line_positions_y = self._cluster_line_positions(positions_y[valid_indices])
+                
+                line_spacing_vars = []
+                for line_y in line_positions_y:
+                    # Find characters on this line
+                    line_chars = np.abs(positions_y[valid_indices] - line_y) < (np.mean(heights[valid_indices]) * 0.5)
+                    if np.sum(line_chars) > 3:
+                        line_x_positions = np.sort(valid_positions_x[line_chars])
+                        # Calculate spaces between characters
+                        spaces = np.diff(line_x_positions)
+                        # Calculate variance in spacing
+                        if len(spaces) > 1:
+                            line_spacing_vars.append(np.var(spaces) / np.mean(spaces))
+                
+                # Overall spacing irregularity
+                if line_spacing_vars:
+                    normalized_spacing_var = min(1.0, np.mean(line_spacing_vars) / 4.0)
+                
+                # Letterpress impression detection (thicker edges on one side - common in old prints)
+                # Calculate edge thickness variation around each character
+                edge_thickness_var = self._measure_edge_thickness_variation(binary, stats[valid_indices])
+                letterpress_impression_score = min(1.0, edge_thickness_var / 2.0)
+        
+        # 5. Combine all indicators with appropriate weights
+        # -------------------------------------------------
+        historical_indicators = {
+            'yellowing': yellow_ratio1 * 0.8 + yellow_hue_in_paper * 0.2,
+            'paper_saturation': paper_saturation,
+            'staining': normalized_light_var,
+            'text_fading': text_fading_score,
+            'contrast_ratio': contrast_ratio,
+            'spacing_irregularity': normalized_spacing_var,
+            'letterpress_impression': letterpress_impression_score
+        }
+        
+        # Weighted combination of indicators
+        historical_score = (
+            historical_indicators['yellowing'] * 0.25 +
+            historical_indicators['paper_saturation'] * 0.15 +
+            historical_indicators['staining'] * 0.15 +
+            historical_indicators['text_fading'] * 0.15 +
+            historical_indicators['contrast_ratio'] * 0.10 +
+            historical_indicators['spacing_irregularity'] * 0.10 +
+            historical_indicators['letterpress_impression'] * 0.10
+        )
+        
+        # Log the detailed analysis results
+        self.logger.debug(f"Historical document analysis: {historical_indicators}")
+        self.logger.debug(f"Historical score: {historical_score:.3f}")
         
         # Classify as historical if score exceeds threshold
-        return historical_score > 0.35
+        # Lower threshold (0.3) to catch more potential historical documents
+        return historical_score > 0.3
+        
+    def _cluster_line_positions(self, y_positions: np.ndarray) -> list:
+        """
+        Cluster Y positions to identify text lines.
+        
+        Args:
+            y_positions: Array of Y coordinates of character components
+            
+        Returns:
+            List of identified line positions (Y coordinates)
+        """
+        if len(y_positions) < 2:
+            return [np.mean(y_positions)] if len(y_positions) > 0 else []
+            
+        # Sort positions
+        sorted_y = np.sort(y_positions)
+        
+        # Calculate differences between consecutive positions
+        diffs = np.diff(sorted_y)
+        
+        # Find gaps between lines (significantly larger differences)
+        mean_diff = np.mean(diffs)
+        std_diff = np.std(diffs)
+        threshold = mean_diff + std_diff * 1.5
+        
+        # Identify line breaks
+        line_breaks = np.where(diffs > threshold)[0]
+        
+        # Extract line positions
+        lines = []
+        start_idx = 0
+        
+        for break_idx in line_breaks:
+            line_positions = sorted_y[start_idx:break_idx+1]
+            lines.append(np.mean(line_positions))
+            start_idx = break_idx + 1
+            
+        # Add the last line
+        if start_idx < len(sorted_y):
+            lines.append(np.mean(sorted_y[start_idx:]))
+            
+        return lines
+        
+    def _measure_edge_thickness_variation(self, binary_image: np.ndarray, component_stats: np.ndarray) -> float:
+        """
+        Measure variation in edge thickness around characters.
+        Historical letterpress printing often shows thicker edges on one side.
+        
+        Args:
+            binary_image: Binary image with black text on white background
+            component_stats: Stats for character components
+            
+        Returns:
+            Score representing edge thickness variation
+        """
+        # Skip if too few components
+        if len(component_stats) < 5:
+            return 0.0
+        
+        # Create edge image
+        edge_img = cv2.Canny(binary_image, 100, 200)
+        
+        # Prepare to measure edge thickness in different directions
+        variations = []
+        
+        # Check a sample of larger components (likely characters, not noise)
+        areas = component_stats[:, cv2.CC_STAT_AREA]
+        heights = component_stats[:, cv2.CC_STAT_HEIGHT]
+        
+        # Only examine larger components
+        size_threshold = np.percentile(areas, 25)
+        height_threshold = np.percentile(heights, 25)
+        
+        for i, stats in enumerate(component_stats):
+            # Skip small components
+            if stats[cv2.CC_STAT_AREA] < size_threshold or stats[cv2.CC_STAT_HEIGHT] < height_threshold:
+                continue
+                
+            x, y, w, h = stats[0:4]
+            
+            # Ensure we stay within image bounds
+            x = max(0, x - 1)
+            y = max(0, y - 1)
+            w = min(w + 2, binary_image.shape[1] - x)
+            h = min(h + 2, binary_image.shape[0] - y)
+            
+            if w <= 4 or h <= 4:  # Skip very small components
+                continue
+                
+            # Extract ROI
+            char_roi = edge_img[y:y+h, x:x+w]
+            
+            # Measure edge thickness in different directions
+            left_edge = char_roi[:, 0:w//4].sum() / (char_roi.shape[0] * w//4 or 1)
+            right_edge = char_roi[:, 3*w//4:].sum() / (char_roi.shape[0] * (w - 3*w//4) or 1)
+            top_edge = char_roi[0:h//4, :].sum() / (h//4 * char_roi.shape[1] or 1)
+            bottom_edge = char_roi[3*h//4:, :].sum() / ((h - 3*h//4) * char_roi.shape[1] or 1)
+            
+            # Calculate directional variation
+            horiz_var = abs(left_edge - right_edge) / (max(left_edge, right_edge) or 1)
+            vert_var = abs(top_edge - bottom_edge) / (max(top_edge, bottom_edge) or 1)
+            
+            # Use the maximum variation found
+            variations.append(max(horiz_var, vert_var))
+            
+            # Limit the number of components checked for performance
+            if len(variations) >= 20:
+                break
+                
+        # Return the average variation
+        return np.mean(variations) if variations else 0.0
         
     def _detect_historical_font(self, image: Image.Image) -> str:
         """

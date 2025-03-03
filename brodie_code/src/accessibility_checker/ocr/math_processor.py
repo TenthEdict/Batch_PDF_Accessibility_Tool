@@ -50,12 +50,49 @@ class MathOCRProcessor:
             raise
 
     def _preprocess_image(self, image: np.ndarray) ->np.ndarray:
-        """Preprocess image for better math detection."""
-        binary = cv2.adaptiveThreshold(image, 255, cv2.
-            ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2)
-        kernel = np.ones((2, 2), np.uint8)
-        cleaned = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
-        return cleaned
+        """
+        Enhanced preprocessing for math detection in both modern and historical documents.
+        Includes specialized handling for faded mathematical symbols and historical notation.
+        
+        Args:
+            image: Grayscale input image
+            
+        Returns:
+            Preprocessed binary image optimized for math symbol detection
+        """
+        # Enhance contrast to bring out potential math symbols
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        enhanced = clahe.apply(image)
+        
+        # Apply bilateral filtering to preserve edges of math symbols while removing noise
+        bilateral = cv2.bilateralFilter(enhanced, 9, 75, 75)
+        
+        # Apply adaptive thresholding with parameters tuned for math symbols
+        # Uses a smaller block size for more precise handling of symbols
+        binary = cv2.adaptiveThreshold(
+            bilateral, 255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY,
+            11, 2
+        )
+        
+        # Apply morphological operations to connect broken parts of symbols
+        # Close operation helps connect broken parts while preserving shape
+        kernel_close = np.ones((2, 2), np.uint8)
+        closed = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel_close)
+        
+        # Apply a small opening to remove tiny noise while preserving symbol structures
+        kernel_open = np.ones((1, 1), np.uint8)
+        cleaned = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel_open)
+        
+        # Additional sharpening to enhance edges of math symbols
+        kernel_sharpen = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+        sharpened = cv2.filter2D(cleaned, -1, kernel_sharpen)
+        
+        # Final noise removal with a more targeted approach
+        denoised = cv2.fastNlMeansDenoising(sharpened, h=7)
+        
+        return denoised
 
     def _detect_math_regions(self, image: np.ndarray) ->List[Tuple[int, int,
         int, int]]:

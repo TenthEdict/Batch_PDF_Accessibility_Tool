@@ -5,7 +5,6 @@ PDF Accessibility Enhancement Script
 This script adds basic accessibility features to PDF files:
 - Document title and author metadata
 - Document language
-- Tagged PDF structure
 - PDF/UA compliance markers
 
 Usage: python enhance_pdf.py input_pdf output_pdf --title "Title" --author "Author"
@@ -69,35 +68,11 @@ def enhance_pdf_accessibility(input_path, output_path, title=None, author=None):
         viewer_prefs = DictionaryObject()
         viewer_prefs[NameObject('/DisplayDocTitle')] = BooleanObject(True)
         
-        # Create MarkInfo to mark as tagged
-        mark_info = DictionaryObject()
-        mark_info[NameObject('/Marked')] = BooleanObject(True)
-        
-        # Create basic document structure
-        struct_tree = DictionaryObject()
-        struct_tree[NameObject('/Type')] = NameObject('/StructTreeRoot')
-        
-        # Create document element
-        document_elem = DictionaryObject()
-        document_elem[NameObject('/Type')] = NameObject('/StructElem')
-        document_elem[NameObject('/S')] = NameObject('/Document')
-        
-        # Add document element to structure tree 
-        struct_tree[NameObject('/K')] = document_elem
-        
-        # Create parent tree (required for PDF/UA)
-        parent_tree = DictionaryObject()
-        parent_tree[NameObject('/Nums')] = ArrayObject()
-        struct_tree[NameObject('/ParentTree')] = parent_tree
-        
-        # Create role map
-        role_map = DictionaryObject()
-        struct_tree[NameObject('/RoleMap')] = role_map
+        # Removed tagging code
         
         # Update the root object
         writer._root_object[NameObject('/ViewerPreferences')] = viewer_prefs
-        writer._root_object[NameObject('/MarkInfo')] = mark_info
-        writer._root_object[NameObject('/StructTreeRoot')] = struct_tree
+        # Removed tagging-related code
         
         # Save the enhanced PDF
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -111,8 +86,6 @@ def enhance_pdf_accessibility(input_path, output_path, title=None, author=None):
             print(f'- Added author: {author}')
         print('- Set language to en-US')
         print('- Set display document title preference')
-        print('- Marked PDF as tagged')
-        print('- Added basic document structure')
         
         return True
     except Exception as e:

@@ -1,6 +1,6 @@
 # PDF Accessibility Enhancement Guide
 
-This guide explains the PDF accessibility features implemented in this project, tools available, and how to use them to enhance academic journal PDFs.
+This guide explains the PDF accessibility features implemented in this project, tools available, and how to use them to enhance academic journal PDFs, including specialized handling for complex and historical documents.
 
 ## Overview
 
@@ -197,6 +197,87 @@ When creating accessible PDFs:
 - Libraries: pikepdf, PyMuPDF, opencv-python-headless, pytesseract, pillow
 - For Docker: Docker Desktop or Docker Engine
 
+## Historical Document Processing
+
+The system now includes specialized processing for historical documents with challenges like:
+- Yellowed/aged paper
+- Faded ink and low contrast text
+- Historical typography and ligatures
+- Non-standard layouts and spacing
+- Stains, blotches, and physical degradation
+
+### Processing Modes
+
+Several specialized processing modes are available:
+
+- **Standard**: Default processing for modern documents with good print quality
+- **Historical**: Specialized processing for historical documents with yellowed paper, faded text, or old typography
+- **Adaptive**: Automatically analyzes the document and applies the optimal processing approach
+- **Manuscript**: Specialized for handwritten documents
+
+### Command Line Usage
+
+#### Processing a single document:
+
+```bash
+./accessibility_tools/scripts/create_accessible_pdf_advanced.sh input.pdf --mode historical
+```
+
+#### Processing a batch of documents:
+
+```bash
+./accessibility_tools/scripts/create_accessible_pdf_advanced.sh --batch input_dir output_dir --mode historical
+```
+
+#### Using Docker container directly:
+
+```bash
+./accessibility_tools/scripts/container_accessibility.sh process 16g 8 14400 historical
+```
+
+Where:
+- `16g` is the memory allocation
+- `8` is the number of CPUs
+- `14400` is the timeout in seconds (4 hours)
+- `historical` is the processing mode
+
+#### Shorthand for historical documents:
+
+```bash
+./accessibility_tools/scripts/container_accessibility.sh historical
+```
+
+### Historical OCR Features
+
+The historical document processing includes:
+
+1. **Enhanced Preprocessing Pipeline**:
+   - Background normalization to address yellowing
+   - Enhanced contrast adjustment for faded text
+   - Specialized bilateral filtering to preserve text edges
+   - Adaptive thresholding with parameters tuned for historical documents
+   - Morphological operations to enhance character connectivity
+   - Specialized denoising for historical document artifacts
+   - Deskewing for warped pages
+
+2. **Historical Document Analysis**:
+   - Paper color and condition analysis
+   - Typography analysis for historical fonts
+   - Detection of letterpress impression characteristics
+   - Analysis of text fading and paper degradation
+   - Layout and spacing patterns typical of historical documents
+
+3. **Specialized Tesseract Configuration**:
+   - Optimized parameters for historical typography
+   - Support for historical ligatures and abbreviations
+   - Historical word dictionaries for different time periods
+   - Enhanced handling of degraded character edges
+   - Special handling for historical spacing and layout
+
+4. **Mathematical Content Detection**:
+   - Specialized processing for mathematical equations and symbols
+   - Preservation of complex mathematical notation
+
 ## Limitations
 
 Current implementation has some limitations:
@@ -206,3 +287,4 @@ Current implementation has some limitations:
 3. Complex mathematical expressions may not be fully accessible
 4. PDFs with complex layouts may require manual adjustment
 5. Very large documents may require additional resources
+6. Extremely degraded historical documents may still require manual correction

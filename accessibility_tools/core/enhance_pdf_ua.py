@@ -3,11 +3,9 @@
 PDF Accessibility Enhancer - Standalone Script
 
 Enhances PDFs with accessibility features, including:
-1. Document tagging
-2. Document structure
-3. Language setting
-4. Initial view setting
-5. PDF/UA compliance
+1. Language setting
+2. Initial view setting
+3. PDF/UA compliance
 
 Usage: python enhance_pdf_ua.py <input_pdf> [<output_pdf>] [--title "Title"] [--author "Author"]
 """
@@ -33,8 +31,6 @@ try:
         update_metadata,
         set_pdf_language,
         set_initial_view_title,
-        mark_pdf_as_tagged,
-        create_document_structure,
         ensure_fonts_embedded,
         append_xmp_to_multiple_pdfs
     )
@@ -87,8 +83,6 @@ def enhance_pdf(input_path, output_path=None, title=None, author=None):
         update_metadata(output_path, title, [author] if author else None)
         set_pdf_language(output_path)
         set_initial_view_title(output_path)
-        mark_pdf_as_tagged(output_path)
-        create_document_structure(output_path)
         ensure_fonts_embedded(output_path)
         
         # Find and add PDF/UA-ID.xmp

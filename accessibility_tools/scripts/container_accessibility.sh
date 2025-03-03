@@ -19,6 +19,7 @@ COMMAND=${1:-"process"}
 MEMORY=${2:-"8g"}
 CPUS=${3:-"4"}
 TIMEOUT=${4:-"7200"}  # Default: 2 hours (in seconds)
+MODE=${5:-"standard"}  # Document processing mode: standard, historical, or adaptive
 
 # Docker image name
 IMAGE_NAME="pdf-accessibility-enhancer"
@@ -27,12 +28,13 @@ IMAGE_NAME="pdf-accessibility-enhancer"
 print_usage() {
     echo "PDF Accessibility Docker Container"
     echo "=================================="
-    echo "Usage: $0 [command] [memory] [cpus] [timeout]"
+    echo "Usage: $0 [command] [memory] [cpus] [timeout] [mode]"
     echo ""
     echo "Commands:"
     echo "  process       Process PDFs in input directory (default)"
     echo "  shell         Start a shell in the container"
     echo "  enhance       Run enhanced PDF accessibility processing"
+    echo "  historical    Run OCR optimized for historical documents"
     echo "  diagnose      Run system diagnostics"
     echo "  help          Show this help message"
     echo ""
@@ -41,11 +43,19 @@ print_usage() {
     echo "  cpus          CPU limit (default: 4)"
     echo "  timeout       Timeout in seconds (default: 7200 = 2 hours)"
     echo ""
+    echo "Processing Modes:"
+    echo "  standard      Standard OCR processing (default)"
+    echo "  historical    Specialized processing for historical documents"
+    echo "  adaptive      Automatically detect and apply optimal processing"
+    echo "  manuscript    Special mode for handwritten manuscripts"
+    echo ""
     echo "Examples:"
-    echo "  $0                       # Run with default settings"
-    echo "  $0 process 16g 8 14400   # Process with 16GB RAM, 8 CPUs, 4 hour timeout"
-    echo "  $0 enhance               # Run enhanced accessibility processing"
-    echo "  $0 shell                 # Start a shell in the container"
+    echo "  $0                                # Run with default settings"
+    echo "  $0 process 16g 8 14400            # Process with 16GB RAM, 8 CPUs, 4 hour timeout"
+    echo "  $0 process 16g 8 14400 historical # Process historical documents with high resources"
+    echo "  $0 historical                     # Process historical documents with default settings"
+    echo "  $0 enhance                        # Run enhanced accessibility processing"
+    echo "  $0 shell                          # Start a shell in the container"
 }
 
 # Function to check if Docker is available
@@ -60,6 +70,16 @@ check_docker() {
 # Function to build Docker image if needed
 build_image() {
     echo "Checking for Docker image: $IMAGE_NAME"
+    
+    # Check for --rebuild flag
+    if [[ "$COMMAND" == *"--rebuild"* ]]; then
+        echo "Rebuild flag detected. Forcing rebuild of Docker image."
+        docker rmi "$IMAGE_NAME" 2>/dev/null || true
+        
+        # Extract the main command by removing --rebuild
+        COMMAND=${COMMAND/--rebuild/}
+        COMMAND=${COMMAND// /}
+    fi
     
     if ! docker images | grep -q "$IMAGE_NAME"; then
         echo "Building Docker image: $IMAGE_NAME"
@@ -113,7 +133,7 @@ run_container() {
             --cpus="$CPUS" \
             -v "$input_dir:/app/input" \
             -v "$output_dir:/app/output" \
-            -v "$PARENT_ROOT/enhance_pdf_advanced.py:/app/enhance_pdf_advanced.py" \
+            -v "$PROJECT_ROOT/core/enhance_pdf_advanced.py:/app/enhance_pdf_advanced.py" \
             "$IMAGE_NAME" bash
         return
     fi
@@ -126,7 +146,7 @@ run_container() {
             --name="pdf-accessibility-enhancement" \
             -v "$input_dir:/app/input" \
             -v "$output_dir:/app/output" \
-            -v "$PARENT_ROOT/enhance_pdf_advanced.py:/app/enhance_pdf_advanced.py" \
+            -v "$PROJECT_ROOT/core/enhance_pdf_advanced.py:/app/enhance_pdf_advanced.py" \
             "$IMAGE_NAME" python3 /app/enhance_pdf_advanced.py --batch /app/input /app/output/accessible
         return
     fi
@@ -142,6 +162,25 @@ run_container() {
             "$IMAGE_NAME" "$COMMAND"
 }
 
+# Function to handle the historical command
+process_historical() {
+    echo "Processing historical documents with specialized OCR settings"
+    
+    # Set mode to historical
+    MODE="historical"
+    
+    # Process using historical settings
+    timeout --preserve-status "$TIMEOUT" \
+        docker run --rm \
+            --memory="$MEMORY" \
+            --cpus="$CPUS" \
+            --name="pdf-accessibility-historical" \
+            -v "$PARENT_ROOT/input:/app/input" \
+            -v "$PARENT_ROOT/output:/app/output" \
+            -e "OCR_MODE=historical" \
+            "$IMAGE_NAME" python3 /app/core/enhance_pdf_advanced.py --batch --mode historical /app/input /app/output/historical
+}
+
 # Main function
 main() {
     if [ "$COMMAND" = "help" ]; then
@@ -149,8 +188,23 @@ main() {
         exit 0
     fi
     
+    # Special handling for historical command
+    if [ "$COMMAND" = "historical" ]; then
+        check_docker
+        build_image
+        process_historical
+        return
+    fi
+    
     check_docker
     build_image
+    
+    # Pass document processing mode to the container
+    if [ -n "$MODE" ] && [ "$MODE" != "standard" ]; then
+        echo "Using document processing mode: $MODE"
+        export OCR_MODE="$MODE"
+    fi
+    
     run_container
 }
 
