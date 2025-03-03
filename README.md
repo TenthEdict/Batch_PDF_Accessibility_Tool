@@ -2,26 +2,61 @@
 
 A comprehensive toolset for automating PDF accessibility improvements through OCR, structural analysis, and intelligent content enhancement, designed for academic documents and publications.
 
-## 🚀 New: PDF Accessibility Toolkit
+## 🚀 New: Enhanced Historical Document OCR
 
-We've added a new unified toolkit that provides a simpler interface to all accessibility tools:
+Our latest update brings specialized processing for historical documents:
+
+```bash
+# Process historical documents with optimized settings
+./accessibility_tools/scripts/create_accessible_pdf_advanced.sh input.pdf --mode historical
+
+# Process a batch of historical documents
+./accessibility_tools/scripts/create_accessible_pdf_advanced.sh --batch input_dir output_dir --mode historical
+
+# Run in Docker container with enhanced resources
+./accessibility_tools/scripts/container_accessibility.sh historical
+```
+
+Key improvements:
+- **Advanced preprocessing** for yellowed paper, faded text, and degradation
+- **Historical document detection** algorithms for optimal processing
+- **Specialized OCR configurations** for historical typography
+- **Mathematical content detection** for complex equations
+
+## 📊 PDF Accessibility Toolkit
+
+Use our unified toolkit that provides a simpler interface to all accessibility tools:
 
 ```bash
 # Install the toolkit
 pip install -e .
 
-# Use the toolkit
+# Process standard documents
 ./accessibility_tools.sh enhance input.pdf output.pdf
 ./accessibility_tools.sh validate document.pdf --detailed
 ./accessibility_tools.sh batch-enhance input_dir output_dir
 ```
 
-See [ACCESSIBILITY_GUIDE.md](ACCESSIBILITY_GUIDE.md) for complete documentation on the new toolkit, including:
-- Document tagging with proper reading order
-- Semantic structure detection (headings, paragraphs, tables)
-- Image accessibility with alt text structures
-- PDF/UA compliance validation
-- Comprehensive accessibility reports
+See [ACCESSIBILITY_GUIDE.md](ACCESSIBILITY_GUIDE.md) for complete documentation on processing modes and features.
+
+## 🔧 Adobe Acrobat JavaScript Tools
+
+New JavaScript tools for Adobe Acrobat Pro to help with manual tagging and optimization:
+
+```
+acrobat_scripts/
+├── BatchPreflightAndOptimize.js  # Batch process multiple documents
+├── TaggingUtilities.js           # Fix tagging structure issues
+└── AcademicPDFToolbox.js         # Tools specific to academic documents
+```
+
+These scripts automate common tasks like:
+- Running Preflight fixups for fonts and tagging structure
+- Optimizing documents with compatible settings
+- Fixing heading hierarchy and table structure issues
+- Adding alt text to figures
+- Creating bookmarks and table of contents
+- Tagging equations and citations
 
 ## Overview
 
@@ -30,11 +65,13 @@ This project provides a robust framework for enhancing PDF documents to meet acc
 ## Key Features
 
 - **Advanced OCR Processing**: Uses Tesseract OCR with adaptive configuration for optimal text extraction from scanned documents
+- **Historical Document Support**: Specialized processing for yellowed paper, faded text, and degraded images
 - **Document Structure Analysis**: Automatically detects headings, tables, lists, and other structural elements
-- **Intelligent Content Enhancement**: Applies machine learning to improve document tagging and structure
+- **Mathematical Content Detection**: Enhanced processing for equations and complex notation
 - **Comprehensive Reporting**: Generates detailed reports on accessibility issues and improvements
 - **Containerized Deployment**: Docker-based workflow for consistent processing across environments
 - **Customizable Resource Allocation**: Scalable processing for both small and large document batches
+- **Adobe Acrobat Integration**: JavaScript tools for post-processing in Adobe Acrobat Pro
 
 ## System Requirements
 
@@ -47,34 +84,48 @@ This project provides a robust framework for enhancing PDF documents to meet acc
 
 ```
 .
-├── brodie_code/              # Main project code
-│   ├── input/                # Input PDFs for processing
-│   ├── output/               # Processed outputs
-│   │   ├── corrections/      # Correction reports
-│   │   ├── reports/          # Processing reports
-│   │   ├── processed_pdfs/   # Enhanced PDFs
-│   │   ├── logs/             # Processing logs
-│   │   ├── ocr_results/      # OCR output
-│   │   ├── tagged/           # Tagged PDFs
-│   │   ├── final/            # Final processed PDFs
-│   │   └── analysis/         # Analysis reports
+├── accessibility_tools/      # Unified accessibility toolkit
+│   ├── core/                 # Core accessibility functionality
+│   │   ├── enhance_pdf.py                # Basic PDF enhancement
+│   │   ├── enhance_pdf_advanced.py       # Advanced PDF processing
+│   │   ├── enhance_pdf_journal.py        # Journal-specific processing
+│   │   └── enhance_pdf_ua.py             # PDF/UA compliance
+│   ├── scripts/              # Command-line interface scripts
+│   │   ├── accessibility_tools.sh        # Main CLI entry point
+│   │   ├── container_accessibility.sh    # Docker container management
+│   │   └── create_accessible_pdf_advanced.sh  # Advanced PDF processing
+│   ├── utils/                # Utility functions
+│   └── validation/           # Validation tools
+│       ├── batch_validate.py             # Batch validation
+│       └── validate_accessibility.py     # Single file validation
+├── acrobat_scripts/          # Adobe Acrobat JavaScript tools
+│   ├── BatchPreflightAndOptimize.js      # Process multiple documents
+│   ├── TaggingUtilities.js               # Fix tagging structure
+│   ├── AcademicPDFToolbox.js             # Academic document tools
+│   └── README.md                         # Usage documentation
+├── brodie_code/              # OCR and text extraction tools
 │   ├── shell_scripts/        # Automation scripts
-│   │   ├── analyze.sh        # Analysis automation
-│   │   ├── clean_*.sh        # Cleanup utilities
-│   │   ├── container.sh      # Container management
-│   │   └── docker-entrypoint.sh  # Container entry point
+│   │   ├── analyze.sh                    # Analysis automation
+│   │   ├── clean_*.sh                    # Cleanup utilities
+│   │   ├── container.sh                  # Container management
+│   │   └── docker-entrypoint.sh          # Container entry point
 │   ├── src/                  # Source code
-│   │   └── accessibility_checker/  # Main package
-│   │       ├── api/          # API components
-│   │       ├── build/        # Build process
-│   │       ├── core/         # Core functionality
-│   │       ├── ocr/          # OCR processing
-│   │       └── utils/        # Utilities
+│   │   └── accessibility_checker/        # Main package
+│   │       ├── api/                      # API components
+│   │       ├── core/                     # Core functionality
+│   │       ├── ocr/                      # OCR processing
+│   │       │   ├── adaptive_config.py    # Adaptive OCR configuration
+│   │       │   ├── math_processor.py     # Math equation detection
+│   │       │   └── processor.py          # Main OCR processor
+│   │       └── utils/                    # Utilities
+│   ├── tessdata/             # Tesseract data
+│   │   └── configs/                      # OCR configurations
+│   │       └── historical.config         # Historical document config
 │   ├── config.yaml           # Configuration settings
-│   ├── Dockerfile            # Container definition
 │   └── requirements.txt      # Python dependencies
 ├── input/                    # Global input directory
 ├── output/                   # Global output directory
+├── ACCESSIBILITY_GUIDE.md    # Comprehensive guide to accessibility features
 └── CLAUDE.md                 # Development guidelines
 ```
 
@@ -93,24 +144,40 @@ This project provides a robust framework for enhancing PDF documents to meet acc
    export ANTHROPIC_API_KEY=<your-api-key>  # Optional, for enhanced analysis
    ```
 
-3. **Process documents:**
+3. **Process regular documents:**
    ```bash
    # Basic processing with default resources (8GB RAM, 4 CPUs)
-   ./brodie_code/shell_scripts/container.sh process
+   ./accessibility_tools/scripts/container_accessibility.sh process
    
    # Processing with higher resources for large documents
-   ./brodie_code/shell_scripts/container.sh process 16g 8 14400  # 16GB RAM, 8 CPUs, 4h timeout
+   ./accessibility_tools/scripts/container_accessibility.sh process 16g 8 14400  # 16GB RAM, 8 CPUs, 4h timeout
    ```
 
-4. **Run diagnostics:**
+4. **Process historical documents:**
+   ```bash
+   # Process historical documents with optimized settings
+   ./accessibility_tools/scripts/container_accessibility.sh historical
+   
+   # With custom resource allocation
+   ./accessibility_tools/scripts/container_accessibility.sh process 16g 8 14400 historical
+   ```
+
+5. **Run diagnostics:**
    ```bash
    ./brodie_code/shell_scripts/container.sh diagnose
    ```
 
-5. **Clean output directories:**
+6. **Clean output directories:**
    ```bash
    ./brodie_code/shell_scripts/container.sh clean
    ```
+
+7. **Post-process in Adobe Acrobat Pro:**
+   - Open processed PDF in Adobe Acrobat Pro
+   - Use the Acrobat Scripts from the menu:
+     - File > Batch Preflight and Optimize
+     - Advanced > Tagging Utilities
+     - Document > Academic PDF Toolbox
 
 ### Local Development
 
@@ -152,14 +219,49 @@ timeout: 600
 retry_count: 3
 ```
 
-## OCR Capabilities
+## Document Processing Capabilities
 
-The system uses an advanced OCR pipeline:
+The system uses an advanced document processing pipeline:
+
+### OCR Processing 
 
 1. **Image Preprocessing**: Enhances document images for better OCR results
+   - Background normalization to address yellowing in historical documents
+   - Contrast enhancement for faded text
+   - Specialized filtering to preserve text edges in degraded documents
+   - Deskewing for warped pages
+
 2. **Adaptive Configuration**: Automatically adjusts OCR parameters based on document type
-3. **Page Analysis**: Processes each page to extract text with position information
-4. **Quality Verification**: Validates OCR results with confidence scores
+   - Standard processing for modern documents
+   - Historical processing for aged documents
+   - Manuscript processing for handwritten content
+   - Adaptive mode for automatic document type detection
+
+3. **Content Detection**: 
+   - Mathematical equation detection and processing
+   - Historical typography and ligature handling
+   - Specialized dictionaries for different time periods
+   - Table structure detection and analysis
+
+4. **Quality Verification**: 
+   - Validates OCR results with confidence scores
+   - Compares OCR results across different processing modes
+   - Provides detailed analysis reports
+
+### Adobe Acrobat Integration
+
+Post-processing tools for Adobe Acrobat Pro:
+
+1. **Automated Accessibility Fixes**:
+   - Fixes potential font problems using Preflight
+   - Fixes problems in PDF tagging structure
+   - Repairs heading hierarchy and table structure issues
+   
+2. **Academic Document Enhancement**:
+   - Automatic section detection (abstract, methods, results)
+   - Equation tagging with proper Formula elements
+   - Citation structure enhancement
+   - Table of contents generation
 
 ## Development Guidelines
 
