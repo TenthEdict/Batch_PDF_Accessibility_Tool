@@ -10,6 +10,9 @@ fix_output_paths.py
 migrate_structure.py
 input/
 output/
+/archive
+/ocr_env
+/pdf_venv
 
 # Python related
 __pycache__/
