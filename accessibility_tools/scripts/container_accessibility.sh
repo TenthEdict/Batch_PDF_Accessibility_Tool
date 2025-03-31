@@ -6,6 +6,12 @@
 #
 # Usage: ./container_accessibility.sh [command] [memory] [cpus] [timeout]
 # Example: ./container_accessibility.sh process 16g 8 14400
+# 
+# Available commands:
+#   process      - Standard processing
+#   historical   - Historical OCR processing
+#   journal      - Academic journal processing
+#   shell        - Start a shell in the container
 
 set -e
 
@@ -22,7 +28,7 @@ TIMEOUT=${4:-"7200"}  # Default: 2 hours (in seconds)
 MODE=${5:-"standard"}  # Document processing mode: standard, historical, or adaptive
 
 # Docker image name
-IMAGE_NAME="pdf-accessibility-enhancer"
+IMAGE_NAME="pdf-accessibility-tools"
 
 # Function to print usage
 print_usage() {
@@ -35,6 +41,7 @@ print_usage() {
     echo "  shell         Start a shell in the container"
     echo "  enhance       Run enhanced PDF accessibility processing"
     echo "  historical    Run OCR optimized for historical documents"
+    echo "  journal       Process academic journal articles"
     echo "  diagnose      Run system diagnostics"
     echo "  help          Show this help message"
     echo ""
@@ -81,25 +88,26 @@ build_image() {
         COMMAND=${COMMAND// /}
     fi
     
-    if ! docker images | grep -q "$IMAGE_NAME"; then
-        echo "Building Docker image: $IMAGE_NAME"
+    # Force rebuild by default to apply Dockerfile changes
+    echo "Forcing rebuild of Docker image to apply updated changes."
+    docker rmi "$IMAGE_NAME" 2>/dev/null || true
+    
+    echo "Building Docker image: $IMAGE_NAME"
+    
+    # Navigate to project root to build from Dockerfile.accessibility
+    cd "$PROJECT_ROOT"
+    
+    # Build Docker image with longer timeout
+    DOCKER_BUILDKIT=1 docker build \
+        --progress=plain \
+        --network=host \
+        --tag "$IMAGE_NAME" \
+        --file Dockerfile.accessibility \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --no-cache \
+        .
         
-        # Navigate to project root to build from Dockerfile.accessibility
-        cd "$PROJECT_ROOT"
-        
-        # Build Docker image with longer timeout
-        DOCKER_BUILDKIT=1 docker build \
-            --progress=plain \
-            --network=host \
-            --tag "$IMAGE_NAME" \
-            --file Dockerfile.accessibility \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            .
-            
-        echo "Docker image built successfully"
-    else
-        echo "Using existing Docker image: $IMAGE_NAME"
-    fi
+    echo "Docker image built successfully"
 }
 
 # Function to run Docker container
@@ -181,18 +189,58 @@ process_historical() {
             "$IMAGE_NAME" python3 /app/core/enhance_pdf_advanced.py --batch --mode historical /app/input /app/output/historical
 }
 
+# Function to handle the journal command
+process_journal() {
+    echo "Processing academic journal articles with fast processing mode"
+    
+    # Set mode to journal
+    MODE="journal"
+    
+    # Process using journal-specific settings
+    timeout --preserve-status "$TIMEOUT" \
+        docker run --rm \
+            --memory="$MEMORY" \
+            --cpus="$CPUS" \
+            --name="pdf-accessibility-journal" \
+            -v "$PARENT_ROOT/input:/app/input" \
+            -v "$PARENT_ROOT/output:/app/output" \
+            "$IMAGE_NAME" python3 /app/core/enhance_pdf_journal.py /app/input /app/output/journal
+}
+
 # Main function
 main() {
+    # Check for --rebuild flag and set a rebuild variable
+    REBUILD=false
+    for arg in "$@"; do
+        if [[ "$arg" == "--rebuild" ]]; then
+            REBUILD=true
+            echo "Rebuild flag detected. Will force rebuild of Docker image."
+        fi
+    done
+
     if [ "$COMMAND" = "help" ]; then
         print_usage
         exit 0
     fi
     
-    # Special handling for historical command
+    # If rebuild flag is set, force rebuild
+    if [ "$REBUILD" = true ]; then
+        echo "Forcing rebuild of Docker image."
+        docker rmi "$IMAGE_NAME" 2>/dev/null || true
+    fi
+    
+    # Special handling for specific commands
     if [ "$COMMAND" = "historical" ]; then
         check_docker
         build_image
         process_historical
+        return
+    fi
+    
+    if [ "$COMMAND" = "journal" ]; then
+        check_docker
+        build_image
+        process_journal
         return
     fi
     
@@ -208,5 +256,5 @@ main() {
     run_container
 }
 
-# Run main function
-main
+# Run main function with all arguments
+main "$@"

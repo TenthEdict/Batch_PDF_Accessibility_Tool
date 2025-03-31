@@ -1,21 +1,26 @@
-# PDF Accessibility Checker - Development Guide
+# SmolDocling Document Processing - Development Guide
 
-## Build & Test Commands
-- Install dependencies: `pip install -e .`
-- Run all tests: `python -m unittest discover -s refactoring_tool/tests`
-- Run single test: `python -m unittest refactoring_tool.tests.test_refactoring.TestRefactoringTool.test_fix_imports`
-- Run code analysis: `./shell_scripts/analyze.sh`
-- Run Docker container: `./shell_scripts/container.sh`
-- Run OCR processing (basic): `./shell_scripts/container.sh process`
-- Run OCR with custom resources: `./shell_scripts/container.sh process 16g 8 14400` (16GB RAM, 8 CPUs, 4hr timeout)
-- Diagnose system: `./shell_scripts/container.sh diagnose`
-- Clean output directory: `./shell_scripts/clean_output.sh`
+## Build & Setup Commands
+- Create virtual environment: `python -m venv venv`
+- Activate virtual environment: `source venv/bin/activate` (Unix) or `venv\Scripts\activate` (Windows)
+- Install dependencies: `pip install -r requirements.txt`
+- Run the processing pipeline: `./run.sh`
 
-## Docker Environment
-- TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
-- OCR files in `/app/input` directory
-- Results in `/app/output` directory
-- Default resources: 8GB RAM, 4 CPUs, 2hr timeout
+## Project Structure
+- Input documents in `/data/input` directory
+- Processed results in `/data/output` directory
+- Source code in `/src` directory
+- Tests in `/tests` directory
+
+## Dependencies
+- docling-core
+- mlx-vlm (Apple Silicon optimized)
+- pillow
+- pymupdf
+- python-docx
+- python-pptx
+- opencv-python
+- scikit-image
 
 ## Code Style Guidelines
 - **Imports**: Standard lib → third-party → local (group and alphabetize)

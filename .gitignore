@@ -13,6 +13,7 @@ output/
 /archive
 /ocr_env
 /pdf_venv
+**/docling_venv
 
 # Python related
 __pycache__/

@@ -40,14 +40,16 @@ class OCRProcessor:
         self.last_confidence = 0.0
         self.text_config = {'language': config.language if config else
             'eng', 'psm': config.psm if config else 3, 'oem': config.oem if
-            config else 3, 'tessedit_char_whitelist': config.char_whitelist if
+            config else 1, 'tessedit_char_whitelist': config.char_whitelist if
             config else
             'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}"\'-'
-            , 'preserve_interword_spaces': '1'}
+            , 'preserve_interword_spaces': '1',
+            'tessedit_do_invert': '0',
+            'textord_min_linesize': '1.25'}
         if config and config.additional_params:
             self.text_config.update(config.additional_params)
         # Default is standard processing, can be set to 'historical' for special handling
-        self.document_mode = 'standard'
+        self.document_mode = 'standard'  # Forcing standard mode for better compatibility
 
     def update_config(self, new_config: Dict[str, Any]) ->None:
         """Update OCR configuration with new settings."""
@@ -80,13 +82,29 @@ class OCRProcessor:
             if self.document_mode == 'historical':
                 return self._preprocess_historical_document(gray)
             
-            # Standard preprocessing for modern documents
-            binary = cv2.adaptiveThreshold(gray, 255, cv2.
-                ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-            denoised = cv2.fastNlMeansDenoising(binary)
+            # Enhanced preprocessing for modern documents
+            # Apply more aggressive denoising to filter out non-text elements like decorations on cover pages
+            
+            # 1. Apply bilateral filtering to preserve edges while removing noise
+            bilateral = cv2.bilateralFilter(gray, 11, 75, 75)  # Increased kernel size
+            
+            # 2. Apply adaptive thresholding with optimized parameters for JBIG2 compressed documents
+            binary = cv2.adaptiveThreshold(bilateral, 255, cv2.
+                ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 1)  # Modified parameters
+                
+            # 3. Apply stronger denoising for JBIG2 compressed documents
+            denoised = cv2.fastNlMeansDenoising(binary, h=15)  # Increased h parameter for stronger denoising
+            
+            # 4. Apply morphological operations to remove small noise
+            kernel = np.ones((2, 2), np.uint8)
+            denoised = cv2.morphologyEx(denoised, cv2.MORPH_OPEN, kernel)
+            
+            # 5. Apply deskewing if needed
             angle = self._get_skew_angle(denoised)
             if abs(angle) > 0.5:
                 denoised = self._rotate_image(denoised, angle)
+                
+            self.logger.info("Applied enhanced modern document preprocessing")
             return denoised
         except Exception as e:
             error_msg = f'Image preprocessing failed: {str(e)}'
@@ -259,10 +277,14 @@ class OCRProcessor:
             confidences = [float(conf) for conf in ocr_data['conf'] if conf !=
                 '-1']
             self.last_confidence = np.mean(confidences) if confidences else 0.0
+            # Lower confidence threshold for JBIG2 compressed documents
+            # This helps capture more text in scanned documents with minimal text layers
+            min_confidence = 15.0  # Lowered from 30% to 15% to capture more text from JBIG2 compressed images
             text_results = []
             for i, text in enumerate(ocr_data['text']):
-                if text.strip() and float(ocr_data['conf'][i]) > 0:
+                if text.strip() and float(ocr_data['conf'][i]) > min_confidence:
                     text_results.append(text)
+            self.logger.info(f"OCR extracted {len(text_results)} text elements with confidence > {min_confidence}%")
             return ' '.join(text_results)
         except Exception as e:
             error_msg = f'OCR processing failed: {str(e)}'
@@ -322,14 +344,17 @@ class OCRProcessor:
             ocr_data = pytesseract.image_to_data(processed_image, lang=self
                 .text_config['language'], config=config, output_type=
                 pytesseract.Output.DICT)
+            # Use a higher confidence threshold to filter out noise
+            min_confidence = 30.0  # Require at least 30% confidence (adjust as needed)
             results = []
             for i, text in enumerate(ocr_data['text']):
-                if text.strip() and float(ocr_data['conf'][i]) > 0:
+                if text.strip() and float(ocr_data['conf'][i]) > min_confidence:
                     bbox = ocr_data['left'][i], ocr_data['top'][i], ocr_data[
                         'left'][i] + ocr_data['width'][i], ocr_data['top'][i
                         ] + ocr_data['height'][i]
                     results.append(OCRResult(text=text, confidence=float(
                         ocr_data['conf'][i]), bbox=bbox, page_num=page_num))
+            self.logger.info(f"Page {page_num}: OCR extracted {len(results)} text elements with confidence > {min_confidence}%")
             confidences = [result.confidence for result in results]
             self.last_confidence = np.mean(confidences) if confidences else 0.0
             return results

@@ -44,7 +44,7 @@ case "$CMD" in
         docker run --rm \
             $VOLUME_MOUNTS \
             -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" \
-            pdf-accessibility python3 -m accessibility_checker.utils.code_analyzer
+            pdf-accessibility-tools python3 -m accessibility_checker.utils.code_analyzer
         ;;
     
     "enhance")
@@ -212,8 +212,7 @@ print('PDF enhancement', 'successful' if result else 'failed')
             -e ENABLE_OCR=1 \
             -e TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata \
             --memory=$MEMORY --cpus=$CPUS \
-            --timeout=$TIMEOUT \
-            pdf-accessibility bash -c "cd /app && python3 -c \"
+            pdf-accessibility-tools bash -c "cd /app && python3 -c \"
 import os
 import sys
 import asyncio
@@ -327,7 +326,7 @@ asyncio.run(main())
             -v "$INPUT_DIR:/app/input" \
             -v "$OUTPUT_DIR:/app/output" \
             -e ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" \
-            pdf-accessibility python3 -m accessibility_checker.build.process
+            pdf-accessibility-tools python3 -m accessibility_checker.build.process
         ;;
         
     "diagnose")
@@ -335,7 +334,7 @@ asyncio.run(main())
         docker run --rm \
             -v "$INPUT_DIR:/app/input" \
             -v "$OUTPUT_DIR:/app/output" \
-            pdf-accessibility bash -c '
+            pdf-accessibility-tools bash -c '
                 echo "Python version:" && python3 --version && 
                 echo -e "\nPython path:" && python3 -c "import sys; print(sys.path)" && 
                 echo -e "\nTesseract version:" && tesseract --version && 

@@ -13,7 +13,7 @@ class AnthropicEnhancedProcessor(AccessibilityDocumentProcessor):
         self.anthropic_client = anthropic_client
         self.ai_suggestions: Dict[int, List[Dict]] = {}
 
-    async def analyze_with_claude(self) ->Dict[str, Any]:
+    def analyze_with_claude(self) ->Dict[str, Any]:
         """
         Perform enhanced accessibility analysis using Claude.
         
@@ -27,15 +27,15 @@ class AnthropicEnhancedProcessor(AccessibilityDocumentProcessor):
             if text.strip():
                 text_content.append(f'Page {page_num + 1}:\n{text}\n')
         full_text = '\n'.join(text_content)
-        analysis = await self.anthropic_client.analyze_document(full_text)
+        analysis = self.anthropic_client.analyze_document(full_text)
         if self.violations:
-            suggestions = await self.anthropic_client.suggest_improvements(
+            suggestions = self.anthropic_client.suggest_improvements(
                 full_text, [v.__dict__ for v in self.violations])
             analysis['improvement_suggestions'] = suggestions.get('suggestions'
                 , '')
         return analysis
 
-    async def export_enhanced_report(self, output_path: str):
+    def export_enhanced_report(self, output_path: str):
         """
         Export enhanced accessibility report including Claude's analysis.
         
@@ -48,7 +48,7 @@ class AnthropicEnhancedProcessor(AccessibilityDocumentProcessor):
             _export_reading_order()}, 'corrections': self.corrections,
             'tables': self._export_table_structures(), 'violations': [v.
             __dict__ for v in self.violations]}
-        claude_analysis = await self.analyze_with_claude()
+        claude_analysis = self.analyze_with_claude()
         report['ai_analysis'] = claude_analysis
         import json
         with open(output_path, 'w', encoding='utf-8') as f:

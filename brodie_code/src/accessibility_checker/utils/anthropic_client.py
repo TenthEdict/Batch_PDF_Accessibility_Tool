@@ -15,7 +15,7 @@ class AnthropicAPIError(RetryableError):
 class AnthropicConfig:
     """Configuration for Anthropic API client."""
     api_key: str
-    model: str = 'claude-3-sonnet-20240229'
+    model: str = 'claude-3-opus-20240229'
     max_tokens: int = 4096
     temperature: float = 0.7
     timeout: int = 30
@@ -39,7 +39,7 @@ class AnthropicClient:
         self.logger = logging.getLogger(__name__)
 
     @RetryHandler(RetryConfig())((AnthropicAPIError,))
-    async def analyze_document(self, text: str, **kwargs) ->Dict[str, Any]:
+    def analyze_document(self, text: str, **kwargs) ->Dict[str, Any]:
         """
         Analyze document content using Claude.
         
@@ -51,7 +51,7 @@ class AnthropicClient:
             Dict containing Claude's analysis
         """
         try:
-            response = await self.client.messages.create(model=self.config.
+            response = self.client.messages.create(model=self.config.
                 model, max_tokens=self.config.max_tokens, temperature=self.
                 config.temperature, messages=[{'role': 'user', 'content':
                 text}], **kwargs)
@@ -62,7 +62,7 @@ class AnthropicClient:
             raise AnthropicAPIError(f'Failed to analyze document: {str(e)}')
 
     @RetryHandler(RetryConfig())((AnthropicAPIError,))
-    async def suggest_improvements(self, original_text: str,
+    def suggest_improvements(self, original_text: str,
         accessibility_issues: List[Dict]) ->Dict[str, Any]:
         """
         Get suggestions for improving document accessibility.
@@ -83,7 +83,7 @@ Detected Issues:
 {self._format_issues(accessibility_issues)}
 
 Please provide specific suggestions to improve accessibility while maintaining the document's meaning and structure."""
-            response = await self.client.messages.create(model=self.config.
+            response = self.client.messages.create(model=self.config.
                 model, max_tokens=self.config.max_tokens, temperature=self.
                 config.temperature, messages=[{'role': 'user', 'content':
                 prompt}])
@@ -120,7 +120,7 @@ def create_anthropic_client(api_key: Optional[str]=None, model: Optional[
         Configured AnthropicClient instance
     """
     config = AnthropicConfig(api_key=api_key or os.getenv(
-        'ANTHROPIC_API_KEY', ''), model=model or 'claude-3-sonnet-20240229')
+        'ANTHROPIC_API_KEY', ''), model=model or 'claude-3-opus-20240229')
     if not config.api_key:
         raise ValueError(
             'Anthropic API key not provided or found in environment')

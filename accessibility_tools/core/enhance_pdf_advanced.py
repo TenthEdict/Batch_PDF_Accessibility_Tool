@@ -73,7 +73,7 @@ try:
         TESSERACT_AVAILABLE = False
     
     # Import from our existing modules if available
-    sys.path.append(str(Path(__file__).parent / 'brodie_code' / 'src'))
+    sys.path.append(str(Path(__file__).parent.parent.parent / 'brodie_code' / 'src'))
     try:
         from accessibility_checker.core.post_processor import (
             update_metadata,
@@ -84,8 +84,24 @@ try:
         )
         logger.info("Successfully imported existing accessibility functions")
         POST_PROCESSOR_AVAILABLE = True
-    except ImportError:
-        logger.warning("Could not import from accessibility_checker module, using built-in functions")
+    except ImportError as e:
+        logger.warning(f"Could not import from accessibility_checker module ({e}), using built-in functions")
+        # Create stub functions
+        def update_metadata(pdf_path, title, authors=None):
+            logger.info(f"Stub: update_metadata({pdf_path}, {title}, {authors})")
+            
+        def set_pdf_language(pdf_path, language_code="en-US"):
+            logger.info(f"Stub: set_pdf_language({pdf_path}, {language_code})")
+            
+        def set_initial_view_title(pdf_path):
+            logger.info(f"Stub: set_initial_view_title({pdf_path})")
+            
+        def ensure_fonts_embedded(pdf_path):
+            logger.info(f"Stub: ensure_fonts_embedded({pdf_path})")
+            
+        def append_xmp_to_multiple_pdfs(dir_path, xmp_path):
+            logger.info(f"Stub: append_xmp_to_multiple_pdfs({dir_path}, {xmp_path})")
+            
         POST_PROCESSOR_AVAILABLE = False
 except ImportError as e:
     logger.error(f"Error importing required libraries: {e}")
@@ -498,6 +514,301 @@ def enhance_pdf_accessibility(input_path: str, output_path: str, title: Optional
         with pikepdf.open(input_path) as pdf:
             pdf.save(output_path)
         logger.info("Created working copy")
+        
+        # Step 1.5: Run OCR on the document if needed for historical mode
+        if mode == 'historical' and TESSERACT_AVAILABLE:
+            try:
+                logger.info("Running historical OCR with specialized settings...")
+                import tempfile
+                import subprocess
+                import os
+                import gc
+                from pdf2image import convert_from_path
+                import pytesseract
+                from tqdm import tqdm
+                
+                # Create temp directory for OCR processing
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    # Get PDF page count first using pikepdf
+                    with pikepdf.open(input_path) as pdf:
+                        total_pages = len(pdf.pages)
+                    
+                    logger.info(f"PDF has {total_pages} pages, processing in batches")
+                    
+                    # For historical documents, use special Tesseract settings
+                    custom_config = '--oem 1 --psm 3 -l eng'
+                    if mode == 'historical':
+                        custom_config += ' --dpi 300'
+                    
+                    # Process in batches of 5 pages to manage memory
+                    batch_size = 5
+                    
+                    # Create an output PDF with the same number of pages as the input
+                    logger.info("Creating output PDF structure with correct page count")
+                    with pikepdf.open(input_path) as input_pdf:
+                        with pikepdf.Pdf.new() as output_pdf:
+                            # Copy all pages from input to output to maintain structure
+                            for page in input_pdf.pages:
+                                output_pdf.pages.append(page)
+                            output_pdf.save(output_path)
+                    
+                    # Process batches
+                    for batch_start in range(0, total_pages, batch_size):
+                        batch_end = min(batch_start + batch_size, total_pages)
+                        logger.info(f"Processing batch of pages {batch_start+1}-{batch_end} of {total_pages}")
+                        
+                        # Convert batch pages to images
+                        try:
+                            # Only convert pages in this batch
+                            pages = convert_from_path(
+                                input_path, 
+                                dpi=200,  # Lower DPI to save memory
+                                first_page=batch_start+1,
+                                last_page=batch_end
+                            )
+                            
+                            # Process each page in the batch
+                            for i, page in enumerate(pages):
+                                page_idx = batch_start + i
+                                logger.info(f"OCR processing page {page_idx+1}/{total_pages}")
+                                
+                                # Save page as image with lower quality to save memory
+                                img_path = f"{tmp_dir}/page_{page_idx}.png"
+                                page.save(img_path, "PNG", quality=85)
+                                
+                                # Free memory
+                                page = None
+                                gc.collect()
+                                
+                                # Run OCR and get text
+                                try:
+                                    # Get text with positional data instead of just string
+                                    ocr_data = pytesseract.image_to_data(img_path, config=custom_config, output_type=pytesseract.Output.DICT)
+                                    
+                                    # Save OCR data with position information as JSON
+                                    with open(f"{tmp_dir}/page_{page_idx}.json", "w", encoding="utf-8") as f:
+                                        json.dump(ocr_data, f)
+                                        
+                                    # Also save plain text for backward compatibility
+                                    text = pytesseract.image_to_string(img_path, config=custom_config)
+                                    with open(f"{tmp_dir}/page_{page_idx}.txt", "w", encoding="utf-8") as f:
+                                        f.write(text)
+                                except Exception as e:
+                                    logger.error(f"OCR error on page {page_idx+1}: {e}")
+                                
+                                # Remove image file to save space
+                                try:
+                                    os.remove(img_path)
+                                except Exception as cleanup_error:
+                                    logger.warning(f"Failed to remove temporary file: {cleanup_error}")
+                            
+                            # Add text layers to this batch in the output PDF
+                            with pikepdf.open(output_path, allow_overwriting_input=True) as pdf:
+                                # For each page in this batch, add text layer
+                                for i in range(batch_start, batch_end):
+                                    # Verify the page exists before accessing it
+                                    if i >= len(pdf.pages):
+                                        logger.error(f"Page index {i} out of range (PDF has {len(pdf.pages)} pages)")
+                                        continue
+                                        
+                                    if os.path.exists(f"{tmp_dir}/page_{i}.txt"):
+                                        try:
+                                            # Load the OCR data with position information
+                                            if os.path.exists(f"{tmp_dir}/page_{i}.json"):
+                                                with open(f"{tmp_dir}/page_{i}.json", "r", encoding="utf-8") as f:
+                                                    ocr_data = json.load(f)
+                                                
+                                                page = pdf.pages[i]
+                                                
+                                                # Get page dimensions for scaling coordinates
+                                                page_width = float(page.mediabox[2])
+                                                page_height = float(page.mediabox[3])
+                                                
+                                                # Calculate scaling factor based on image resolution and PDF dimensions
+                                                scale_x = page_width / 200  # Assuming 200 DPI from the convert_from_path function
+                                                scale_y = page_height / 200
+                                                
+                                                # Create annotations for each text block with proper positioning
+                                                if '/Annots' not in page:
+                                                    page['/Annots'] = pikepdf.Array()
+                                                
+                                                # Filter out entries with empty text
+                                                text_entries = []
+                                                for idx in range(len(ocr_data['text'])):
+                                                    if ocr_data['text'][idx].strip():
+                                                        text_entries.append(idx)
+                                                
+                                                # Group text entries by paragraph/block
+                                                blocks = {}
+                                                for idx in text_entries:
+                                                    block_num = ocr_data['block_num'][idx]
+                                                    if block_num not in blocks:
+                                                        blocks[block_num] = []
+                                                    blocks[block_num].append(idx)
+                                                
+                                                # Create text content for each text block using PyMuPDF (fitz)
+                                                # First save the PDF to access it with PyMuPDF
+                                                pdf.save(output_path)
+                                                
+                                                # Open with PyMuPDF to insert text directly into content
+                                                try:
+                                                    with fitz.open(output_path) as doc:
+                                                        pymupdf_page = doc[i]
+                                                        
+                                                        for block_num, indices in blocks.items():
+                                                            # Determine block bounds
+                                                            left = min(ocr_data['left'][idx] for idx in indices)
+                                                            top = min(ocr_data['top'][idx] for idx in indices)
+                                                            right = max(ocr_data['left'][idx] + ocr_data['width'][idx] for idx in indices)
+                                                            bottom = max(ocr_data['top'][idx] + ocr_data['height'][idx] for idx in indices)
+                                                            
+                                                            # Scale to PDF coordinates
+                                                            pdf_left = left * scale_x
+                                                            pdf_top = page_height - (top * scale_y)  # Flip Y coordinate (PDF origin is bottom-left)
+                                                            pdf_right = right * scale_x
+                                                            pdf_bottom = page_height - (bottom * scale_y)
+                                                            
+                                                            # Combine text from this block
+                                                            block_text = ""
+                                                            for idx in indices:
+                                                                if block_text and not block_text.endswith(" "):
+                                                                    block_text += " "
+                                                                block_text += ocr_data['text'][idx]
+                                                            
+                                                            # Insert text directly into PDF content (not as annotation)
+                                                            rect = fitz.Rect(pdf_left, pdf_bottom, pdf_right, pdf_top)
+                                                            pymupdf_page.insert_text(
+                                                                rect.tl,  # Top-left position
+                                                                block_text,
+                                                                fontsize=12,  # Default font size
+                                                                color=(0, 0, 0),  # Black text
+                                                                render_mode=3,  # Invisible text for OCR layer (3=neither fill nor stroke)
+                                                                morph=None  # Explicitly disable morphing to prevent error
+                                                            )
+                                                        
+                                                        # Save the changes back to the file
+                                                        try:
+                                                            doc.save(output_path, incremental=True)
+                                                        except Exception as e:
+                                                            if "encryption" in str(e).lower() or "save to original must be incremental" in str(e).lower():
+                                                                # Fallback to non-incremental save when encryption is detected
+                                                                logger.info("Detected encrypted PDF, using non-incremental save")
+                                                                # Create a new document and copy all content to avoid incremental save issues
+                                                                temp_path = f"{output_path}_temp.pdf"
+                                                                doc.save(temp_path, incremental=False)
+                                                                # Replace original with the temp file
+                                                                if os.path.exists(temp_path):
+                                                                    import shutil
+                                                                    try:
+                                                                        shutil.move(temp_path, output_path)
+                                                                    except Exception as move_error:
+                                                                        logger.error(f"Error moving temp file: {move_error}")
+                                                                        # Try to clean up the temp file
+                                                                        try:
+                                                                            os.remove(temp_path)
+                                                                        except Exception as cleanup_error:
+                                                                            logger.warning(f"Failed to remove temporary file: {cleanup_error}")
+                                                                else:
+                                                                    logger.warning(f"Failed to create temporary file: {temp_path}")
+                                                            else:
+                                                                raise
+                                                        
+                                                except Exception as e:
+                                                    logger.error(f"Error inserting text content: {e}")
+                                                    # Fallback to loading the original PDF again
+                                                    with pikepdf.open(output_path, allow_overwriting_input=True) as fallback_pdf:
+                                                        logger.warning(f"Fallback to original PDF structure")
+                                            else:
+                                                # Fallback to the old method if JSON data is not available
+                                                with open(f"{tmp_dir}/page_{i}.txt", "r", encoding="utf-8") as f:
+                                                    text_content = f.read()
+                                                
+                                                # Save the PDF first so we can open it with PyMuPDF
+                                                pdf.save(output_path)
+                                                
+                                                # Use PyMuPDF to insert text directly into content
+                                                try:
+                                                    with fitz.open(output_path) as doc:
+                                                        pymupdf_page = doc[i]
+                                                        
+                                                        # Insert text directly as page content
+                                                        rect = fitz.Rect(0, 0, float(page.mediabox[2]), float(page.mediabox[3]))
+                                                        pymupdf_page.insert_text(
+                                                            rect.tl,  # Top-left position
+                                                            text_content,
+                                                            fontsize=12,  # Default font size
+                                                            color=(0, 0, 0),  # Black text
+                                                            render_mode=3,  # Invisible text for OCR layer (3=neither fill nor stroke)
+                                                            morph=None  # Explicitly disable morphing to prevent error
+                                                        )
+                                                        
+                                                        # Save the changes back to the file
+                                                        try:
+                                                            doc.save(output_path, incremental=True)
+                                                        except Exception as e:
+                                                            if "encryption" in str(e).lower() or "save to original must be incremental" in str(e).lower():
+                                                                # Fallback to non-incremental save when encryption is detected
+                                                                logger.info("Detected encrypted PDF, using non-incremental save")
+                                                                # Create a new document and copy all content to avoid incremental save issues
+                                                                temp_path = f"{output_path}_temp.pdf"
+                                                                doc.save(temp_path, incremental=False)
+                                                                # Replace original with the temp file
+                                                                if os.path.exists(temp_path):
+                                                                    import shutil
+                                                                    try:
+                                                                        shutil.move(temp_path, output_path)
+                                                                    except Exception as move_error:
+                                                                        logger.error(f"Error moving temp file: {move_error}")
+                                                                        # Try to clean up the temp file
+                                                                        try:
+                                                                            os.remove(temp_path)
+                                                                        except Exception as cleanup_error:
+                                                                            logger.warning(f"Failed to remove temporary file: {cleanup_error}")
+                                                                else:
+                                                                    logger.warning(f"Failed to create temporary file: {temp_path}")
+                                                            else:
+                                                                raise
+                                                except Exception as e:
+                                                    logger.error(f"Error inserting fallback text content: {e}")
+                                                    # If PyMuPDF approach fails, reload the PDF
+                                                    with pikepdf.open(output_path, allow_overwriting_input=True) as fallback_pdf:
+                                                        logger.warning(f"Fallback to original PDF structure")
+                                        except Exception as e:
+                                            logger.error(f"Error adding text layer to page {i+1}: {e}")
+                                
+                                # Save the PDF after each batch
+                                pdf.save(output_path)
+                            
+                            # Clean up text files and JSON data from this batch
+                            for i in range(batch_start, batch_end):
+                                # Remove text files
+                                if os.path.exists(f"{tmp_dir}/page_{i}.txt"):
+                                    try:
+                                        os.remove(f"{tmp_dir}/page_{i}.txt")
+                                    except Exception as cleanup_error:
+                                        logger.warning(f"Failed to remove temporary file: {cleanup_error}")
+                                
+                                # Remove JSON files
+                                if os.path.exists(f"{tmp_dir}/page_{i}.json"):
+                                    try:
+                                        os.remove(f"{tmp_dir}/page_{i}.json")
+                                    except Exception as cleanup_error:
+                                        logger.warning(f"Failed to remove temporary file: {cleanup_error}")
+                        
+                        except Exception as e:
+                            logger.error(f"Error processing batch {batch_start+1}-{batch_end}: {e}")
+                            import traceback
+                            traceback.print_exc()
+                        
+                        # Force garbage collection between batches
+                        pages = None
+                        gc.collect()
+                
+                logger.info("OCR processing complete with historical settings")
+            except Exception as e:
+                logger.error(f"Error performing OCR: {e}")
+                import traceback
+                traceback.print_exc()
         
         # Step 2: Analyze document structure (simplified or comprehensive based on available libraries)
         analyzer = PDFAnalyzer(str(input_path))

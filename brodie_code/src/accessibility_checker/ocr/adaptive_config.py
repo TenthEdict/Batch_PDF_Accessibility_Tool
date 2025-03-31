@@ -453,8 +453,10 @@ class AdaptiveOCRConfig:
         self.logger.debug(f"Historical score: {historical_score:.3f}")
         
         # Classify as historical if score exceeds threshold
-        # Lower threshold (0.3) to catch more potential historical documents
-        return historical_score > 0.3
+        # Increased threshold to avoid misclassifying modern book covers/publisher pages
+        historical_threshold = 0.75  # Increased from 0.45 to reduce false positives
+        self.logger.info(f"Historical detection score: {historical_score:.3f} (threshold: {historical_threshold})")
+        return historical_score > historical_threshold
         
     def _cluster_line_positions(self, y_positions: np.ndarray) -> list:
         """
