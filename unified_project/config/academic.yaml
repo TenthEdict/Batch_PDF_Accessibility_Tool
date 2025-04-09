@@ -1,0 +1,76 @@
+# Configuration optimized for modern academic papers
+
+# OCR settings optimized for clean, modern academic prints
+ocr:
+  language: eng
+  psm: 1  # Automatic page segmentation with OSD
+  oem: 3  # Default LSTM engine
+  dpi: 300
+  tessdata_dir: /usr/share/tesseract-ocr/5/tessdata
+  additional_params:
+    textord_tablefind_recognize_tables: 1
+    textord_tabfind_find_tables: 1
+    tessedit_enable_doc_dict: 1
+    tessedit_preserve_interword_spaces: 1
+    language_model_ngram_on: 1
+
+# Content detection settings
+content_detection:
+  formulas: true
+  tables: true
+  figures: true
+  charts: true
+  citations: true
+  references: true
+  
+# Structure detection for academic papers
+structure:
+  detect_sections: true
+  detect_columns: true
+  detect_headings: true
+  detect_paragraphs: true
+  section_types:
+    - abstract
+    - introduction
+    - methods
+    - results
+    - discussion
+    - conclusion
+    - references
+    
+# Performance settings
+performance:
+  max_workers: 4
+  batch_size: 10
+  timeout: 600
+  retry_count: 3
+  
+# Validation
+validation:
+  accessibility_standard: WCAG21AA
+  check_reading_order: true
+  check_table_headers: true
+  check_alt_text: true
+  check_language: true
+  check_metadata: true
+
+# Academic-specific settings
+academic:
+  # Citation patterns
+  citation_patterns:
+    author_year: true      # e.g., (Smith, 2020)
+    numeric: true          # e.g., [1] or [1-3]
+    superscript: true      # e.g., ¹²³
+    
+  # Math detection
+  math_detection:
+    inline_math: true      # Detect inline equations
+    display_math: true     # Detect display/block equations
+    greek_symbols: true    # Detect Greek letters and math symbols
+    
+  # Processing enhancements
+  preprocessing:
+    enhance_contrast: true
+    denoise: false        # Modern papers rarely need denoising
+    sharpen: true
+    deskew: true
