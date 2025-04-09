@@ -2,9 +2,32 @@
 
 A comprehensive toolset for automating PDF accessibility improvements through OCR, structural analysis, and intelligent content enhancement, designed for academic documents and publications.
 
-## 🚀 New: Enhanced Historical Document OCR
+## 🚀 New: Unified Processing Framework & MCP Support
 
-Our latest update brings specialized processing for historical documents:
+Our latest update brings significant improvements:
+
+```bash
+# Process documents with the unified framework
+./unified_project/scripts/process_academic.sh input.pdf output.pdf
+
+# Process documents with enhanced AI analysis
+./process_academic_local.py --input document.pdf --output enhanced.pdf --mcp
+
+# Run batch processing via Docker
+./unified_project/scripts/docker-entrypoint.sh batch input_dir output_dir
+```
+
+Key improvements:
+- **Unified architecture** with service containers and dependency injection
+- **MCP integration** utilizing Claude AI for enhanced document analysis
+- **SmolDocling integration** for academic paper optimization
+- **Advanced academic processing** for journal articles and theses
+- **JBIG2-optimized OCR** for improved text recognition
+- **Comprehensive refactoring** for better performance and maintainability
+
+## 🔍 Historical Document Processing
+
+Specialized processing for historical documents:
 
 ```bash
 # Process historical documents with optimized settings
@@ -17,7 +40,7 @@ Our latest update brings specialized processing for historical documents:
 ./accessibility_tools/scripts/container_accessibility.sh historical
 ```
 
-Key improvements:
+Features include:
 - **Advanced preprocessing** for yellowed paper, faded text, and degradation
 - **Historical document detection** algorithms for optimal processing
 - **Specialized OCR configurations** for historical typography
@@ -37,26 +60,27 @@ pip install -e .
 ./accessibility_tools.sh batch-enhance input_dir output_dir
 ```
 
-See [ACCESSIBILITY_GUIDE.md](ACCESSIBILITY_GUIDE.md) for complete documentation on processing modes and features.
+See [README.ACCESSIBILITY.md](README.ACCESSIBILITY.md) for complete documentation on processing modes and features.
 
-## 🔧 Adobe Acrobat JavaScript Tools
+## 🔧 Academic Document Processing
 
-New JavaScript tools for Adobe Acrobat Pro to help with manual tagging and optimization:
+New tools specifically designed for academic papers, theses, and journals:
 
+```bash
+# Process academic documents with SmolDocling
+./smolDocling/run.sh --input thesis.pdf --output accessible_thesis.pdf
+
+# Process with advanced academic features
+python unified_project/src/main.py --config config/academic.yaml --input paper.pdf
 ```
-acrobat_scripts/
-├── BatchPreflightAndOptimize.js  # Batch process multiple documents
-├── TaggingUtilities.js           # Fix tagging structure issues
-└── AcademicPDFToolbox.js         # Tools specific to academic documents
-```
 
-These scripts automate common tasks like:
-- Running Preflight fixups for fonts and tagging structure
-- Optimizing documents with compatible settings
-- Fixing heading hierarchy and table structure issues
-- Adding alt text to figures
-- Creating bookmarks and table of contents
-- Tagging equations and citations
+Academic processing features:
+- Multi-column layout detection and processing
+- Formula and equation recognition
+- Citation pattern analysis
+- Figure and table detection with proper tagging
+- Bibliography section optimization
+- Apple Silicon optimization for mathematical content
 
 ## Overview
 
@@ -64,14 +88,16 @@ This project provides a robust framework for enhancing PDF documents to meet acc
 
 ## Key Features
 
-- **Advanced OCR Processing**: Uses Tesseract OCR with adaptive configuration for optimal text extraction from scanned documents
+- **Unified Processing Framework**: Integrated pipeline for all document types with dependency injection
+- **MCP AI Support**: Claude AI integration for enhanced document analysis and accessibility improvements
+- **Advanced OCR Processing**: Uses Tesseract OCR with adaptive configuration for optimal text extraction
+- **SmolDocling Integration**: Optimized processing for academic papers with enhanced layout analysis
 - **Historical Document Support**: Specialized processing for yellowed paper, faded text, and degraded images
 - **Document Structure Analysis**: Automatically detects headings, tables, lists, and other structural elements
 - **Mathematical Content Detection**: Enhanced processing for equations and complex notation
 - **Comprehensive Reporting**: Generates detailed reports on accessibility issues and improvements
 - **Containerized Deployment**: Docker-based workflow for consistent processing across environments
 - **Customizable Resource Allocation**: Scalable processing for both small and large document batches
-- **Adobe Acrobat Integration**: JavaScript tools for post-processing in Adobe Acrobat Pro
 
 ## System Requirements
 
@@ -79,53 +105,49 @@ This project provides a robust framework for enhancing PDF documents to meet acc
 - Python 3.11+
 - Tesseract OCR 5.x
 - 8GB RAM minimum (16GB+ recommended for large documents)
+- Anthropic API key (optional, for enhanced analysis)
 
 ## Project Structure
 
 ```
 .
-├── accessibility_tools/      # Unified accessibility toolkit
+├── accessibility_tools/      # Core accessibility toolkit
 │   ├── core/                 # Core accessibility functionality
-│   │   ├── enhance_pdf.py                # Basic PDF enhancement
-│   │   ├── enhance_pdf_advanced.py       # Advanced PDF processing
-│   │   ├── enhance_pdf_journal.py        # Journal-specific processing
-│   │   └── enhance_pdf_ua.py             # PDF/UA compliance
 │   ├── scripts/              # Command-line interface scripts
-│   │   ├── accessibility_tools.sh        # Main CLI entry point
-│   │   ├── container_accessibility.sh    # Docker container management
-│   │   └── create_accessible_pdf_advanced.sh  # Advanced PDF processing
 │   ├── utils/                # Utility functions
 │   └── validation/           # Validation tools
-│       ├── batch_validate.py             # Batch validation
-│       └── validate_accessibility.py     # Single file validation
-├── acrobat_scripts/          # Adobe Acrobat JavaScript tools
-│   ├── BatchPreflightAndOptimize.js      # Process multiple documents
-│   ├── TaggingUtilities.js               # Fix tagging structure
-│   ├── AcademicPDFToolbox.js             # Academic document tools
-│   └── README.md                         # Usage documentation
 ├── brodie_code/              # OCR and text extraction tools
 │   ├── shell_scripts/        # Automation scripts
-│   │   ├── analyze.sh                    # Analysis automation
-│   │   ├── clean_*.sh                    # Cleanup utilities
-│   │   ├── container.sh                  # Container management
-│   │   └── docker-entrypoint.sh          # Container entry point
 │   ├── src/                  # Source code
-│   │   └── accessibility_checker/        # Main package
-│   │       ├── api/                      # API components
-│   │       ├── core/                     # Core functionality
-│   │       ├── ocr/                      # OCR processing
-│   │       │   ├── adaptive_config.py    # Adaptive OCR configuration
-│   │       │   ├── math_processor.py     # Math equation detection
-│   │       │   └── processor.py          # Main OCR processor
-│   │       └── utils/                    # Utilities
-│   ├── tessdata/             # Tesseract data
-│   │   └── configs/                      # OCR configurations
-│   │       └── historical.config         # Historical document config
-│   ├── config.yaml           # Configuration settings
-│   └── requirements.txt      # Python dependencies
-├── input/                    # Global input directory
-├── output/                   # Global output directory
-├── ACCESSIBILITY_GUIDE.md    # Comprehensive guide to accessibility features
+│   │   └── accessibility_checker/
+│   │       ├── api/          # API components
+│   │       ├── core/         # Core functionality
+│   │       ├── ocr/          # OCR processing
+│   │       └── utils/        # Utilities
+│   └── tessdata/             # Tesseract data
+├── data/                     # Global input/output directories
+│   ├── input/                # Input documents
+│   └── output/               # Output processed documents
+├── smolDocling/              # Academic document processing
+│   ├── src/                  # Source code
+│   │   ├── academic_processor.py
+│   │   ├── accessibility_processor.py
+│   │   └── document_enhancer.py
+│   └── tests/                # Unit tests
+├── unified_project/          # Unified processing framework
+│   ├── config/               # YAML configuration files
+│   ├── resources/            # Processing resources
+│   ├── scripts/              # Processing scripts
+│   └── src/                  # Source code
+│       ├── academic/         # Academic document processing
+│       ├── accessibility/    # Accessibility enhancement
+│       ├── cli/              # Command-line interfaces
+│       ├── core/             # Core framework
+│       ├── enhancement/      # Enhancement modules
+│       ├── metadata/         # Metadata processing
+│       ├── ocr/              # OCR processing modules
+│       └── validation/       # Validation modules
+├── README.ACCESSIBILITY.md   # Accessibility documentation
 └── CLAUDE.md                 # Development guidelines
 ```
 
@@ -146,14 +168,23 @@ This project provides a robust framework for enhancing PDF documents to meet acc
 
 3. **Process regular documents:**
    ```bash
-   # Basic processing with default resources (8GB RAM, 4 CPUs)
-   ./accessibility_tools/scripts/container_accessibility.sh process
+   # Using unified framework with default resources
+   ./unified_project/scripts/docker-entrypoint.sh process input.pdf output.pdf
    
-   # Processing with higher resources for large documents
+   # Using accessibility tools with higher resources
    ./accessibility_tools/scripts/container_accessibility.sh process 16g 8 14400  # 16GB RAM, 8 CPUs, 4h timeout
    ```
 
-4. **Process historical documents:**
+4. **Process academic documents:**
+   ```bash
+   # Using unified academic processor
+   ./unified_project/scripts/docker-entrypoint.sh academic input.pdf output.pdf
+   
+   # Using SmolDocling for academic papers
+   ./smolDocling/run.sh --input thesis.pdf --output accessible_thesis.pdf
+   ```
+
+5. **Process historical documents:**
    ```bash
    # Process historical documents with optimized settings
    ./accessibility_tools/scripts/container_accessibility.sh historical
@@ -162,28 +193,20 @@ This project provides a robust framework for enhancing PDF documents to meet acc
    ./accessibility_tools/scripts/container_accessibility.sh process 16g 8 14400 historical
    ```
 
-5. **Run diagnostics:**
+6. **Run diagnostics:**
    ```bash
    ./brodie_code/shell_scripts/container.sh diagnose
    ```
 
-6. **Clean output directories:**
+7. **Clean output directories:**
    ```bash
-   ./brodie_code/shell_scripts/container.sh clean
+   ./brodie_code/shell_scripts/clean_io.sh
    ```
-
-7. **Post-process in Adobe Acrobat Pro:**
-   - Open processed PDF in Adobe Acrobat Pro
-   - Use the Acrobat Scripts from the menu:
-     - File > Batch Preflight and Optimize
-     - Advanced > Tagging Utilities
-     - Document > Academic PDF Toolbox
 
 ### Local Development
 
 1. **Create virtual environment:**
    ```bash
-   cd brodie_code
    python -m venv venv
    source venv/bin/activate  # or `venv\Scripts\activate` on Windows
    ```
@@ -194,29 +217,46 @@ This project provides a robust framework for enhancing PDF documents to meet acc
    pip install -e .
    ```
 
-3. **Run processor:**
+3. **Run unified processor:**
    ```bash
-   python src/main.py
+   python unified_project/src/main.py --config config/default.yaml
+   ```
+
+4. **Run academic processor with MCP:**
+   ```bash
+   python process_academic_local.py --input document.pdf --output enhanced.pdf --mcp
    ```
 
 ## Configuration
 
-The `config.yaml` file controls processing behavior:
+The unified project uses YAML configuration files in the `unified_project/config/` directory:
 
 ```yaml
-# Example configuration
+# Example configuration (default.yaml)
 ocr:
+  engine: tesseract
   language: eng
   psm: 3
   oem: 3
-  char_whitelist: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}\"'-"
   additional_params:
     preserve_interword_spaces: 1
 
-max_workers: 4
-batch_size: 10
-timeout: 600
-retry_count: 3
+enhancement:
+  mode: standard
+  tag_headings: true
+  tag_tables: true
+  tag_figures: true
+  
+mcp:
+  enabled: false
+  analyze_structure: true
+  enhance_metadata: true
+  
+resources:
+  max_workers: 4
+  batch_size: 10
+  timeout: 600
+  retry_count: 3
 ```
 
 ## Document Processing Capabilities
@@ -234,34 +274,36 @@ The system uses an advanced document processing pipeline:
 2. **Adaptive Configuration**: Automatically adjusts OCR parameters based on document type
    - Standard processing for modern documents
    - Historical processing for aged documents
-   - Manuscript processing for handwritten content
+   - Academic processing for journal articles and papers
    - Adaptive mode for automatic document type detection
 
 3. **Content Detection**: 
    - Mathematical equation detection and processing
+   - Multi-column layout analysis
    - Historical typography and ligature handling
-   - Specialized dictionaries for different time periods
    - Table structure detection and analysis
+   - Figure and chart recognition
 
 4. **Quality Verification**: 
    - Validates OCR results with confidence scores
    - Compares OCR results across different processing modes
    - Provides detailed analysis reports
 
-### Adobe Acrobat Integration
+### MCP Integration
 
-Post-processing tools for Adobe Acrobat Pro:
+The system now integrates with Anthropic's Claude AI for enhanced document processing:
 
-1. **Automated Accessibility Fixes**:
-   - Fixes potential font problems using Preflight
-   - Fixes problems in PDF tagging structure
-   - Repairs heading hierarchy and table structure issues
-   
-2. **Academic Document Enhancement**:
-   - Automatic section detection (abstract, methods, results)
-   - Equation tagging with proper Formula elements
-   - Citation structure enhancement
-   - Table of contents generation
+1. **Intelligent Structure Analysis**:
+   - Semantic document structure extraction
+   - Advanced heading level detection
+   - Context-aware table of contents generation
+   - Citation and reference detection
+
+2. **Accessibility Enhancement**:
+   - AI-assisted alt text generation for images
+   - Equation description refinement
+   - Document summary generation
+   - Improved metadata extraction and enhancement
 
 ## Development Guidelines
 
@@ -278,17 +320,17 @@ See [CLAUDE.md](CLAUDE.md) for detailed development guidelines, including:
 1. **OCR Quality Issues:**
    - Verify Tesseract installation with `./brodie_code/shell_scripts/container.sh diagnose`
    - Check TESSDATA_PREFIX environment variable is correctly set
-   - Adjust OCR configuration in config.yaml
+   - Adjust OCR configuration in unified_project/config/default.yaml
 
 2. **Container Resource Issues:**
-   - For large documents, increase resources: `./brodie_code/shell_scripts/container.sh process 16g 8 14400`
+   - For large documents, increase resources: `./unified_project/scripts/docker-entrypoint.sh process input.pdf output.pdf 16g 8`
    - Check Docker resource allocation settings
    - Monitor container logs for memory or timeout errors
 
-3. **Processing Errors:**
-   - Check input PDF format and quality
-   - Review logs in output/logs/ directory
-   - Verify file permissions for input and output directories
+3. **MCP Integration Issues:**
+   - Verify ANTHROPIC_API_KEY is set correctly
+   - Check network connectivity to Anthropic API
+   - Review logs for API rate limiting or timeout errors
 
 ## Contributing
 
