@@ -5,7 +5,7 @@ ocr:
   language: eng
   psm: 1  # Automatic page segmentation with OSD
   oem: 3  # Default LSTM engine
-  dpi: 300
+  dpi: 250  # Reduced from 300 for better performance while maintaining quality
   tessdata_dir: /usr/share/tesseract-ocr/5/tessdata
   additional_params:
     textord_tablefind_recognize_tables: 1

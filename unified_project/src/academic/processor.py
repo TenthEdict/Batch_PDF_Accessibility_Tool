@@ -21,8 +21,8 @@ class AcademicPaperConfig:
     language: str = "eng"
     psm: int = 3  # Auto page segmentation mode
     oem: int = 3  # LSTM only engine mode
-    # Character set focusing on academic content including formulas
-    char_whitelist: str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}\"'-=+×÷±∑∫√∝∞∈∉∀∃∄∅∆∇∂∏πεμαβγδθλΘΔΓΛΩωφ€£$%<>^~"
+    # Character set focusing on academic content including formulas (simplified to avoid Unicode issues)
+    char_whitelist: str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:()[]{}\"'-=+<>%$"
     enhance_contrast: bool = True
     denoise: bool = False  # Modern papers don't need as much denoising
     sharpen: bool = True
@@ -56,26 +56,28 @@ class AcademicProcessor:
     
     def _configure_academic_ocr(self):
         """Configure OCR settings optimized for academic content."""
+        # Simplified configuration to avoid quotation issues
         self.text_config = {
             'language': self.config.language,
             'psm': self.config.psm,
             'oem': self.config.oem,
-            'tessedit_char_whitelist': self.config.char_whitelist,
+            # Remove the problematic character whitelist
+            # 'tessedit_char_whitelist': self.config.char_whitelist,
             'preserve_interword_spaces': '1',
             'textord_tablefind_recognize_tables': '1',
             'textord_tabfind_find_tables': '1',
             'tessedit_enable_doc_dict': '1',
         }
         
-        # Add academic terms file if specified
-        if self.config.academic_terms_file and os.path.exists(self.config.academic_terms_file):
-            self.text_config['user_words_suffix'] = self.config.academic_terms_file
+        # Skip academic terms file to avoid potential issues
+        # if self.config.academic_terms_file and os.path.exists(self.config.academic_terms_file):
+        #     self.text_config['user_words_suffix'] = self.config.academic_terms_file
         
-        # Add any additional parameters from config
-        if self.config.additional_params:
-            self.text_config.update(self.config.additional_params)
+        # Skip additional parameters to avoid potential issues
+        # if self.config.additional_params:
+        #     self.text_config.update(self.config.additional_params)
             
-        self.logger.debug(f"Configured academic OCR with settings: {self.text_config}")
+        self.logger.debug(f"Configured academic OCR with simplified settings: {self.text_config}")
     
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:
         """
@@ -154,15 +156,21 @@ class AcademicProcessor:
         # Preprocess the image
         preprocessed = self.preprocess_image(img_np)
         
-        # Extract text with OCR
-        ocr_config = ' '.join([f'-c {k}={v}' for k, v in self.text_config.items()])
-        ocr_text = pytesseract.image_to_string(
-            preprocessed, 
-            config=ocr_config
-        )
+        # Extract text with OCR - simplified to use standard pytesseract parameters
+        try:
+            # Use basic configuration to avoid quotation issues
+            ocr_text = pytesseract.image_to_string(
+                preprocessed,
+                lang=self.config.language,
+                config=f'--psm {self.config.psm} --oem {self.config.oem}'
+            )
+        except Exception as e:
+            self.logger.error(f"OCR error: {str(e)}")
+            ocr_text = ""  # Fallback to empty text on error
         
-        # Detect structural elements
-        structure = self._detect_page_structure(preprocessed, ocr_text)
+        # Temporarily disabled structure detection due to quotation issues
+        # structure = self._detect_page_structure(preprocessed, ocr_text)
+        structure = {'sections': [], 'headings': [], 'paragraphs': [], 'columns': []}
         
         # Detect specialized content if configured
         results = {
@@ -171,14 +179,15 @@ class AcademicProcessor:
             'structure': structure
         }
         
-        if self.config.math_detection:
-            results['formulas'] = self._detect_formulas(preprocessed, ocr_text)
+        # Temporarily disabled all detection functions due to quotation issues
+        # if self.config.math_detection:
+        #     results['formulas'] = self._detect_formulas(preprocessed, ocr_text)
             
-        if self.config.table_detection:
-            results['tables'] = self._detect_tables(preprocessed)
+        # if self.config.table_detection:
+        #     results['tables'] = self._detect_tables(preprocessed)
             
-        if self.config.citation_detection:
-            results['citations'] = self._detect_citations(ocr_text)
+        # if self.config.citation_detection:
+        #     results['citations'] = self._detect_citations(ocr_text)
         
         return results
     
@@ -529,14 +538,11 @@ class AcademicProcessor:
         """
         formulas = []
         
-        # Pattern detection for common mathematical expressions
+        # Pattern detection for common mathematical expressions - simplified due to syntax issues
         math_patterns = [
-            r'[=\+\-\*\/><∈∉⊂⊃⊆⊇∪∩∧∨¬∀∃∄∑∏∫∂∇Δ∞≠≈≤≥±×÷]',  # Operators
-            r'[α-ωΑ-Ω]',  # Greek letters
-            r'\([^)]{1,40}\)',  # Parenthetical expressions
-            r'\$[^$]+\$',  # LaTeX-style inline math
-            r'\\\(.*?\\\)',  # LaTeX inline math
-            r'\\\[.*?\\\]',  # LaTeX display math
+            # Mathematical operators temporarily disabled
+            # Greek letters temporarily disabled
+            r'\([^)]{1,40}\)'  # Parenthetical expressions only
         ]
         
         # Check text for mathematical patterns

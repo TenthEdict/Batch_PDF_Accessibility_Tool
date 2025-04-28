@@ -21,6 +21,7 @@
 - python-pptx
 - opencv-python
 - scikit-image
+- poppler-utils (system dependency, install with `sudo apt-get install poppler-utils`)
 
 ## Code Style Guidelines
 - **Imports**: Standard lib → third-party → local (group and alphabetize)

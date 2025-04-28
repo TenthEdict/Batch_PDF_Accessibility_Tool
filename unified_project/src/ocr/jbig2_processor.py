@@ -26,10 +26,10 @@ class JBIG2OCRProcessor:
         
         Args:
             min_confidence: Minimum confidence threshold for OCR text (default: 40)
-            dpi: DPI for image processing (default: 300)
+            dpi: DPI for image processing (default: 300, maximum allowed)
         """
         self.min_confidence = min_confidence
-        self.dpi = dpi
+        self.dpi = min(dpi, 300)  # Ensure DPI is at most 300
     
     def preprocess_image(self, image):
         """

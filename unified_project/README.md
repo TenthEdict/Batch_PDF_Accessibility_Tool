@@ -42,6 +42,7 @@ The unified project combines capabilities for enhancing document accessibility a
 1. Create virtual environment: `python -m venv venv`
 2. Activate: `source venv/bin/activate` (Unix) or `venv\Scripts\activate` (Windows)
 3. Install dependencies: `pip install -r requirements.txt`
+4. Install system dependencies: `sudo apt-get install -y poppler-utils` (Required for PDF to image conversion)
 
 ### Academic Paper Processing
 Process a single academic paper:

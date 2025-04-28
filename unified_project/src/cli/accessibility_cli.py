@@ -177,9 +177,10 @@ def run_ocr_command(args, config):
 
 def run_enhance_command(args, config):
     """Run enhance command."""
+    from src.enhancers.pdf_enhancer import PDFEnhancer
+    
     if args.level == "basic":
-        from src.enhancers.basic_enhancer import BasicEnhancer
-        enhancer = BasicEnhancer()
+        enhancer = PDFEnhancer()
     else:
         logger.warning(f"Enhancement level '{args.level}' not yet implemented")
         return 1
