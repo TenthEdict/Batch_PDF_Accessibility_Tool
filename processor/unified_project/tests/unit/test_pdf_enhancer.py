@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for the BasicEnhancer module.
+Unit tests for the PDFEnhancer module.
 """
 
 import os
@@ -10,16 +10,16 @@ from pathlib import Path
 import tempfile
 
 # Add parent directory to path to allow importing modules
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent.parent))
 
-from src.enhancers.basic_enhancer import BasicEnhancer
+from processor.unified_project.src.enhancers.pdf_enhancer import PDFEnhancer
 
-class TestBasicEnhancer(unittest.TestCase):
-    """Test cases for the BasicEnhancer module."""
+class TestPDFEnhancer(unittest.TestCase):
+    """Test cases for the PDFEnhancer module."""
     
     def setUp(self):
         """Set up test fixtures."""
-        self.enhancer = BasicEnhancer()
+        self.enhancer = PDFEnhancer()
         self.temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = Path(self.temp_dir.name)
     
@@ -29,7 +29,7 @@ class TestBasicEnhancer(unittest.TestCase):
     
     def test_initialization(self):
         """Test enhancer initialization."""
-        self.assertIsInstance(self.enhancer, BasicEnhancer)
+        self.assertIsInstance(self.enhancer, PDFEnhancer)
     
     def test_file_not_found(self):
         """Test handling of non-existent input file."""

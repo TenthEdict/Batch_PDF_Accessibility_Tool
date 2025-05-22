@@ -1,35 +1,71 @@
-# SmolDocling Document Processing - Development Guide
+# CLAUDE.md
 
-## Build & Setup Commands
-- Create virtual environment: `python -m venv venv`
-- Activate virtual environment: `source venv/bin/activate` (Unix) or `venv\Scripts\activate` (Windows)
-- Install dependencies: `pip install -r requirements.txt`
-- Run the processing pipeline: `./run.sh`
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Structure
-- Input documents in `/data/input` directory
-- Processed results in `/data/output` directory
-- Source code in `/src` directory
-- Tests in `/tests` directory
+## Commands
 
-## Dependencies
-- docling-core
-- mlx-vlm (Apple Silicon optimized)
-- pillow
-- pymupdf
-- python-docx
-- python-pptx
-- opencv-python
-- scikit-image
-- poppler-utils (system dependency, install with `sudo apt-get install poppler-utils`)
+### Setup
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # Unix/MacOS
+# venv\Scripts\activate   # Windows
 
-## Code Style Guidelines
-- **Imports**: Standard lib → third-party → local (group and alphabetize)
-- **Formatting**: 4-space indentation, 88-char line length (PEP 8)
-- **Type Hints**: Required for function signatures with arrow syntax
-- **Docstrings**: Triple quotes with Args/Returns sections
-- **Error Handling**: Specific exception types, avoid bare excepts
-- **Resources**: Always use context managers (with statements)
-- **Classes**: Single responsibility, split large classes
-- **Naming**: snake_case for variables/functions, PascalCase for classes
-- **Logging**: Use logger, not print statements
+# Install dependencies
+pip install -r processor/unified_project/requirements.txt
+
+# Install system dependencies (Linux)
+sudo apt-get install -y poppler-utils
+```
+
+### Processing Documents
+```bash
+# Process academic papers
+./processor/unified_project/scripts/process_academic.sh input.pdf output.pdf
+
+# Process with batch mode
+./processor/unified_project/scripts/process_academic.sh --batch input_directory output_directory
+
+# Process historical documents
+./processor/unified_project/scripts/process_document.sh --mode historical input.pdf output.pdf
+```
+
+### Docker
+```bash
+# Build Docker images
+docker build -f processor/unified_project/Dockerfile.academic -t epubs/academic_processor:latest processor/unified_project/
+docker build -f processor/unified_project/Dockerfile -t epubs/unified_processor:latest processor/unified_project/
+
+# Run with Docker
+docker run --rm -v /path/to/input.pdf:/data/input/document.pdf -v /path/to/output:/data/output \
+  epubs/academic_processor:latest --mode academic /data/input/document.pdf /data/output/accessible.pdf
+```
+
+## Architecture
+
+This project is focused on enhancing document accessibility for both academic and historical publications:
+
+### Core Components
+- **Service Container**: Central dependency injection system (`processor/unified_project/src/core/service_container.py`)
+- **Enhancers**: Document transformation modules (`processor/unified_project/src/enhancers/`)
+  - `enhancer_base.py`: Abstract base class for all enhancers
+  - `basic_enhancer.py`: General document enhancements
+  - `pdf_enhancer.py`: PDF-specific accessibility improvements
+- **OCR**: Text recognition and processing (`processor/unified_project/src/ocr/`)
+  - Specialized processors for different document types
+  - Historical document optimizations in `processor/brodie_code/`
+- **Validation**: Accessibility compliance checking (`processor/unified_project/src/validation/`)
+  - Rules-based validation in `rules.py`
+  - `accessibility_validator.py`: Main validation engine
+
+### Project Structure
+- **Configuration**: YAML files in `processor/unified_project/config/` control processing behavior
+- **Academic Processing**: Specialized modules in `processor/unified_project/src/academic/` for academic papers
+- **Automation**: Workflow scripts in `automation/` directory
+- **Scraper**: Document acquisition tools in `scraper/` directory
+
+### Extension Pattern
+New capabilities should:
+1. Implement interfaces defined in `processor/unified_project/src/core/interfaces.py`
+2. Register with the service container for dependency management
+3. Follow existing patterns for document type specialization

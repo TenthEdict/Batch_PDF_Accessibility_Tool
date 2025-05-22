@@ -11,9 +11,9 @@ import tempfile
 import json
 
 # Add parent directory to path to allow importing modules
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent.parent))
 
-from src.validation.accessibility_validator import AccessibilityValidator
+from processor.unified_project.src.validation.accessibility_validator import AccessibilityValidator
 
 class TestAccessibilityValidator(unittest.TestCase):
     """Test cases for the AccessibilityValidator module."""

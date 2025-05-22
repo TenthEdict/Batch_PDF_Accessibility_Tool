@@ -1,41 +1,44 @@
-# Already ignored files
-src.zip
-key.txt
-frontend.archive
-container_ub.sh
-container_ub_run.sh
-
-# Newly specified files to ignore
-fix_output_paths.py
-migrate_structure.py
-input/
-output/
-/archive
-/ocr_env
-/pdf_venv
-**/docling_venv
-MoslerThesis/
-acrobat_scripts/
-
-# Python related
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
-*.egg
-*.egg-info/
-dist/
+.Python
 build/
-!brodie_code/src/accessibility_checker/build/
+!processor/brodie_code/src/accessibility_checker/build/
+develop-eggs/
+dist/
+downloads/
 eggs/
+.eggs/
+lib/
+lib64/
 parts/
 bin/
 var/
 sdist/
-develop-eggs/
+wheels/
+*.egg-info/
 .installed.cfg
-lib/
-lib64/
+*.egg
+MANIFEST
+
+# Virtual Environment
 venv/
+env/
+ENV/
+.venv/
+.env/
+/ocr_env
+/pdf_venv
+**/docling_venv
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 
 # OS generated files
 .DS_Store
@@ -47,9 +50,49 @@ ehthumbs.db
 Thumbs.db
 .smbdelete*
 
-# IDE related (common clutter)
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
+# Downloaded materials and logs
+automation/downloaded_materials/
+automation/logs/
+scraper/temp/
+
+# Temporary files and output
+input/
+output/
+processor/unified_project/data/input/*
+processor/unified_project/data/output/*
+!processor/unified_project/data/input/.gitkeep
+!processor/unified_project/data/output/.gitkeep
+
+# Project specific files
+src.zip
+key.txt
+frontend.archive
+container_ub.sh
+container_ub_run.sh
+fix_output_paths.py
+migrate_structure.py
+/archive
+MoslerThesis/
+acrobat_scripts/
+
+# Configuration files with sensitive data
+*.env
+*.ini
+secrets.yaml
+
+# Local development files
+local_config.yaml
+local_settings.py
+
+# Test data
+test_files/
+temp_tests/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+*.ipynb
+
+# Cache files
+.cache/
+.pytest_cache/

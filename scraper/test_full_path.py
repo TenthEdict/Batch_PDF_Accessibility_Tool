@@ -1,4 +1,4 @@
-from purdue_downloader import generate_download_path, is_wsl, convert_to_windows_path
+from scraper.purdue_downloader import generate_download_path, is_wsl, convert_to_windows_path
 import os
 from urllib.parse import urlparse
 

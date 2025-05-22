@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 import subprocess
 import shutil
 import sys
@@ -32,9 +33,10 @@ LOG_DIR_NAME = config('LOG_DIR_NAME', default='logs')
 LOG_FILE_NAME = config('LOG_FILE_NAME', default='automation_workflow.log')
 CONFIG_LOG_LEVEL = config('LOG_LEVEL', default='INFO').upper()
 
-# Construct full paths
-PURDUE_DOWNLOADER_SCRIPT_PATH = BASE_SCRIPT_DIR / PURDUE_DOWNLOADER_SCRIPT_NAME
-UNIFIED_PROJECT_DIR = BASE_SCRIPT_DIR / UNIFIED_PROJECT_DIR_NAME
+# Construct full paths for the monorepo structure
+REPO_ROOT = BASE_SCRIPT_DIR.parent
+PURDUE_DOWNLOADER_SCRIPT_PATH = REPO_ROOT / "scraper" / PURDUE_DOWNLOADER_SCRIPT_NAME
+UNIFIED_PROJECT_DIR = REPO_ROOT / "processor" / UNIFIED_PROJECT_DIR_NAME
 LOG_DIR = BASE_SCRIPT_DIR / LOG_DIR_NAME
 LOG_FILE_PATH = LOG_DIR / LOG_FILE_NAME
 
@@ -98,48 +100,84 @@ def run_purdue_downloader(base_url: str, download_target_dir: Path, script_path:
     Executes purdue_downloader.py to download files.
     Returns a list of paths to the downloaded PDF files.
     """
-    logger.info(f"Executing {script_path.name} with base URL: {base_url} to {download_target_dir}")
+    logger.info(f"Executing {script_path.name} with base URL: {base_url}")
     
-    download_target_dir.mkdir(parents=True, exist_ok=True) # [1, 3, 5, 4]
+    # With the monorepo philosophy, we let the scraper determine the appropriate directory
+    # structure based on the URL, rather than forcing a specific download target directory
+    download_target_dir.mkdir(parents=True, exist_ok=True)
     
-    # Adapt this command to the actual arguments purdue_downloader.py expects
+    # Use the scraper module directly
     command = [
         'python3', 
-        str(script_path),
-        '--base-url', base_url,
-        '--output-dir', str(download_target_dir)
+        '-m',
+        'scraper.purdue_downloader',  # Use as module within monorepo
+        '--url', base_url
     ]
     
+    if base_url.endswith('.txt'):
+        # If the base_url is actually a path to a text file with URLs
+        command = [
+            'python3',
+            '-m',
+            'scraper.purdue_downloader',
+            '--file', base_url
+        ]
+    
     try:
-        # `check=True` raises CalledProcessError for non-zero exit codes [6, 7, 8]
-        # `capture_output=True` captures stdout/stderr [6, 9, 10]
-        # `text=True` decodes stdout/stderr as text
+        # Execute from the repo root to ensure proper module imports
         result = subprocess.run(
             command, 
             capture_output=True, 
             text=True, 
             check=True,
-            cwd=script_path.parent # Run script from its own directory [6]
+            cwd=REPO_ROOT  # Run from repo root for proper module imports
         )
-        logger.info(f"{script_path.name} executed successfully.")
-        if result.stdout: # Log stdout if not empty
-            logger.debug(f"{script_path.name} STDOUT:\n{result.stdout.strip()}")
-        if result.stderr: # Log stderr if not empty
-            logger.warning(f"{script_path.name} STDERR:\n{result.stderr.strip()}")
+        logger.info(f"Scraper executed successfully.")
+        if result.stdout:
+            logger.debug(f"Scraper STDOUT:\n{result.stdout.strip()}")
+        if result.stderr:
+            logger.warning(f"Scraper STDERR:\n{result.stderr.strip()}")
+        
+        # Since the scraper organizes files into directories based on the URL structure,
+        # we need to find all PDFs that were downloaded by searching recursively
+        downloaded_files = []
+        
+        # Default location is within S: drive, but we'll also check for local files
+        s_drive_path = Path('/mnt/s/Departments/ePubs/Accessibility_Project')
+        if s_drive_path.exists():
+            # Walk through the directory structure to find newly created PDF files
+            for root, _, files in os.walk(s_drive_path):
+                for file in files:
+                    if file.endswith('.pdf'):
+                        file_path = Path(root) / file
+                        # Only include recently created files (within the last hour)
+                        if (datetime.now().timestamp() - file_path.stat().st_mtime) < 3600:
+                            downloaded_files.append(file_path)
             
-        # Identify downloaded files (assuming PDFs in the target directory)
-        downloaded_files = list(download_target_dir.glob('*.pdf')) # [11, 12]
-        logger.info(f"Found {len(downloaded_files)} downloaded PDF files in {download_target_dir}")
+            logger.info(f"Found {len(downloaded_files)} recently downloaded PDF files in S: drive structure")
+        
+        # Also check local directories in case files were downloaded there
+        for root, _, files in os.walk(download_target_dir):
+            for file in files:
+                if file.endswith('.pdf'):
+                    file_path = Path(root) / file
+                    downloaded_files.append(file_path)
+        
+        if not downloaded_files:
+            logger.warning("No PDF files were found in the expected locations")
+        else:
+            logger.info(f"Found a total of {len(downloaded_files)} PDF files to process")
+        
         return downloaded_files
 
     except subprocess.CalledProcessError as e:
-        logger.error(f"{script_path.name} failed. Return code: {e.returncode}")
+        logger.error(f"Scraper failed. Return code: {e.returncode}")
         logger.error(f"Command: {' '.join(e.cmd)}")
         if e.stdout:
             logger.error(f"STDOUT: {e.stdout.strip()}")
         if e.stderr:
             logger.error(f"STDERR: {e.stderr.strip()}")
-        raise # Re-raise to be caught by main error handler
+        raise
     except FileNotFoundError:
         logger.error(f"The script {script_path} or python3 interpreter was not found.")
         raise
@@ -147,35 +185,55 @@ def run_purdue_downloader(base_url: str, download_target_dir: Path, script_path:
 
 # --- Stage 1.5: Prepare Input for Unified Project ---
 def prepare_unified_project_input(downloaded_files: list[Path], unified_input_dir: Path):
-    """Moves downloaded files to the unified_project input directory."""
+    """
+    Copies downloaded files to the unified_project input directory.
+    Instead of moving, we copy to preserve the original directory structure.
+    """
     logger.info(f"Preparing input for unified_project in {unified_input_dir}...")
-    unified_input_dir.mkdir(parents=True, exist_ok=True) # [1, 3, 5, 4]
+    unified_input_dir.mkdir(parents=True, exist_ok=True)
 
-    moved_files_count = 0
+    copied_files_count = 0
     if not downloaded_files:
-        logger.info("No downloaded files to move to unified_project input.")
-        return
+        logger.info("No downloaded files to copy to unified_project input.")
+        return []
 
+    # Keep track of files copied to the input directory
+    input_files = []
+    
     for src_file_path in downloaded_files:
         if not src_file_path.is_file():
-            logger.warning(f"Source {src_file_path} is not a file or was already moved, skipping.")
+            logger.warning(f"Source {src_file_path} is not a file, skipping.")
             continue
         
+        # For each downloaded file, copy it to the processor input
+        # We'll use the original filename to maintain traceability
         dest_file_path = unified_input_dir / src_file_path.name
+        
         try:
-            shutil.move(str(src_file_path), str(dest_file_path)) # [13, 14, 15, 16, 17, 18, 19]
-            logger.debug(f"Moved {src_file_path} to {dest_file_path}")
-            moved_files_count += 1
-        except shutil.Error as e:
-            logger.error(f"Error moving {src_file_path} to {dest_file_path}: {e}")
-        except FileNotFoundError:
-            logger.error(f"Source file {src_file_path} not found for moving. It might have been moved or deleted by another process.")
-        except Exception as e: # Catch any other unexpected error during move
-            logger.error(f"An unexpected error occurred while moving {src_file_path}: {e}")
+            # Use copy2 to preserve metadata
+            shutil.copy2(str(src_file_path), str(dest_file_path))
+            logger.debug(f"Copied {src_file_path} to {dest_file_path}")
+            copied_files_count += 1
             
-    logger.info(f"Moved {moved_files_count} files to {unified_input_dir}.")
-    if moved_files_count!= len(downloaded_files):
-        logger.warning("Not all identified downloaded files were moved. Check logs for details.")
+            # Track the files we've copied to the input directory
+            input_files.append(dest_file_path)
+            
+            # Store the original path for each file to know where to place processed results
+            # We'll use a parallel list to maintain the relationship
+            input_files[-1].original_path = src_file_path
+            
+        except shutil.Error as e:
+            logger.error(f"Error copying {src_file_path} to {dest_file_path}: {e}")
+        except FileNotFoundError:
+            logger.error(f"Source file {src_file_path} not found for copying.")
+        except Exception as e:
+            logger.error(f"An unexpected error occurred while copying {src_file_path}: {e}")
+            
+    logger.info(f"Copied {copied_files_count} files to {unified_input_dir}.")
+    if copied_files_count != len(downloaded_files):
+        logger.warning("Not all downloaded files were copied. Check logs for details.")
+        
+    return input_files
 
 
 # --- Stage 2: Execute unified_project ---
@@ -224,38 +282,69 @@ def execute_unified_project(project_dir: Path, executable_name: str):
 
 
 # --- Stage 3: Process unified_project/output/ ---
-def process_unified_project_output(project_output_dir: Path, final_processed_dir: Path):
-    """Moves files from unified_project's output to the final processed directory."""
-    logger.info(f"Processing output from {project_output_dir} to {final_processed_dir}...")
+def process_unified_project_output(project_output_dir: Path, input_files: list[Path]):
+    """
+    Moves processed files from unified_project's output back to their original locations.
+    Each processed file is placed in a 'processed/' subdirectory relative to its original location.
+    """
+    logger.info(f"Processing output from {project_output_dir}...")
     
     if not project_output_dir.is_dir():
         logger.warning(f"Project output directory {project_output_dir} does not exist. No files to move.")
         return
 
-    final_processed_dir.mkdir(parents=True, exist_ok=True) # [1, 3, 5, 4]
-
-    # List all files and directories to move. If only files, add f.is_file()
-    output_items = list(project_output_dir.iterdir()) # [11, 12]
+    # List all output files
+    output_items = [f for f in project_output_dir.iterdir() if f.is_file() and f.suffix.lower() == '.pdf']
     
     moved_items_count = 0
     if not output_items:
-        logger.info(f"No items found in {project_output_dir} to move.")
+        logger.info(f"No PDF items found in {project_output_dir} to move.")
         return
 
-    for src_item_path in output_items:
-        dest_item_path = final_processed_dir / src_item_path.name
-        try:
-            shutil.move(str(src_item_path), str(dest_item_path)) # [13, 14, 15, 16, 17, 18, 19]
-            logger.debug(f"Moved {src_item_path} to {dest_item_path}")
-            moved_items_count += 1
-        except shutil.Error as e: # Catches errors like destination already exists and is not a directory
-            logger.error(f"Error moving {src_item_path} to {dest_item_path}: {e}")
-        except Exception as e:
-            logger.error(f"An unexpected error occurred while moving {src_item_path}: {e}")
+    # Process each output file
+    for src_output_path in output_items:
+        # Try to find the corresponding input file
+        matching_input = None
+        
+        # Match based on filename (without considering path)
+        for input_file in input_files:
+            if src_output_path.name == input_file.name:
+                matching_input = input_file
+                break
+                
+        # If we found a matching input file, we know its original location
+        if matching_input and hasattr(matching_input, 'original_path'):
+            # Create a 'processed' subdirectory in the original location
+            original_path = matching_input.original_path
+            processed_dir = original_path.parent / 'processed'
+            processed_dir.mkdir(parents=True, exist_ok=True)
             
-    logger.info(f"Moved {moved_items_count} output items to {final_processed_dir}.")
-    if moved_items_count!= len(output_items):
-        logger.warning("Not all identified output items were moved. Check logs for details.")
+            # Define the destination path in the processed directory
+            dest_item_path = processed_dir / original_path.name
+            
+            try:
+                # Copy the processed file to its destination
+                shutil.copy2(str(src_output_path), str(dest_item_path))
+                logger.debug(f"Copied processed file to original location: {dest_item_path}")
+                moved_items_count += 1
+            except Exception as e:
+                logger.error(f"Error copying processed file to {dest_item_path}: {e}")
+        else:
+            # If we can't determine the original location, log a warning
+            logger.warning(f"Could not determine original location for {src_output_path.name}")
+            
+    logger.info(f"Copied {moved_items_count} processed files back to their original locations.")
+    if moved_items_count != len(output_items):
+        logger.warning("Not all processed files were copied back. Check logs for details.")
+        
+    # Clean up the processor output directory after processing
+    try:
+        for item in project_output_dir.iterdir():
+            if item.is_file():
+                item.unlink()  # Remove files
+        logger.debug(f"Cleaned up processor output directory")
+    except Exception as e:
+        logger.warning(f"Error cleaning up processor output directory: {e}")
 
 
 # --- Main Orchestration ---
@@ -321,14 +410,19 @@ def main():
         
         if not downloaded_files:
             logger.warning("No files were downloaded by purdue_downloader.py. "
-                           "Proceeding, but unified_project may not have input.")
-            # Depending on requirements, you might choose to exit here:
-            # logger.info("Exiting workflow as no files were downloaded.")
-            # sys.exit(0) # Or sys.exit(1) if this is an error condition
+                           "Exiting as there are no files to process.")
+            logger.info("Workflow completed with no files to process.")
+            return 0
 
         # --- Stage 1.5: Prepare input for unified_project ---
         logger.info("--- Stage 1.5: Preparing input for Unified Project ---")
-        prepare_unified_project_input(downloaded_files, unified_input_dir)
+        input_files = prepare_unified_project_input(downloaded_files, unified_input_dir)
+        
+        if not input_files:
+            logger.warning("No files were prepared for processing. "
+                          "Exiting as there are no files to process.")
+            logger.info("Workflow completed with no files to process.")
+            return 0
 
         # --- Stage 2: Execute unified_project ---
         logger.info("--- Stage 2: Executing Unified Project ---")
@@ -336,7 +430,7 @@ def main():
 
         # --- Stage 3: Process output from unified_project ---
         logger.info("--- Stage 3: Processing Unified Project Output ---")
-        process_unified_project_output(unified_output_dir, final_processed_dir)
+        process_unified_project_output(unified_output_dir, input_files)
 
         logger.info(f"Workflow completed successfully for run ID: {args.run_id}.")
 
