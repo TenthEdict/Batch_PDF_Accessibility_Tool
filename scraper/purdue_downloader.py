@@ -967,19 +967,25 @@ def generate_download_path(base_url, event_url=None):
     # Add the series
     path_components.append(series)
     
-    # Add section (typically year like 2024) if present - treat as string
+    # Check if the additional URL parts are meaningful subsections or just numeric identifiers
+    has_meaningful_subsections = False
+    
+    # Look for meaningful subsections like years, volume names, etc.
     if len(url_parts) > 1:
         section = url_parts[1]
-        # Include the section (year) even if it's a digit like 2024
-        if not "announcements.html" in section and not "." in section:
+        # Check if section is a meaningful name (not a numeric ID or HTML file)
+        if not section.isdigit() and not "announcements.html" in section and not "." in section:
+            has_meaningful_subsections = True
             path_components.append(section)
+            
+            # Add additional partitions if present and meaningful
+            if len(url_parts) > 2:
+                partition = url_parts[2]
+                if not partition.isdigit() and not "announcements.html" in partition and not "." in partition:
+                    path_components.append(partition)
     
-    # Add partition (va, cmec) if present
-    if len(url_parts) > 2:
-        partition = url_parts[2]
-        # Include partition, but filter out numeric event IDs and HTML files
-        if not "announcements.html" in partition and not "." in partition and not partition.isdigit():
-            path_components.append(partition)
+    # If no meaningful subsections were found, stop at the series level
+    # All PDFs will be placed directly in the series directory
     
     # Combine into a full path using forward slashes for Linux
     full_path = os.path.join(*path_components)

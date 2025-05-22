@@ -79,6 +79,7 @@ acrobat_scripts/
 *.env
 *.ini
 secrets.yaml
+credentials.txt
 
 # Local development files
 local_config.yaml
