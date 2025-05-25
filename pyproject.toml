@@ -131,7 +131,10 @@ all = [
 ]
 
 [project.scripts]
-# Main CLI scripts - using existing entry points for now
+# Unified CLI entry point
+epubs = "processor.unified_project.src.cli.main:main"
+
+# Legacy CLI scripts (maintained for backward compatibility)
 epubs-process-academic = "processor.process_academic_local:main"
 epubs-scrape = "scraper.purdue_downloader:main"
 epubs-automate = "automation.automate_workflow:main"

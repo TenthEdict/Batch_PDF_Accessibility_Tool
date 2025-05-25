@@ -150,3 +150,69 @@ def get_container() -> ServiceContainer:
         ServiceContainer: Global service container instance
     """
     return container
+
+
+def register_default_services(container: ServiceContainer) -> None:
+    """
+    Register default services in the container.
+    
+    Args:
+        container: Service container to register services in
+    """
+    # Register configuration manager factory
+    def config_manager_factory(container):
+        from ..config.config_manager import ConfigManager
+        from ..config.epubs_schema import create_epubs_config_schema
+        from pathlib import Path
+        
+        config_path = Path(__file__).parent.parent.parent / 'config'
+        schema = create_epubs_config_schema()
+        return ConfigManager(config_path, schema)
+    
+    # Register repository factories
+    def document_repository_factory(container):
+        from ..repositories.document_repository import FileSystemDocumentRepository
+        return FileSystemDocumentRepository()
+    
+    def metadata_repository_factory(container):
+        from ..repositories.metadata_repository import FileBasedMetadataRepository
+        return FileBasedMetadataRepository()
+    
+    def config_repository_factory(container):
+        from ..repositories.config_repository import YamlConfigRepository
+        from pathlib import Path
+        config_path = Path(__file__).parent.parent.parent / 'config'
+        return YamlConfigRepository(config_path)
+    
+    # Register service factories
+    def document_service_factory(container):
+        from ..services.document_service import DocumentService
+        return DocumentService(container)
+    
+    def enhancement_service_factory(container):
+        from ..services.enhancement_service import EnhancementService
+        return EnhancementService(container)
+    
+    def validation_service_factory(container):
+        from ..services.validation_service import ValidationService
+        return ValidationService(container)
+    
+    def metadata_service_factory(container):
+        from ..services.metadata_service import MetadataService
+        return MetadataService(container)
+    
+    # Register configuration manager
+    container.register('config_manager', config_manager_factory, singleton=True)
+    
+    # Register repositories
+    container.register('document_repository', document_repository_factory, singleton=True)
+    container.register('metadata_repository', metadata_repository_factory, singleton=True)
+    container.register('config_repository', config_repository_factory, singleton=True)
+    
+    # Register services
+    container.register('document_service', document_service_factory, singleton=True)
+    container.register('enhancement_service', enhancement_service_factory, singleton=True)
+    container.register('validation_service', validation_service_factory, singleton=True)
+    container.register('metadata_service', metadata_service_factory, singleton=True)
+    
+    logger.info("Registered default services, repositories, and configuration manager in container")

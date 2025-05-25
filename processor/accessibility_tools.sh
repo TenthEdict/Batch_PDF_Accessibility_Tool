@@ -1,17 +1,43 @@
-#\!/bin/bash
+#!/bin/bash
 #
-# PDF Accessibility Tools - Main wrapper script
+# DEPRECATED: PDF Accessibility Tools - Main wrapper script
 #
-# This script provides easy access to all PDF accessibility tools
+# This script has been DEPRECATED in Phase 2 of the refactoring process.
+# Historical document processing is no longer required per user requirements.
 #
-# Usage: 
-#   ./accessibility_tools.sh enhance INPUT OUTPUT [OPTIONS]
-#   ./accessibility_tools.sh batch-enhance INPUT_DIR OUTPUT_DIR [OPTIONS]
-#   ./accessibility_tools.sh validate INPUT [OPTIONS]
-#   ./accessibility_tools.sh batch-validate INPUT_DIR OUTPUT_DIR [OPTIONS]
-#   ./accessibility_tools.sh analyze INPUT [OPTIONS]
-#   ./accessibility_tools.sh docker [COMMAND] [RESOURCES]
+# PLEASE USE THE UNIFIED CLI INTERFACE INSTEAD:
+#
+# Installation:
+#   pip install -e .
+#
+# Usage:
+#   epubs process input.pdf output.pdf --mode academic
+#   epubs process-batch input_dir output_dir --mode accessibility  
+#   epubs enhance input.pdf output.pdf --title "Document Title"
+#   epubs validate document.pdf --report-format html
+#
+# For more information, see: processor/unified_project/README.md
 
+# Show deprecation notice and exit
+echo "DEPRECATED: This script has been deprecated in Phase 2 of the refactoring process."
+echo ""
+echo "Historical document processing is no longer required per user requirements."
+echo "Please use the unified CLI interface instead:"
+echo ""
+echo "Installation:"
+echo "  pip install -e ."
+echo ""
+echo "Usage:"
+echo "  epubs process input.pdf output.pdf --mode academic"
+echo "  epubs process-batch input_dir output_dir --mode accessibility"
+echo "  epubs enhance input.pdf output.pdf --title \"Document Title\""
+echo "  epubs validate document.pdf --report-format html"
+echo ""
+echo "For more information, see: processor/unified_project/README.md"
+echo ""
+exit 1
+
+# Legacy code below - no longer executed
 set -e
 
 # Determine script location and project root

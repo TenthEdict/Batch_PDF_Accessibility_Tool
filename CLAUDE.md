@@ -27,13 +27,15 @@ sudo apt-get install -y poppler-utils tesseract-ocr
 
 ### Processing Documents
 ```bash
-# Process academic papers (new CLI)
+# Unified CLI (Phase 2 - Recommended)
+epubs process input.pdf output.pdf --mode academic
+epubs process-batch input_dir output_dir --mode accessibility
+epubs enhance input.pdf output.pdf --title "Document Title"
+epubs validate document.pdf --report-format html
+
+# Legacy CLI scripts (maintained for compatibility)
 epubs-process-academic input.pdf output.pdf
 epubs-process-academic --batch input_directory output_directory
-
-# Legacy shell scripts (still available)
-./processor/unified_project/scripts/process_academic.sh input.pdf output.pdf
-./processor/unified_project/scripts/process_academic.sh --batch input_directory output_directory
 
 # Web scraping
 epubs-scrape --url https://example.com/document.pdf
