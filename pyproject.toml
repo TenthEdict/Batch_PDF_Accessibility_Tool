@@ -1,0 +1,297 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epubs-accessibility"
+version = "2.0.0"
+description = "Comprehensive toolkit for enhancing document accessibility"
+authors = [{name = "Broderick Schipp", email = "schipp0@purdue.edu"}]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Text Processing :: Markup :: XML",
+    "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+]
+
+# Core dependencies (always required)
+dependencies = [
+    # PDF Processing (Critical Path)
+    "PyMuPDF>=1.23.0,<1.25.0",
+    "pikepdf>=8.3.0,<9.0.0",
+    "pdf2image>=1.16.3,<2.0.0",
+    "pdfplumber>=0.7.0,<1.0.0",
+    
+    # Image Processing
+    "Pillow>=10.0.0,<11.0.0",
+    "opencv-python-headless>=4.8.0,<5.0.0",  # headless for better server compatibility
+    "scikit-image>=0.21.0,<1.0.0",
+    "numpy>=1.24.0,<2.0.0",
+    
+    # OCR
+    "pytesseract>=0.3.10,<1.0.0",
+    
+    # Data Processing
+    "pandas>=1.5.0,<3.0.0",
+    "scipy>=1.7.0,<2.0.0",
+    "tqdm>=4.66.0,<5.0.0",
+    
+    # Configuration and Environment
+    "pyyaml>=6.0.0,<7.0.0",
+    "python-decouple>=3.6,<4.0",
+    
+    # CLI and User Interface
+    "click>=8.0.0,<9.0.0",
+    "rich>=13.0.0,<14.0.0",
+    
+    # Utilities
+    "pathlib-mate>=1.0.0,<2.0.0",
+    "python-magic>=0.4.27,<1.0.0",
+]
+
+[project.optional-dependencies]
+# Document format support
+docs = [
+    "python-docx>=1.0.0,<2.0.0",
+    "python-pptx>=0.6.21,<1.0.0",
+    "openpyxl>=3.0.7,<4.0.0",
+    "python-xmp-toolkit>=2.0.2,<3.0.0",
+]
+
+# Machine Learning and AI features (Heavy dependencies)
+ml = [
+    "torch>=2.0.0,<3.0.0",
+    "transformers>=4.49.0,<5.0.0",
+    "huggingface-hub>=0.20.0,<1.0.0",
+    "anthropic>=0.18.0,<1.0.0",
+]
+
+# Apple Silicon optimizations
+apple = [
+    "mlx-vlm>=0.0.3,<1.0.0",
+]
+
+# Advanced document analysis
+advanced = [
+    "docling-core>=0.0.1,<1.0.0",
+]
+
+# Web scraping capabilities
+web = [
+    "selenium>=4.0.0,<5.0.0",
+    "requests>=2.28.0,<3.0.0",
+    "beautifulsoup4>=4.11.0,<5.0.0",
+    "urllib3>=1.26.0,<3.0.0",
+]
+
+# Development dependencies
+dev = [
+    "pytest>=7.0.0,<8.0.0",
+    "pytest-cov>=4.0.0,<5.0.0",
+    "pytest-mock>=3.10.0,<4.0.0",
+    "pytest-xdist>=3.0.0,<4.0.0",
+    "black>=23.0.0,<24.0.0",
+    "isort>=5.12.0,<6.0.0",
+    "flake8>=6.0.0,<7.0.0",
+    "mypy>=1.0.0,<2.0.0",
+    "pre-commit>=3.0.0,<4.0.0",
+    "coverage>=7.0.0,<8.0.0",
+]
+
+# Testing dependencies (lighter than dev)
+test = [
+    "pytest>=7.0.0,<8.0.0",
+    "pytest-cov>=4.0.0,<5.0.0",
+    "pytest-mock>=3.10.0,<4.0.0",
+    "pytest-xdist>=3.0.0,<4.0.0",
+    "hypothesis>=6.0.0,<7.0.0",    # Property-based testing
+    "factory-boy>=3.2.0,<4.0.0",  # Test fixtures
+]
+
+# All optional dependencies combined (for convenience)
+all = [
+    "python-docx>=1.0.0,<2.0.0",
+    "python-pptx>=0.6.21,<1.0.0",
+    "openpyxl>=3.0.7,<4.0.0",
+    "python-xmp-toolkit>=2.0.2,<3.0.0",
+    "selenium>=4.0.0,<5.0.0",
+    "requests>=2.28.0,<3.0.0",
+    "beautifulsoup4>=4.11.0,<5.0.0",
+    "docling-core>=0.0.1,<1.0.0",
+]
+
+[project.scripts]
+# Main CLI scripts - using existing entry points for now
+epubs-process-academic = "processor.process_academic_local:main"
+epubs-scrape = "scraper.purdue_downloader:main"
+epubs-automate = "automation.automate_workflow:main"
+
+[project.urls]
+Homepage = "https://github.com/schipp0/ePubs_Main"
+Repository = "https://github.com/schipp0/ePubs_Main"
+Documentation = "https://epubs-accessibility.readthedocs.io"
+"Bug Tracker" = "https://github.com/schipp0/ePubs_Main/issues"
+
+[tool.setuptools.packages.find]
+# Use current directory structure, exclude unneeded directories
+exclude = ["venv*", "test_venv*", "build*", "dist*", "*.egg-info*", "temp_processing*", "logs*"]
+
+[tool.setuptools.package-data]
+"*" = [
+    "config/*.yaml", 
+    "config/**/*.yaml",
+    "resources/*",
+    "resources/**/*",
+    "*.md",
+    "*.txt",
+]
+
+# Testing configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "-q", 
+    "--strict-markers",
+    "--strict-config",
+    "--cov=epubs_accessibility",
+    "--cov-report=term-missing",
+    "--cov-report=html:htmlcov",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "ocr: marks tests that require OCR engine",
+    "gpu: marks tests that require GPU",
+]
+
+# Code formatting with Black
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+# Import sorting with isort
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["epubs_accessibility"]
+known_third_party = [
+    "numpy", "pandas", "PIL", "cv2", "pytesseract", 
+    "pikepdf", "fitz", "yaml", "click", "rich"
+]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+# Type checking with mypy
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "cv2.*",
+    "pytesseract.*",
+    "fitz.*",
+    "pikepdf.*",
+    "pdf2image.*",
+    "docling_core.*",
+    "mlx_vlm.*",
+]
+ignore_missing_imports = true
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["processor", "scraper", "automation"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/conftest.py",
+    "*/venv/*",
+    "*/build/*",
+    "*/dist/*",
+    "*/temp_processing/*",
+    "*/logs/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+show_missing = true
+skip_covered = false
+
+# Flake8 configuration (in setup.cfg format for compatibility)
+[tool.flake8]
+max-line-length = 88
+extend-ignore = [
+    "E203",  # whitespace before ':'
+    "E501",  # line too long (handled by black)
+    "W503",  # line break before binary operator
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    "venv",
+    ".eggs",
+    "*.egg",
+]
+max-complexity = 10

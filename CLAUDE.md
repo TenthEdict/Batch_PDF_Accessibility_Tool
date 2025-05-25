@@ -11,23 +11,36 @@ python -m venv venv
 source venv/bin/activate  # Unix/MacOS
 # venv\Scripts\activate   # Windows
 
-# Install dependencies
-pip install -r processor/unified_project/requirements.txt
+# Install core dependencies (new unified system)
+pip install -e .
+
+# Install optional dependencies as needed
+pip install -e .[web]      # Web scraping
+pip install -e .[docs]     # Document format support
+pip install -e .[ml]       # Machine learning features
+pip install -e .[dev]      # Development tools
+pip install -e .[all]      # All optional dependencies
 
 # Install system dependencies (Linux)
-sudo apt-get install -y poppler-utils
+sudo apt-get install -y poppler-utils tesseract-ocr
 ```
 
 ### Processing Documents
 ```bash
-# Process academic papers
-./processor/unified_project/scripts/process_academic.sh input.pdf output.pdf
+# Process academic papers (new CLI)
+epubs-process-academic input.pdf output.pdf
+epubs-process-academic --batch input_directory output_directory
 
-# Process with batch mode
+# Legacy shell scripts (still available)
+./processor/unified_project/scripts/process_academic.sh input.pdf output.pdf
 ./processor/unified_project/scripts/process_academic.sh --batch input_directory output_directory
 
-# Process historical documents
-./processor/unified_project/scripts/process_document.sh --mode historical input.pdf output.pdf
+# Web scraping
+epubs-scrape --url https://example.com/document.pdf
+epubs-scrape --file urls.txt --workers 3
+
+# Workflow automation
+epubs-automate --base-url https://library.example.com
 ```
 
 ### Docker
