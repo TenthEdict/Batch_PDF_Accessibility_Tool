@@ -54,6 +54,7 @@ Thumbs.db
 automation/downloaded_materials/
 automation/logs/
 scraper/temp/
+*.log
 
 # Temporary files and output
 input/
