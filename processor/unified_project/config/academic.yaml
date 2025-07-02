@@ -56,7 +56,7 @@ validation:
 
 # Adobe PDF Services AutoTag configuration
 adobe_autotag:
-  enabled: true                    # Enable Adobe AutoTag when credentials available
+  enabled: false                   # Disable Adobe AutoTag (set to true to re-enable when quota available)
   generate_report: true           # Generate accessibility reports for academic validation
   shift_headings: true            # Optimize heading structure for academic papers
   timeout: 300                    # Timeout for cloud processing (5 minutes)

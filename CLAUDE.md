@@ -99,14 +99,51 @@ The `EnhancementService` orchestrates this pipeline with graceful fallbacks.
 ## Docker Support
 
 ### Container Images
-- Main processor: `processor/unified_project/Dockerfile`
-- Academic-specific: `processor/unified_project/Dockerfile.academic`
-- Entry point script: `scripts/docker-entrypoint.sh`
+- Unified processor: `processor/unified_project/Dockerfile`
+- Entry point script: `processor/unified_project/scripts/docker-entrypoint.sh`
+- Docker ignore: `processor/unified_project/.dockerignore`
 
-### Usage
+### Build and Usage
 ```bash
-docker build -f processor/unified_project/Dockerfile -t epubs/processor:latest processor/unified_project/
-docker run --rm -v /input:/data/input -v /output:/data/output epubs/processor:latest --mode academic /data/input/doc.pdf /data/output/enhanced.pdf
+# Build the container from project root
+docker build -f processor/unified_project/Dockerfile -t epubs/processor:latest .
+
+# Single document processing
+docker run --rm \
+  -v /path/to/input.pdf:/data/input/document.pdf \
+  -v /path/to/output:/data/output \
+  epubs/processor:latest \
+  --mode academic \
+  /data/input/document.pdf \
+  /data/output/enhanced.pdf
+
+# Batch processing (Adobe AutoTag disabled by default)
+docker run --rm \
+  -v /path/to/input_dir:/data/input \
+  -v /path/to/output_dir:/data/output \
+  epubs/processor:latest \
+  --mode academic \
+  --batch \
+  --verbose \
+  /data/input \
+  /data/output
+
+# Re-enable Adobe AutoTag when quota is available (optional)
+# docker run --rm \
+#   -v /path/to/input_dir:/data/input \
+#   -v /path/to/output_dir:/data/output \
+#   -v /path/to/credentials.json:/app/pdfservices-api-credentials.json \
+#   epubs/processor:latest \
+#   --mode academic \
+#   --batch \
+#   --use-adobe-autotag \
+#   --generate-accessibility-report \
+#   --verbose \
+#   /data/input \
+#   /data/output
+
+# Show help
+docker run --rm epubs/processor:latest --help
 ```
 
 ## Development Notes

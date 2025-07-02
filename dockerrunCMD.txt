@@ -1,0 +1,9 @@
+  docker run --rm \
+    -v $(pwd)/data/input:/data/input \
+    -v $(pwd)/data/output:/data/output \
+    epubs/processor:latest \
+    --mode academic \
+    --batch \
+    --verbose \
+    /data/input \
+    /data/output

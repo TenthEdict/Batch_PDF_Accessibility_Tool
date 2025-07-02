@@ -40,7 +40,7 @@ class OCREnhancer(EnhancerBase):
             
             # Default options optimized for smaller file sizes while avoiding Ghostscript 10.0.0 regression
             options = {
-                "force_ocr": False,         # Only OCR pages without text (prevents Ghostscript issues)
+                "force_ocr": True,          # Always OCR all pages regardless of existing text
                 "skip_text": False,         # Disable skip_text to avoid Ghostscript 10.0.0 regression
                 "redo_ocr": False,          # Don't redo OCR on pages with existing text
                 "deskew": False,            # Disable deskew to prevent image transcoding

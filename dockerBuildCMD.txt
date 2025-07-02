@@ -1,0 +1,1 @@
+docker build -f processor/unified_project/Dockerfile -t epubs/processor:latest .
