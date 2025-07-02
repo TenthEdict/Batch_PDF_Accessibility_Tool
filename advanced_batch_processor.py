@@ -32,6 +32,7 @@ except ImportError:
 
 # Core component imports
 from processor.unified_project.src.enhancers.pdf_enhancer import PDFEnhancer
+from processor.unified_project.src.enhancers.ocr_enhancer import OCREnhancer
 
 
 class BatchProcessingConfiguration:
@@ -60,6 +61,7 @@ class BatchProcessingConfiguration:
         self.enable_detailed_logging = True
         self.enable_quality_validation = True
         self.generate_processing_report = True
+        self.force_ocr = True  # Always perform OCR on all files
         
     def validate_configuration(self) -> bool:
         """Validate configuration parameters and directory accessibility."""
@@ -257,6 +259,41 @@ class AdvancedBatchProcessor:
         self.quality_validator = QualityValidator()
         self.logger = self._setup_logging()
         self.enhancer: Optional[PDFEnhancer] = None
+        self.ocr_enhancer: Optional[OCREnhancer] = None
+    
+    def _has_sufficient_text_content(self, pdf_path: Path, min_text_threshold: int = 100) -> bool:
+        """
+        Check if a PDF already has sufficient text content to skip OCR.
+        
+        Args:
+            pdf_path: Path to the PDF file to check
+            min_text_threshold: Minimum number of characters to consider sufficient
+            
+        Returns:
+            bool: True if PDF has sufficient text content, False otherwise
+        """
+        try:
+            import fitz  # PyMuPDF
+            
+            with fitz.open(str(pdf_path)) as doc:
+                total_text_length = 0
+                pages_to_check = min(3, len(doc))  # Check first 3 pages or all pages if fewer
+                
+                for page_num in range(pages_to_check):
+                    page = doc[page_num]
+                    text = page.get_text()
+                    total_text_length += len(text.strip())
+                    
+                    # Early exit if we already have enough text
+                    if total_text_length >= min_text_threshold:
+                        return True
+                
+                return total_text_length >= min_text_threshold
+                
+        except Exception as e:
+            self.logger.warning(f"⚠️ Failed to check text content for {pdf_path.name}: {e}")
+            # If we can't check, assume OCR is needed
+            return False
         
     def _setup_logging(self) -> logging.Logger:
         """Configure comprehensive logging infrastructure."""
@@ -290,19 +327,25 @@ class AdvancedBatchProcessor:
         return logger
     
     def initialize_processing_engine(self) -> bool:
-        """Initialize the PDFEnhancer component with validated configuration."""
+        """Initialize the PDFEnhancer and OCREnhancer components with validated configuration."""
         try:
             self.enhancer = PDFEnhancer()
             self.logger.info("✅ PDFEnhancer processing engine initialized successfully")
+            
+            if self.config.force_ocr:
+                self.ocr_enhancer = OCREnhancer()
+                self.logger.info("✅ OCREnhancer processing engine initialized successfully")
+            
             return True
         except Exception as e:
-            self.logger.error(f"❌ Failed to initialize PDFEnhancer: {e}")
+            self.logger.error(f"❌ Failed to initialize processing engines: {e}")
             return False
     
     def discover_input_files(self) -> List[Path]:
-        """Discover and validate PDF files in input directory."""
+        """Discover and validate PDF files in input directory and subdirectories recursively."""
         try:
-            pdf_files = list(self.config.input_dir.glob('*.pdf'))
+            # Use recursive glob pattern to search subdirectories
+            pdf_files = list(self.config.input_dir.rglob('*.pdf'))
             
             # Filter out hidden files and validate accessibility
             valid_files = []
@@ -315,7 +358,7 @@ class AdvancedBatchProcessor:
                     except OSError as e:
                         self.logger.warning(f"⚠️  Skipping inaccessible file {pdf_file}: {e}")
             
-            self.logger.info(f"📁 Discovered {len(valid_files)} valid PDF files for processing")
+            self.logger.info(f"📁 Discovered {len(valid_files)} valid PDF files for processing (including subdirectories)")
             return valid_files
             
         except Exception as e:
@@ -329,21 +372,57 @@ class AdvancedBatchProcessor:
         Returns True for successful processing, False for failures.
         """
         start_time = time.time()
-        output_file = self.config.output_dir / f"{input_file.stem}_enhanced.pdf"
+        
+        # Create relative path structure to preserve directory hierarchy
+        relative_path = input_file.relative_to(self.config.input_dir)
+        output_subdir = self.config.output_dir / relative_path.parent
+        output_subdir.mkdir(parents=True, exist_ok=True)
+        output_file = output_subdir / f"{input_file.stem}_enhanced.pdf"
         
         try:
             self.logger.info(f"🔄 Processing: {input_file.name}")
             
-            # Prepare enhancement parameters with file-specific customization
+            # Step 1: Apply OCR only if text content is insufficient
+            if self.config.force_ocr and self.ocr_enhancer:
+                # Check if the PDF already has sufficient text content
+                has_text = self._has_sufficient_text_content(input_file)
+                
+                if has_text:
+                    self.logger.info(f"📄 PDF already has sufficient text content, skipping OCR: {input_file.name}")
+                    ocr_input_file = input_file
+                else:
+                    self.logger.info(f"🔍 No sufficient text content found, applying OCR to: {input_file.name}")
+                    # Create a temporary OCR output file
+                    ocr_output = output_file.parent / f"{input_file.stem}_ocr_temp.pdf"
+                    
+                    ocr_success = self.ocr_enhancer.enhance_file(input_file, ocr_output)
+                    if not ocr_success:
+                        self.logger.warning(f"⚠️ OCR failed for {input_file.name}, proceeding with original file")
+                        ocr_input_file = input_file
+                    else:
+                        self.logger.info(f"✅ OCR completed for: {input_file.name}")
+                        ocr_input_file = ocr_output
+            else:
+                ocr_input_file = input_file
+            
+            # Step 2: Apply PDF accessibility enhancements
+            self.logger.info(f"📝 Applying accessibility enhancements to: {input_file.name}")
             enhancement_params = self.config.enhancement_params.copy()
             enhancement_params['filename'] = input_file.name
             
             # Execute enhancement using validated PDFEnhancer
             success = self.enhancer.enhance_file(
-                input_file, 
+                ocr_input_file, 
                 output_file, 
                 **enhancement_params
             )
+            
+            # Clean up temporary OCR file if it was created
+            if self.config.force_ocr and self.ocr_enhancer and ocr_input_file != input_file:
+                try:
+                    ocr_input_file.unlink()  # Delete temporary OCR file
+                except Exception as cleanup_error:
+                    self.logger.warning(f"Failed to clean up temporary file {ocr_input_file}: {cleanup_error}")
             
             processing_time = time.time() - start_time
             
@@ -352,10 +431,15 @@ class AdvancedBatchProcessor:
                 if self.config.enable_quality_validation:
                     validation_results = self.quality_validator.validate_enhanced_document(output_file)
                     
+                    # Determine OCR status for logging
+                    ocr_applied = (self.config.force_ocr and self.ocr_enhancer and 
+                                   ocr_input_file != input_file)
+                    ocr_status = " with OCR" if ocr_applied else ""
+                    
                     if validation_results['accessibility_compliant']:
-                        self.logger.info(f"✅ Successfully enhanced with accessibility compliance: {input_file.name}")
+                        self.logger.info(f"✅ Successfully enhanced{ocr_status} with accessibility compliance: {input_file.name}")
                     else:
-                        self.logger.warning(f"⚠️  Enhanced but accessibility validation concerns: {input_file.name}")
+                        self.logger.warning(f"⚠️  Enhanced{ocr_status} but accessibility validation concerns: {input_file.name}")
                 
                 # Record success metrics
                 self.metrics.record_success(input_file, output_file, processing_time)
@@ -385,7 +469,8 @@ class AdvancedBatchProcessor:
                     'configuration': {
                         'input_directory': str(self.config.input_dir),
                         'output_directory': str(self.config.output_dir),
-                        'enhancement_parameters': self.config.enhancement_params
+                        'enhancement_parameters': self.config.enhancement_params,
+                        'force_ocr_enabled': self.config.force_ocr
                     }
                 },
                 'performance_statistics': self.metrics.file_size_statistics,
@@ -441,7 +526,8 @@ class AdvancedBatchProcessor:
                 return True
             
             # Phase 4: Batch processing execution
-            self.logger.info(f"🔄 Beginning batch processing of {len(pdf_files)} files")
+            ocr_status = " with conditional OCR (only when text content is insufficient)" if self.config.force_ocr else ""
+            self.logger.info(f"🔄 Beginning batch processing{ocr_status} of {len(pdf_files)} files")
             
             # Process files with optional progress tracking
             if self.config.enable_progress_bar and TQDM_AVAILABLE:
