@@ -24,6 +24,13 @@ from threading import Lock
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import random
+import configparser
+
+# Read configuration
+config = configparser.ConfigParser()
+config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
+config.read(config_path)
+download_directory_config = config['PurdueDownloader']['download_directory']
 
 # Set up logging
 logging.basicConfig(
@@ -71,7 +78,7 @@ def retry_with_backoff(retries=3, backoff_factor=0.5, allowed_exceptions=(Except
                         f"Attempt {attempt}/{total_attempts-1} failed for {func.__name__}: {e}. "
                         f"Retrying in {backoff_time:.2f} seconds..."
                     )
-                    time.sleep(backoff_time)
+                    WebDriverWait(driver, backoff_time).until(lambda d: d.execute_script('return document.readyState === "complete"'))
         return wrapper
     return decorator
 
@@ -468,7 +475,9 @@ def handle_cookie_banner(driver, max_attempts=3):
                 """)
                 
                 # Check if banner is gone
-                time.sleep(0.5)
+                WebDriverWait(driver, 0.5).until(
+                    EC.invisibility_of_element_located((By.ID, 'onetrust-banner-sdk'))
+                )
                 banners = driver.find_elements(By.ID, 'onetrust-banner-sdk')
                 if not banners or not banners[0].is_displayed():
                     logger.info("Successfully removed cookie banner with JavaScript")
@@ -545,14 +554,14 @@ def click_pdf_link_with_fallbacks(driver, pdf_link, max_attempts=3):
         try:
             driver.execute_script("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", pdf_link)
             # Brief pause for any scrolling animations to complete
-            time.sleep(0.5)
+            WebDriverWait(driver, 0.5).until(lambda d: d.execute_script('return document.readyState === "complete"'))
         except:
             # Ignore scroll errors
             pass
             
         try:
             # Strategy 1: Direct click with explicit wait for element to be clickable
-            WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.XPATH, f".//*[@href='{href}']")))
+            WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"[href='{href}']")))
             pdf_link.click()
             logger.info("Clicked PDF link directly")
             return True
@@ -572,7 +581,7 @@ def click_pdf_link_with_fallbacks(driver, pdf_link, max_attempts=3):
                     }, 50);
                 """, pdf_link)
                 logger.info("Clicked PDF link with enhanced JavaScript")
-                time.sleep(0.5)  # Wait for click to be processed
+                WebDriverWait(driver, 0.5).until(lambda d: d.execute_script('return document.readyState === "complete"'))  # Wait for click to be processed
                 return True
             except Exception as js_error:
                 logger.debug(f"JavaScript click failed: {js_error}")
@@ -597,7 +606,7 @@ def click_pdf_link_with_fallbacks(driver, pdf_link, max_attempts=3):
                 driver.execute_script(f"window.open('{href}', '_blank');")
                 # Switch to the new tab
                 driver.switch_to.window(driver.window_handles[-1])
-                time.sleep(1)  # Wait for navigation
+                WebDriverWait(driver, 1).until(lambda d: d.execute_script('return document.readyState === "complete"'))  # Wait for navigation
                 # Switch back to the original tab
                 driver.switch_to.window(driver.window_handles[0])
                 return True
@@ -637,7 +646,7 @@ def click_pdf_link_with_fallbacks(driver, pdf_link, max_attempts=3):
                 logger.debug(f"Error removing blocking elements: {e}")
             
         # Slightly increasing wait between attempts
-        time.sleep(0.5 + attempt * 0.5)
+        WebDriverWait(driver, 0.5 + attempt * 0.5).until(lambda d: d.execute_script('return document.readyState === "complete"'))
     
     logger.warning("All PDF link clicking strategies failed")
     return False  # All strategies failed
@@ -946,61 +955,7 @@ def generate_download_path(base_url, event_url=None):
     
     # Base path for all downloads - adapted for WSL/Linux
     # Map Windows S: drive to its WSL equivalent
-    base_path = "/mnt/s/Departments/ePubs/Accessibility_Project"
-    
-    # Extract series from the URL
-    series = url_parts[0] if len(url_parts) > 0 else ""
-    
-    # Determine the series prefix based on the first character
-    # Each letter has its own *_series folder
-    if series and series[0].isalpha():
-        series_prefix = f"{series[0]}_series"
-    else:
-        series_prefix = ""
-    
-    # Build the path components
-    path_components = [base_path]
-    
-    if series_prefix:
-        path_components.append(series_prefix)
-    
-    # Add the series
-    path_components.append(series)
-    
-    # Check if the additional URL parts are meaningful subsections or just numeric identifiers
-    has_meaningful_subsections = False
-    
-    # Look for meaningful subsections like years, volume names, etc.
-    if len(url_parts) > 1:
-        section = url_parts[1]
-        # Check if section is a meaningful name (not a numeric ID or HTML file)
-        if not section.isdigit() and not "announcements.html" in section and not "." in section:
-            has_meaningful_subsections = True
-            path_components.append(section)
-            
-            # Add additional partitions if present and meaningful
-            if len(url_parts) > 2:
-                partition = url_parts[2]
-                if not partition.isdigit() and not "announcements.html" in partition and not "." in partition:
-                    path_components.append(partition)
-    
-    # If no meaningful subsections were found, stop at the series level
-    # All PDFs will be placed directly in the series directory
-    
-    # Combine into a full path using forward slashes for Linux
-    full_path = os.path.join(*path_components)
-    
-    # Create the directory if it doesn't exist
-    os.makedirs(full_path, exist_ok=True)
-    
-    logger.info(f"Generated download path: {full_path}")
-    
-    # For Windows users, also log the equivalent Windows path
-    if is_wsl():
-        windows_path = convert_to_windows_path(full_path)
-        logger.info(f"Windows equivalent path: {windows_path}")
-    
-    return full_path
+    base_path = download_directory_config
 
 # Global WebDriver instance for session reuse
 _shared_webdriver = None
@@ -1151,17 +1106,16 @@ def check_login_required(driver):
     """Check if the page requires login"""
     try:
         # Look for common login indicators
-        login_elements = driver.find_elements(By.XPATH, 
-            "//input[@type='password'] | //form[contains(@action, 'login')] | //a[contains(text(), 'login') or contains(text(), 'Login')]")
+        login_elements = driver.find_elements(By.CSS_SELECTOR, "input[type='password'], form[action*='login'], a:contains('login'), a:contains('Login')")
         
         if login_elements:
             return True
         
         # Check if the Edit Event button is missing when it should be there
-        edit_buttons = driver.find_elements(By.XPATH, "//*[@id='user-destinations']/ul/li[3]/a")
+        edit_buttons = driver.find_elements(By.CSS_SELECTOR, "#user-destinations ul li:nth-child(3) a")
         
         # If we're on an event page and the edit button is not found, login is likely required
-        event_indicators = driver.find_elements(By.XPATH, "//div[contains(@class, 'event-detail')]")
+        event_indicators = driver.find_elements(By.CSS_SELECTOR, "div.event-detail")
         
         if event_indicators and not edit_buttons:
             return True
@@ -1175,29 +1129,31 @@ def handle_login(driver, username, password):
     """Handle the login process with automatic retries"""
     try:
         # Look for login form or button
-        login_link = driver.find_elements(By.XPATH, "//a[contains(text(), 'login') or contains(text(), 'Login')]")
+        login_link = driver.find_elements(By.CSS_SELECTOR, "a:contains('login'), a:contains('Login')")
         if login_link:
             login_link[0].click()
-            time.sleep(2)
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "input[name='username'], input[id='username'], input[name='user'], input[id='user']"))
+            )
         
         # Try different login form patterns
         username_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, 
-                "//input[@name='username'] | //input[@id='username'] | //input[@name='user'] | //input[@id='user']"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, 
+                "input[name='username'], input[id='username'], input[name='user'], input[id='user']"))
         )
         username_field.send_keys(username)
         
-        password_field = driver.find_element(By.XPATH, 
-            "//input[@name='password'] | //input[@id='password'] | //input[@type='password']")
+        password_field = driver.find_element(By.CSS_SELECTOR, "input[name='password'], input[id='password'], input[type='password']")
         password_field.send_keys(password)
         
         # Find and click login button
-        login_button = driver.find_element(By.XPATH, 
-            "//input[@type='submit'] | //button[@type='submit'] | //button[contains(text(), 'Login')]")
+        login_button = driver.find_element(By.CSS_SELECTOR, "input[type='submit'], button[type='submit'], button:contains('Login')")
         login_button.click()
         
-        # Wait for login to complete
-        time.sleep(5)
+        # Wait for login to complete by checking for the absence of the login form
+        WebDriverWait(driver, 10).until_not(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "form[action*='login']"))
+        )
         
         # Check if login was successful
         if check_login_required(driver):
@@ -1223,7 +1179,7 @@ def process_url_recursively(driver, current_url, download_directory, url_structu
                 return success, failure
                 
             # Check for direct PDF links
-            pdf_links = driver.find_elements(By.XPATH, "//a[contains(@href, '.pdf') or contains(@href, 'viewcontent')]")
+            pdf_links = driver.find_elements(By.CSS_SELECTOR, "a[href*='.pdf'], a[href*='viewcontent']")
             if pdf_links:
                 logger.info(f"Found {len(pdf_links)} direct PDF links at max depth, attempting download")
                 # Try to process as a pseudo-event
@@ -1248,51 +1204,55 @@ def process_url_recursively(driver, current_url, download_directory, url_structu
             
         return 0, 0  # Return successful and failed counts
     
-    logger.info(f"\nProcessing content at: {current_url} (depth: {depth})")
-    driver.get(current_url)
-    
-    # Handle cookie banner with more robust approach
-    handle_cookie_banner(driver)
-    
-    # Wait for page to load optimally
-    wait_for_page_load(driver)
-    
-    # Check if this is an event page first (has "Edit Event" button)
-    # Try both the old and new XPaths
-    edit_event_buttons = driver.find_elements(By.XPATH, '/html/body/div[3]/ul/li[3]/a') or \
-                         driver.find_elements(By.XPATH, '//*[@id="user-destinations"]/ul/li[3]/a')
-    
-    if edit_event_buttons:
-        logger.info("This appears to be a single event page")
-        result = process_single_event(driver, current_url, download_directory, url_structure)
-        return (1, 0) if result else (0, 1)  # Return 1 success or 1 failure
-    
-    # Check for event links on this page
-    event_links = find_event_links(driver, url_structure)
-    
-    successful_downloads = 0
-    failed_downloads = 0
-    
-    if event_links:
-        logger.info(f"Found {len(event_links)} events to process")
-        success, failure = process_event_links(driver, event_links, download_directory, url_structure)
-        successful_downloads += success
-        failed_downloads += failure
-    else:
-        # This might be a section page with links to other sections or event lists
-        section_links = find_section_links(driver, url_structure)
+    try:
+        logger.info(f"\nProcessing content at: {current_url} (depth: {depth})")
+        driver.get(current_url)
         
-        if section_links:
-            logger.info(f"Found {len(section_links)} sections to process")
-            for index, link in enumerate(section_links):
-                logger.info(f"Processing section {index + 1}/{len(section_links)}: {link}")
-                success, failure = process_url_recursively(driver, link, download_directory, url_structure, depth + 1, max_depth)
-                successful_downloads += success
-                failed_downloads += failure
+        # Handle cookie banner with more robust approach
+        handle_cookie_banner(driver)
+        
+        # Wait for page to load optimally
+        wait_for_page_load(driver)
+        
+        # Check if this is an event page first (has "Edit Event" button)
+        # Try both the old and new XPaths
+        edit_event_buttons = driver.find_elements(By.CSS_SELECTOR, 'body > div:nth-child(3) > ul > li:nth-child(3) > a') or \
+                             driver.find_elements(By.CSS_SELECTOR, '#user-destinations > ul > li:nth-child(3) > a')
+        
+        if edit_event_buttons:
+            logger.info("This appears to be a single event page")
+            result = process_single_event(driver, current_url, download_directory, url_structure)
+            return (1, 0) if result else (0, 1)  # Return 1 success or 1 failure
+        
+        # Check for event links on this page
+        event_links = find_event_links(driver, url_structure)
+        
+        successful_downloads = 0
+        failed_downloads = 0
+        
+        if event_links:
+            logger.info(f"Found {len(event_links)} events to process")
+            success, failure = process_event_links(driver, event_links, download_directory, url_structure)
+            successful_downloads += success
+            failed_downloads += failure
         else:
-            logger.info(f"No events or sections found at {current_url}")
-    
-    return successful_downloads, failed_downloads
+            # This might be a section page with links to other sections or event lists
+            section_links = find_section_links(driver, url_structure)
+            
+            if section_links:
+                logger.info(f"Found {len(section_links)} sections to process")
+                for index, link in enumerate(section_links):
+                    logger.info(f"Processing section {index + 1}/{len(section_links)}: {link}")
+                    success, failure = process_url_recursively(driver, link, download_directory, url_structure, depth + 1, max_depth)
+                    successful_downloads += success
+                    failed_downloads += failure
+            else:
+                logger.info(f"No events or sections found at {current_url}")
+        
+        return successful_downloads, failed_downloads
+    except Exception as e:
+        logger.error(f"Error processing URL recursively: {e}")
+        return 0, 0
 
 def find_event_links(driver, url_structure):
     """Find all event links on the current page"""
@@ -1302,18 +1262,18 @@ def find_event_links(driver, url_structure):
     # Try different patterns for event links
     try:
         # Pattern 1: Links in table cells with paragraph tags
-        links = driver.find_elements(By.XPATH, "//table//td//p/a")
+        links = driver.find_elements(By.CSS_SELECTOR, "table td p a")
         if links:
             event_links.extend([link.get_attribute("href") for link in links if link.get_attribute("href")])
         
         # Pattern 2: Links with specific patterns in their href
-        links = driver.find_elements(By.XPATH, "//a[contains(@href, '/Program/') or contains(@href, '/event/')]")
+        links = driver.find_elements(By.CSS_SELECTOR, "a[href*='/Program/'], a[href*='/event/']")
         if links:
             event_links.extend([link.get_attribute("href") for link in links if link.get_attribute("href")])
             
         # Pattern 3: Links in list items
         if series_name:
-            links = driver.find_elements(By.XPATH, f"//li//a[contains(@href, '{series_name}')]")
+            links = driver.find_elements(By.CSS_SELECTOR, f"li a[href*='{series_name}']")
             if links:
                 event_links.extend([link.get_attribute("href") for link in links if link.get_attribute("href")])
             
@@ -1341,11 +1301,11 @@ def find_section_links(driver, url_structure):
         # Try to find section links based on URL structure
         if series_name:
             # Pattern 1: Links that match the series but go to subsections
-            links = driver.find_elements(By.XPATH, f"//a[contains(@href, '{series_name}/') and not(contains(@href, 'viewcontent'))]")
+            links = driver.find_elements(By.CSS_SELECTOR, f"a[href*='{series_name}/']:not([href*='viewcontent'])")
             section_links.extend([link.get_attribute("href") for link in links if link.get_attribute("href")])
         
         # Pattern 2: Links in tables that might be sections
-        links = driver.find_elements(By.XPATH, "//table//a[not(contains(@href, 'viewcontent'))]")
+        links = driver.find_elements(By.CSS_SELECTOR, "table a:not([href*='viewcontent'])")
         section_links.extend([link.get_attribute("href") for link in links if link.get_attribute("href")])
         
         # Filter out links that don't follow the expected pattern
@@ -1452,8 +1412,8 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
             # Try each XPath to find a PDF link
             for xpath in direct_pdf_xpaths:
                 try:
-                    logger.info(f"Trying direct PDF link XPath: {xpath}")
-                    pdf_elements = driver.find_elements(By.XPATH, xpath)
+                    logger.info(f"Trying direct PDF link CSS selector: {xpath}")
+                    pdf_elements = driver.find_elements(By.CSS_SELECTOR, xpath)
                     if pdf_elements:
                         pdf_link = pdf_elements[0]  # Take the first match
                         pdf_href = pdf_link.get_attribute("href")
@@ -1462,7 +1422,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                             direct_download_successful = True
                             break
                 except Exception as e:
-                    logger.debug(f"Error with direct PDF XPath {xpath}: {e}")
+                    logger.debug(f"Error with direct PDF CSS selector {xpath}: {e}")
                     continue
                 
             # If direct PDF link was found, we'll skip the Edit Event flow
@@ -1478,8 +1438,6 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                 try:
                     # Try a more robust set of XPaths for the Edit Event button
                     edit_xpaths = [
-                        '/html/body/div[3]/ul/li[3]/a',  # Original from full_Xpaths.txt
-                        '//*[@id="user-destinations"]/ul/li[3]/a',
                         "//a[contains(text(), 'Edit Event')]",
                         "//a[contains(text(), 'Edit') and contains(@href, 'editor.cgi')]",
                         "//a[contains(@href, 'editor.cgi') and contains(@href, 'window=abstract')]",
@@ -1495,7 +1453,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                         try:
                             logger.info(f"Trying Edit Event XPath: {xpath}")
                             edit_event_button = WebDriverWait(driver, 3).until(
-                                EC.element_to_be_clickable((By.XPATH, xpath))
+                                EC.element_to_be_clickable((By.CSS_SELECTOR, xpath))
                             )
                             logger.info(f"Found Edit Event button with XPath: {xpath}")
                             
@@ -1508,7 +1466,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                             edit_successful = True
                             logger.info("Successfully clicked Edit Event button")
                             # Wait for page to load after click
-                            time.sleep(2)
+                            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#MenuSidebar a:contains('Revisions')")))
                             break
                         except:
                             continue
@@ -1529,27 +1487,26 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                     revisions_successful = False
                     try:
                         # Try a more robust set of XPaths for the View Revisions link
-                        revisions_xpaths = [
-                            '/html/body/table[1]/tbody/tr/td[1]/table/tbody/tr/td/table/tbody/tr[13]/td/a/strong',  # Original from full_Xpaths.txt
-                            "//*[@id=\"MenuSidebar\"]/table/tbody/tr/td/table/tbody/tr[12]/td/a",
-                            "//a[contains(text(), 'View Revisions')]",
-                            "//a[contains(text(), 'Revisions')]",
-                            "//a[contains(@href, 'pickvers')]",
-                            "//a/strong[contains(text(), 'Revisions')]/..",
-                            "//td/a[contains(text(), 'Revisions')]",
-                            "//*[contains(@id, 'MenuSidebar')]//a[contains(text(), 'Revisions')]",
-                            "//div[contains(@class, 'sidebar')]//a[contains(text(), 'Revisions')]",
-                            "//nav[contains(@class, 'menu')]//a[contains(text(), 'Revision')]",
-                            "//div[contains(@id, 'sidebar')]//a[contains(@href, 'revisions')]",
-                            "//aside//a[contains(text(), 'Revisions')]"
-                        ]
+                        # Try a more robust set of XPaths for the View Revisions link
+                    revisions_xpaths = [
+                        "//a[contains(text(), 'View Revisions')]",
+                        "//a[contains(text(), 'Revisions')]",
+                        "//a[contains(@href, 'pickvers')]",
+                        "//a/strong[contains(text(), 'Revisions')]/..",
+                        "//td/a[contains(text(), 'Revisions')]",
+                        "//*[contains(@id, 'MenuSidebar')]//a[contains(text(), 'Revisions')]",
+                        "//div[contains(@class, 'sidebar')]//a[contains(text(), 'Revisions')]",
+                        "//nav[contains(@class, 'menu')]//a[contains(text(), 'Revision')]",
+                        "//div[contains(@id, 'sidebar')]//a[contains(@href, 'revisions')]",
+                        "//aside//a[contains(text(), 'Revisions')]"
+                    ]
                         
                         # Try each XPath with explicit wait but with shorter timeouts
                         for xpath in revisions_xpaths:
                             try:
                                 logger.info(f"Trying View Revisions XPath: {xpath}")
                                 view_revisions_link = WebDriverWait(driver, 3).until(
-                                    EC.element_to_be_clickable((By.XPATH, xpath))
+                                    EC.element_to_be_clickable((By.CSS_SELECTOR, xpath))
                                 )
                                 logger.info(f"Found View Revisions link with XPath: {xpath}")
                                 
@@ -1563,7 +1520,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                                 edit_view_flow_successful = True
                                 logger.info("Successfully clicked View Revisions link")
                                 # Wait for page to load after click
-                                time.sleep(2)
+                                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "table[id*='revision']")))
                                 break
                             except:
                                 continue
@@ -1573,7 +1530,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                             # Navigate back to the event page to try direct PDF finding
                             driver.get(event_url)
                             # Wait for page to load
-                            time.sleep(3)
+                            wait_for_page_load(driver)
                             # Handle cookie banner
                             handle_cookie_banner(driver)
                     except Exception as e:
@@ -1581,7 +1538,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                         # Navigate back to the event page to try direct PDF finding
                         driver.get(event_url)
                         # Wait for page to load
-                        time.sleep(3)
+                        wait_for_page_load(driver)
                         # Handle cookie banner
                         handle_cookie_banner(driver)
         except Exception as e:
@@ -1597,10 +1554,6 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                 if edit_view_flow_successful:
                     # XPaths for the revisions page
                     pdf_xpaths = [
-                        # Original from full_Xpaths.txt
-                        '/html/body/table[1]/tbody/tr/td[2]/table/tbody/tr/td/form/div/table/tbody/tr[1]/td[5]/p/a',
-                        # Additional specific patterns
-                        '//*[@id="revision"]/tbody/tr[1]/td[5]/p/a',  # First row
                         "//table[contains(@id, 'revision')]//tr[1]//a[contains(@href, 'viewcontent')]",  # First row in revision table
                         # More general patterns
                         "//table[contains(@id, 'revision')]//a[contains(@href, '.pdf') or contains(@href, 'viewcontent')]",
@@ -1640,22 +1593,22 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                 # Try each XPath with logging
                 for xpath in pdf_xpaths:
                     try:
-                        logger.info(f"Trying PDF link XPath: {xpath}")
-                        pdf_elements = driver.find_elements(By.XPATH, xpath)
+                        logger.info(f"Trying PDF link CSS selector: {xpath}")
+                        pdf_elements = driver.find_elements(By.CSS_SELECTOR, xpath)
                         if pdf_elements:
                             pdf_link = pdf_elements[0]  # Take the first match
                             pdf_href = pdf_link.get_attribute("href")
-                            logger.info(f"Found PDF link with XPath {xpath}: {pdf_href}")
+                            logger.info(f"Found PDF link with CSS selector {xpath}: {pdf_href}")
                             break
                     except Exception as e:
-                        logger.debug(f"Error with PDF XPath {xpath}: {e}")
+                        logger.debug(f"Error with PDF CSS selector {xpath}: {e}")
                         continue
                 
                 # If no PDF link found and we're in a revisions page, try finding any link in the first row
                 if not pdf_link and "pickvers" in driver.current_url:
                     try:
                         logger.info("Trying to find any link in the first row of the revisions table")
-                        first_row_links = driver.find_elements(By.XPATH, "//table[contains(@id, 'revision')]//tr[1]//a")
+                        first_row_links = driver.find_elements(By.CSS_SELECTOR, "table[id*='revision'] tr:first-child a")
                         if first_row_links:
                             pdf_link = first_row_links[0]
                             pdf_href = pdf_link.get_attribute("href")
@@ -1776,8 +1729,9 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                 # Open in new tab/window and switch to it
                 logger.info("Attempting to open PDF in new tab")
                 driver.execute_script(f"window.open('{pdf_url}', '_blank');")
+                WebDriverWait(driver, 10).until(EC.number_of_windows_to_be(2))
                 driver.switch_to.window(driver.window_handles[-1])
-                time.sleep(3)  # Allow time for the PDF to start loading
+                WebDriverWait(driver, 3).until(lambda d: d.execute_script('return document.readyState === "complete"'))  # Allow time for the PDF to start loading
                 # Switch back to the original tab
                 driver.switch_to.window(driver.window_handles[0])
             except Exception as e:
@@ -1785,7 +1739,9 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                 return False  # Mark this event as failed
         
         # Wait for download to start and complete
-        time.sleep(5)  # Adjust based on typical download times
+        WebDriverWait(driver, 60).until(
+            lambda d: any(f.lower().endswith(".pdf") for f in os.listdir(event_download_directory))
+        )
         
         # Check for the downloaded file and rename it
         max_wait = 60  # Increased maximum wait time in seconds
@@ -1825,6 +1781,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                     
                     if os.path.exists(direct_file_path) and os.path.getsize(direct_file_path) > 0:
                         logger.info(f"Successfully downloaded PDF directly to: {direct_file_path}")
+                        print(f"Successfully downloaded PDF directly to: {direct_file_path}")
                         return True  # Mark this event as successful
                 else:
                     logger.warning(f"Direct download failed. Status code: {response.status_code}, Content-Type: {content_type}")
@@ -1835,7 +1792,9 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                         logger.info("Received HTML instead of PDF, trying browser click as fallback")
                         if click_pdf_link_with_fallbacks(driver, pdf_link):
                             # Wait for browser download
-                            time.sleep(5)
+                            WebDriverWait(driver, 5).until(
+                                lambda d: any(f.lower().endswith(".pdf") for f in os.listdir(event_download_directory))
+                            )
             except Exception as e:
                 logger.warning(f"Error with direct download approach: {e}")
                 # Fall back to browser download detection
@@ -1869,13 +1828,16 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
             except Exception as e:
                 logger.warning(f"Error checking download directory: {e}")
             
-            time.sleep(2)  # Increased check interval to reduce filesystem operations
+            WebDriverWait(driver, 2).until(
+                lambda d: any(f.lower().endswith(".pdf") for f in os.listdir(event_download_directory))
+            )  # Increased check interval to reduce filesystem operations
         
         logger.warning("No PDF file found in download directory after waiting.")
         return False  # Mark this event as failed
             
     except Exception as e:
         logger.error(f"Error processing event: {e}")
+        return False
 
 def process_url_list(url_file_path, username=None, password=None, custom_download_dir=None, max_workers=3, use_shared_driver=True):
     """
@@ -1989,15 +1951,19 @@ def process_url_list(url_file_path, username=None, password=None, custom_downloa
     logger.info(f"\nAll URLs have been processed in parallel! Success: {successful}, Failed: {failed}")
     return successful > 0
 
-def check_s_drive_mount():
+def check_download_dir():
     """
-    Check if the S: drive is properly mounted in WSL
+    Check if the download directory is properly mounted in WSL
     Returns True if mounted, False otherwise
     """
-    if not os.path.exists('/mnt/s'):
-        logger.warning("S: drive mount point doesn't exist. Creating it...")
+    if not os.path.exists(download_directory_config):
+        logger.warning("Download directory doesn't exist. Creating it...")
         try:
-            os.makedirs('/mnt/s', exist_ok=True)
+            os.makedirs(download_directory_config, exist_ok=True)
+        except OSError as e:
+            logger.error(f"Could not create download directory: {e}")
+            return False
+    return True
         except Exception as e:
             logger.error(f"Error creating mount point: {e}")
             return False

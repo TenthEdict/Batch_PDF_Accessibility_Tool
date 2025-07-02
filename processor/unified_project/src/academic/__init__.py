@@ -1,6 +1,2 @@
-"""
-Academic paper processing module.
-
-This module provides specialized functionality for processing
-academic papers with optimized OCR and structure analysis.
-"""
+from .processor import AcademicProcessor, AcademicPaperConfig
+from .structure_analyzer import AcademicStructureAnalyzer

@@ -1,11 +1,19 @@
-# Python
+# ePubs Accessibility Enhancement Project - .gitignore
+
+# ===================================================================
+# Python specific
+# ===================================================================
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
 build/
-!processor/brodie_code/src/accessibility_checker/build/
 develop-eggs/
 dist/
 downloads/
@@ -14,49 +22,127 @@ eggs/
 lib/
 lib64/
 parts/
-bin/
-var/
 sdist/
+var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# Virtual Environment
-venv/
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+.env
+.venv
 env/
+venv/
 ENV/
-.venv/
-.env/
+env.bak/
+venv.bak/
+test_venv/
 /ocr_env
 /pdf_venv
 **/docling_venv
 
-# IDE files
+# ===================================================================
+# IDE and Editor files
+# ===================================================================
+# PyCharm
 .idea/
+
+# VSCode
 .vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
 *.swp
 *.swo
 *~
 
-# OS generated files
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===================================================================
+# Operating System files
+# ===================================================================
+# macOS
 .DS_Store
 .DS_Store?
+.AppleDouble
+.LSOverride
+Icon
 ._*
+.DocumentRevisions-V100
+.fseventsd
 .Spotlight-V100
+.TemporaryItems
 .Trashes
-ehthumbs.db
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
 .smbdelete*
 
-# Downloaded materials and logs
-automation/downloaded_materials/
-automation/logs/
-scraper/temp/
-*.log
-
-# Temporary files and output
+# ===================================================================
+# Project-specific artifacts
+# ===================================================================
+# Processing data and output files
+data/
+data/input/
+data/output/
+temp_processing/
+processing_output/
+enhanced_pdfs/
 input/
 output/
 processor/unified_project/data/input/*
@@ -64,7 +150,149 @@ processor/unified_project/data/output/*
 !processor/unified_project/data/input/.gitkeep
 !processor/unified_project/data/output/.gitkeep
 
-# Project specific files
+# Downloaded materials and automation artifacts
+automation/downloaded_materials/
+automation/logs/
+scraper/temp/
+
+# Log files
+logs/
+*.log
+*.log.*
+
+# Temporary files and directories
+temp/
+tmp/
+*.tmp
+*.temp
+
+# ===================================================================
+# Credentials and sensitive information
+# ===================================================================
+# Adobe PDF Services API credentials
+*credentials*.json
+*api-credentials*.json
+pdfservices-api-credentials.json
+adobe-credentials.json
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+secrets.yaml
+secrets.yml
+config/secrets/
+*secret*
+*password*
+*token*
+credentials.txt
+
+# Configuration files with sensitive data
+*.ini
+config.ini
+local_config.yaml
+local_settings.py
+
+# ===================================================================
+# PDF and document processing artifacts
+# ===================================================================
+# Large PDF files (sample data)
+*.pdf
+!processor/unified_project/tests/fixtures/*.pdf
+!**/test_*.pdf
+!**/sample_*.pdf
+
+# OCR temporary files
+ocrmypdf_*
+tesseract_*
+*.hocr
+
+# Image processing temporary files
+*.png
+*.jpg
+*.jpeg
+*.tiff
+*.bmp
+!**/resources/*.png
+!**/resources/*.jpg
+!**/static/*.png
+!**/static/*.jpg
+
+# Document conversion temporary files
+*.docx
+*.pptx
+*.xlsx
+!**/test_*.docx
+!**/resources/*.docx
+
+# ===================================================================
+# Adobe PDF Services SDK Samples (Third-party)
+# ===================================================================
+# Exclude the entire Adobe SDK samples directory
+PDFServicesSDK-PythonSamples/
+
+# ===================================================================
+# Docker and containerization
+# ===================================================================
+.dockerignore
+Dockerfile.dev
+docker-compose.override.yml
+.docker/
+
+# ===================================================================
+# Machine Learning and AI models
+# ===================================================================
+# Downloaded models
+models/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+transformers_cache/
+.transformers_cache/
+
+# ===================================================================
+# Development and build artifacts
+# ===================================================================
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+*.ipynb
+
+# Poetry
+poetry.lock
+
+# pipenv
+Pipfile.lock
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ===================================================================
+# Backup and archive files
+# ===================================================================
+*.backup
+*.bak
+*.orig
+*.rej
+*.swp
+*.patch
+*~
+
+# Archive files
+*.zip
+*.tar.gz
+*.7z
+*.rar
+
+# ===================================================================
+# Legacy project files
+# ===================================================================
 src.zip
 key.txt
 frontend.archive
@@ -76,25 +304,50 @@ migrate_structure.py
 MoslerThesis/
 acrobat_scripts/
 
-# Configuration files with sensitive data
-*.env
-*.ini
-secrets.yaml
-credentials.txt
-
-# Local development files
-local_config.yaml
-local_settings.py
-
 # Test data
 test_files/
 temp_tests/
 
-# Jupyter Notebooks
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-*.ipynb
+# ===================================================================
+# Reports and analysis output
+# ===================================================================
+# Accessibility reports
+*_accessibility_report.xlsx
+*_report.json
+accessibility_reports/
+reports/
 
-# Cache files
-.cache/
-.pytest_cache/
+# Performance and profiling
+profile_*.log
+*.prof
+
+# ===================================================================
+# Memory management files (specific to project)
+# ===================================================================
+.memory-bank/
+.clauderules
+GEMINI.md
+
+# ===================================================================
+# URLs and scraping artifacts
+# ===================================================================
+urls.txt
+downloaded_urls.txt
+scraper_cache/
+
+# ===================================================================
+# Migration and setup artifacts
+# ===================================================================
+migrate_dependencies.py
+dependency_backups/
+*requirements*.backup
+setup_backup/
+
+# ===================================================================
+# Deprecated and legacy files
+# ===================================================================
+*deprecated*
+*legacy*
+*old*
+*/brodie_code/
+processor/brodie_code/

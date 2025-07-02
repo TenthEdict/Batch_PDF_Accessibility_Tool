@@ -12,8 +12,8 @@ from .validation_service import ValidationService
 from .metadata_service import MetadataService
 
 __all__ = [
-    'DocumentService',
-    'EnhancementService', 
-    'ValidationService',
-    'MetadataService'
+    "DocumentService",
+    "EnhancementService",
+    "ValidationService",
+    "MetadataService",
 ]

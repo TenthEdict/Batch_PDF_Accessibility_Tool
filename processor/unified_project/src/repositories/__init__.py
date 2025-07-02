@@ -12,10 +12,10 @@ from .metadata_repository import MetadataRepository, FileBasedMetadataRepository
 from .config_repository import ConfigRepository, YamlConfigRepository
 
 __all__ = [
-    'DocumentRepository',
-    'FileSystemDocumentRepository',
-    'MetadataRepository', 
-    'FileBasedMetadataRepository',
-    'ConfigRepository',
-    'YamlConfigRepository'
+    "DocumentRepository",
+    "FileSystemDocumentRepository",
+    "MetadataRepository",
+    "FileBasedMetadataRepository",
+    "ConfigRepository",
+    "YamlConfigRepository",
 ]

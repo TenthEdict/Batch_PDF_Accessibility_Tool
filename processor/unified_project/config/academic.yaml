@@ -5,7 +5,7 @@ ocr:
   language: eng
   psm: 1  # Automatic page segmentation with OSD
   oem: 3  # Default LSTM engine
-  dpi: 250  # Reduced from 300 for better performance while maintaining quality
+  dpi: 200  # Reduced to 200 for smaller file sizes while maintaining readability
   tessdata_dir: /usr/share/tesseract-ocr/5/tessdata
   additional_params:
     textord_tablefind_recognize_tables: 1
@@ -54,6 +54,21 @@ validation:
   check_language: true
   check_metadata: true
 
+# Adobe PDF Services AutoTag configuration
+adobe_autotag:
+  enabled: true                    # Enable Adobe AutoTag when credentials available
+  generate_report: true           # Generate accessibility reports for academic validation
+  shift_headings: true            # Optimize heading structure for academic papers
+  timeout: 300                    # Timeout for cloud processing (5 minutes)
+  fallback_to_local: true         # Use local processing if Adobe services fail
+  
+  # Academic document optimization
+  academic_mode:
+    preserve_math_structure: true  # Maintain mathematical notation structure
+    optimize_table_headers: true   # Ensure proper table accessibility
+    enhance_figure_captions: true  # Improve figure and chart accessibility
+    preserve_citation_links: true  # Maintain citation reference structure
+
 # Academic-specific settings
 academic:
   # Citation patterns
@@ -68,9 +83,9 @@ academic:
     display_math: true     # Detect display/block equations
     greek_symbols: true    # Detect Greek letters and math symbols
     
-  # Processing enhancements
+  # Processing enhancements - optimized for file size
   preprocessing:
-    enhance_contrast: true
-    denoise: false        # Modern papers rarely need denoising
-    sharpen: true
-    deskew: true
+    enhance_contrast: false   # Disable to prevent image reprocessing
+    denoise: false           # Modern papers rarely need denoising
+    sharpen: false           # Disable to prevent image reprocessing
+    deskew: false            # Disable to prevent transcoding (major size impact)

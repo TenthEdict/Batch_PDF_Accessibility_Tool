@@ -1,6 +1,6 @@
 # ePubs Accessibility Enhancement Project
 
-This monorepo contains all components of the ePubs Accessibility Enhancement Project, which provides specialized tools for enhancing document accessibility across both historical and academic publications.
+This monorepo contains all components of the ePubs Accessibility Enhancement Project, which provides specialized tools for enhancing document accessibility for academic publications.
 
 ## Project Structure
 
@@ -13,7 +13,6 @@ The repository is organized into three main components:
 ## Features
 
 - **Unified Document Processing**: Common architecture for all document types
-- **Historical Document Support**: Specialized OCR and analysis for historical documents
 - **Academic Paper Enhancement**: Advanced handling of complex academic layouts
 - **PDF/UA Compliance**: Ensures output documents meet accessibility standards
 - **Workflow Automation**: Complete pipeline from document acquisition to accessibility enhancement
@@ -38,7 +37,7 @@ The repository is organized into three main components:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r processor/unified_project/requirements.txt
+   pip install -e .
    ```
 
 3. Install system dependencies (Ubuntu/Debian):
@@ -104,7 +103,7 @@ docker run --rm \
 ePubs_Main/
 ├── automation/           # Workflow automation scripts
 ├── processor/            # Document processing components
-│   ├── brodie_code/      # Historical document code
+│   ├── brodie_code/      # Deprecated document code
 │   └── unified_project/  # Main unified framework
 └── scraper/              # Document acquisition tools
 ```
