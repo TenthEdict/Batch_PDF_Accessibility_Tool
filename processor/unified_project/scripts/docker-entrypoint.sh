@@ -9,8 +9,6 @@ MODE="academic"
 TIMEOUT=1800
 BATCH_MODE=false
 VERBOSE=false
-USE_ADOBE_AUTOTAG=false
-GENERATE_REPORT=false
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -31,14 +29,6 @@ while [[ $# -gt 0 ]]; do
             VERBOSE=true
             shift
             ;;
-        --use-adobe-autotag)
-            USE_ADOBE_AUTOTAG=true
-            shift
-            ;;
-        --generate-accessibility-report)
-            GENERATE_REPORT=true
-            shift
-            ;;
         --help)
             echo "ePubs Accessibility Enhancement Container"
             echo "Usage: docker run [options] INPUT OUTPUT"
@@ -47,8 +37,6 @@ while [[ $# -gt 0 ]]; do
             echo "  --timeout SECONDS          Processing timeout (default: 1800)"
             echo "  --batch                     Process directory of files"
             echo "  --verbose                   Enable verbose output"
-            echo "  --use-adobe-autotag        Enable Adobe AutoTag (requires credentials)"
-            echo "  --generate-accessibility-report  Generate accessibility report"
             echo "  --help                      Show this help"
             exit 0
             ;;
@@ -94,25 +82,14 @@ log "Output: $OUTPUT"
 log "Timeout: ${TIMEOUT}s"
 log "Batch mode: $BATCH_MODE"
 log "Verbose: $VERBOSE"
-log "Adobe AutoTag: $USE_ADOBE_AUTOTAG"
-log "Generate Report: $GENERATE_REPORT"
 
 # Build command flags
 VERBOSE_FLAG=""
-ADOBE_FLAG=""
-REPORT_FLAG=""
 
 if [ "$VERBOSE" = true ]; then
     VERBOSE_FLAG="--verbose"
 fi
 
-if [ "$USE_ADOBE_AUTOTAG" = true ]; then
-    ADOBE_FLAG="--use-adobe-autotag"
-fi
-
-if [ "$GENERATE_REPORT" = true ]; then
-    REPORT_FLAG="--generate-accessibility-report"
-fi
 
 # Execute main python processing script using the unified CLI
 if [ "$BATCH_MODE" = true ]; then
@@ -129,14 +106,14 @@ if [ "$BATCH_MODE" = true ]; then
         mkdir -p "$(dirname "$output_file")"
         
         log "Processing: $rel_path"
-        timeout "$TIMEOUT" python3 -m processor.unified_project.src.main "$pdf_file" "$output_file" --mode "$MODE" $VERBOSE_FLAG $ADOBE_FLAG $REPORT_FLAG 2>&1 | tee -a "$LOG_FILE" || {
+        timeout "$TIMEOUT" python3 -m processor.unified_project.src.main "$pdf_file" "$output_file" --mode "$MODE" $VERBOSE_FLAG 2>&1 | tee -a "$LOG_FILE" || {
             log "Failed to process: $rel_path"
             continue
         }
     done
 else
     log "Processing single document: $(basename "$INPUT")"
-    timeout "$TIMEOUT" python3 -m processor.unified_project.src.main "$INPUT" "$OUTPUT" --mode "$MODE" $VERBOSE_FLAG $ADOBE_FLAG $REPORT_FLAG 2>&1 | tee -a "$LOG_FILE"
+    timeout "$TIMEOUT" python3 -m processor.unified_project.src.main "$INPUT" "$OUTPUT" --mode "$MODE" $VERBOSE_FLAG 2>&1 | tee -a "$LOG_FILE"
 fi
 
 # Check for successful completion

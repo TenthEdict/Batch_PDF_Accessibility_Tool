@@ -83,7 +83,6 @@ test_venv/
 *~
 
 # Emacs
-*~
 \#*\#
 /.emacs.desktop
 /.emacs.desktop.lock
@@ -128,7 +127,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # Linux
-*~
 .directory
 .Trash-*
 .smbdelete*
@@ -280,9 +278,7 @@ dmypy.json
 *.bak
 *.orig
 *.rej
-*.swp
 *.patch
-*~
 
 # Archive files
 *.zip
@@ -327,6 +323,14 @@ profile_*.log
 .memory-bank/
 .clauderules
 GEMINI.md
+
+# ===================================================================
+# Orchestration and pipeline artifacts
+# ===================================================================
+processor/unified_project/src/orchestration/temp/
+processor/unified_project/src/orchestration/logs/
+orchestration_output/
+pipeline_cache/
 
 # ===================================================================
 # URLs and scraping artifacts

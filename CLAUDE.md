@@ -29,6 +29,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Directory processing: `python processor/unified_project/src/process_directory.py`
 - Web scraping: `epubs-scrape --url https://docs.lib.purdue.edu/modvis/2024/va`
 
+### Unified Scraper-Processor Pipeline
+- Complete pipeline: `python processor/unified_project/src/orchestration/scrape_and_process.py --url https://docs.lib.purdue.edu/modvis/2024/va --mode academic`
+- Manual login mode: `python processor/unified_project/src/orchestration/scrape_and_process.py --url https://docs.lib.purdue.edu/modvis/2024/va --manual-login --mode academic`
+- Batch processing: `python processor/unified_project/src/orchestration/scrape_and_process.py --urls-file /Volumes/Accessibility_Project/urls.txt --manual-login --mode academic`
+
 ## Project Architecture
 
 ### Clean Architecture Pattern
@@ -49,8 +54,7 @@ Uses a custom service container (`src/core/service_container.py`) for dependency
 Document processing follows a multi-stage enhancement pipeline:
 
 1. **OCR Enhancement** (`src/enhancers/ocr_enhancer.py`): Adds searchable text layer
-2. **Adobe AutoTag** (`src/enhancers/adobe_autotag_enhancer.py`): AI-powered structure tagging (optional)
-3. **PDF Enhancement** (`src/enhancers/pdf_enhancer.py`): Metadata and accessibility features
+2. **PDF Enhancement** (`src/enhancers/pdf_enhancer.py`): Metadata and accessibility features
 
 The `EnhancementService` orchestrates this pipeline with graceful fallbacks.
 
@@ -67,11 +71,6 @@ The `EnhancementService` orchestrates this pipeline with graceful fallbacks.
 
 ## Key Components
 
-### Adobe PDF Services Integration
-- Optional cloud-based enhancement using Adobe PDF Services AutoTag
-- Credentials-based activation (falls back gracefully if unavailable)
-- Generates accessibility reports and optimizes document structure
-- Configuration in `adobe_autotag` section of YAML configs
 
 ### Web Scraping (`scraper/`)
 - Purdue library document downloader
@@ -117,7 +116,7 @@ docker run --rm \
   /data/input/document.pdf \
   /data/output/enhanced.pdf
 
-# Batch processing (Adobe AutoTag disabled by default)
+# Batch processing
 docker run --rm \
   -v /path/to/input_dir:/data/input \
   -v /path/to/output_dir:/data/output \
@@ -128,19 +127,6 @@ docker run --rm \
   /data/input \
   /data/output
 
-# Re-enable Adobe AutoTag when quota is available (optional)
-# docker run --rm \
-#   -v /path/to/input_dir:/data/input \
-#   -v /path/to/output_dir:/data/output \
-#   -v /path/to/credentials.json:/app/pdfservices-api-credentials.json \
-#   epubs/processor:latest \
-#   --mode academic \
-#   --batch \
-#   --use-adobe-autotag \
-#   --generate-accessibility-report \
-#   --verbose \
-#   /data/input \
-#   /data/output
 
 # Show help
 docker run --rm epubs/processor:latest --help

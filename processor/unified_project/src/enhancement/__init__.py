@@ -1,10 +1,7 @@
 """
 Enhancement module for document accessibility improvements.
 
-This module provides a unified enhancement pipeline that orchestrates
-multiple enhancers to improve document accessibility.
+This module is a placeholder for future enhancement pipeline development.
+Currently, enhancement functionality is handled by individual enhancer classes
+in the enhancers/ directory and orchestrated by the EnhancementService.
 """
-
-from .pipeline import EnhancementPipeline, EnhancementConfig, EnhancementOrchestrator
-
-__all__ = ["EnhancementPipeline", "EnhancementConfig", "EnhancementOrchestrator"]

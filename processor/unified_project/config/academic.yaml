@@ -54,20 +54,6 @@ validation:
   check_language: true
   check_metadata: true
 
-# Adobe PDF Services AutoTag configuration
-adobe_autotag:
-  enabled: false                   # Disable Adobe AutoTag (set to true to re-enable when quota available)
-  generate_report: true           # Generate accessibility reports for academic validation
-  shift_headings: true            # Optimize heading structure for academic papers
-  timeout: 300                    # Timeout for cloud processing (5 minutes)
-  fallback_to_local: true         # Use local processing if Adobe services fail
-  
-  # Academic document optimization
-  academic_mode:
-    preserve_math_structure: true  # Maintain mathematical notation structure
-    optimize_table_headers: true   # Ensure proper table accessibility
-    enhance_figure_captions: true  # Improve figure and chart accessibility
-    preserve_citation_links: true  # Maintain citation reference structure
 
 # Academic-specific settings
 academic:

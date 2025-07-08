@@ -42,19 +42,6 @@ validation:
   check_language: true
   generate_report: true
 
-# Adobe PDF Services AutoTag configuration
-adobe_autotag:
-  enabled: true                    # Enable Adobe AutoTag when credentials available
-  generate_report: false          # Disable reports by default for general documents
-  shift_headings: false           # Conservative heading structure for general documents
-  timeout: 180                    # Shorter timeout for general processing (3 minutes)
-  fallback_to_local: true         # Always fallback to local processing if Adobe fails
-  
-  # General document settings
-  processing_options:
-    preserve_original_structure: true  # Maintain original document structure
-    basic_accessibility_only: false   # Use full Adobe AutoTag capabilities
-    optimize_for_screen_readers: true # Optimize output for assistive technology
 
 # Metadata settings
 metadata:

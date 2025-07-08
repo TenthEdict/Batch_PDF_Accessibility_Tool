@@ -150,7 +150,8 @@ def convert_to_wsl_path(windows_path):
     # Handle drive letter
     if ':' in windows_path:
         drive, rest = windows_path.split(':', 1)
-        return f"/mnt/{drive.lower()}{rest.replace('\\', '/')}"
+        rest_converted = rest.replace('\\', '/')
+        return f"/mnt/{drive.lower()}{rest_converted}"
     return windows_path.replace('\\', '/')
 
 def convert_to_windows_path(wsl_path):
@@ -159,7 +160,8 @@ def convert_to_windows_path(wsl_path):
     if wsl_path.startswith('/mnt/') and len(wsl_path) > 5:
         drive = wsl_path[5:6]
         rest = wsl_path[6:]
-        return f"{drive.upper()}:{rest.replace('/', '\\')}"
+        rest_converted = rest.replace('/', '\\')
+        return f"{drive.upper()}:{rest_converted}"
     return wsl_path.replace('/', '\\')
 
 # Global cache for Chrome version
@@ -984,8 +986,9 @@ def get_shared_webdriver(download_directory):
                 
                 # Update download directory preference if needed
                 try:
+                    escaped_directory = download_directory.replace('\\', '\\\\')
                     _shared_webdriver.execute_script(
-                        f"chrome.prefs.set('download.default_directory', '{download_directory.replace('\\', '\\\\')}')"
+                        f"chrome.prefs.set('download.default_directory', '{escaped_directory}')"
                     )
                 except:
                     pass  # Ignore errors with preference updating
@@ -1378,9 +1381,9 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
         except Exception as e:
             logger.warning(f"Error extracting document number from URL: {e}")
             
-        # Since Edit Event triggers are consistently not working, first try to find PDF directly
-        # Check for direct PDF links on the event page
-        logger.info("Prioritizing direct PDF download instead of Edit Event flow")
+        # Prioritize Edit Event workflow to get correct manuscript number from editor.cgi URL
+        # This ensures proper filename generation with manuscript number from article parameter
+        logger.info("Prioritizing Edit Event → View Revisions workflow for accurate manuscript number extraction")
         
         # Try to find PDF link directly on the event page first
         pdf_link = None
@@ -1488,7 +1491,7 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
                     try:
                         # Try a more robust set of XPaths for the View Revisions link
                         # Try a more robust set of XPaths for the View Revisions link
-                    revisions_xpaths = [
+                        revisions_xpaths = [
                         "//a[contains(text(), 'View Revisions')]",
                         "//a[contains(text(), 'Revisions')]",
                         "//a[contains(@href, 'pickvers')]",
@@ -1656,50 +1659,107 @@ def process_single_event(driver, event_url, download_directory, url_structure, i
         # Log confirmation of found PDF link
         logger.info(f"Using PDF link: {pdf_href}")
         
-        # Extract the article number from the URL
+        # Extract the article number from the Edit Event URL if available
+        # This should be the manuscript number from the editor.cgi URL
         article_number = None
-        if "article=" in pdf_href:
+        edit_event_url = None
+        
+        # First, try to get manuscript number from current URL if it's an editor.cgi URL
+        current_url = driver.current_url
+        if "editor.cgi" in current_url and "article=" in current_url:
+            edit_event_url = current_url
+            query_params = parse_qs(urlparse(current_url).query)
+            if 'article' in query_params:
+                article_number = query_params['article'][0]
+                logger.info(f"Extracted manuscript number from Edit Event URL: {article_number}")
+        
+        # If not found, try to extract from the PDF link URL (fallback)
+        if not article_number and "article=" in pdf_href:
             # Parse the query parameters
             query_params = parse_qs(urlparse(pdf_href).query)
             if 'article' in query_params:
                 article_number = query_params['article'][0]
+                logger.info(f"Extracted manuscript number from PDF URL: {article_number}")
+        
+        # Final fallback to regex extraction
+        if not article_number:
+            for url_to_check in [current_url, pdf_href]:
+                if url_to_check:
+                    article_match = re.search(r'article=(\d+)', url_to_check)
+                    if article_match:
+                        article_number = article_match.group(1)
+                        logger.info(f"Extracted manuscript number via regex: {article_number}")
+                        break
         
         if not article_number:
-            # Fallback to regex extraction if parse_qs doesn't work
-            article_match = re.search(r'article=(\d+)', pdf_href)
-            if article_match:
-                article_number = article_match.group(1)
+            logger.warning("Could not extract manuscript number from any URL, using placeholder")
+            article_number = "0000"  # Use placeholder for unknown article numbers
         
-        if not article_number:
-            logger.warning("Could not extract article number from URL, using a placeholder")
-            article_number = f"0000"  # Use placeholder for unknown article numbers
-        
-        # Format the filename according to the requirements
-        # {four digit article number}_{Publication Series}_{section}_{partition}.pdf
-        # Example: 1223_modvis_2024_va.pdf
-        
-        # Parse the event URL to extract components for better filename creation
-        event_url_parts = urlparse(event_url).path.strip('/').split('/')
-        
-        # Extract parts from URL structure - prefer event URL parts if available
-        series = event_url_parts[0] if len(event_url_parts) > 0 else (url_structure[0] if len(url_structure) > 0 else "")
-        section = event_url_parts[1] if len(event_url_parts) > 1 else (url_structure[1] if len(url_structure) > 1 else "") # Year or other section identifier
-        partition = event_url_parts[2] if len(event_url_parts) > 2 else (url_structure[2] if len(url_structure) > 2 else "") # va, cmec, etc.
-        event_id = event_url_parts[3] if len(event_url_parts) > 3 else ""
-        
-        # Build filename parts
-        filename_parts = [article_number, series]
-        
-        # Add section if present (which may be a year or other identifier)
-        if section and not "announcements.html" in section and not "." in section:
-            filename_parts.append(section)
+        def generate_flexible_filename(event_url, article_number):
+            """
+            Generate flexible filename: manuscriptNumber_series_pathComponents.pdf
             
-        # Add partition (va, cmec, etc.) if present
-        if partition and not "announcements.html" in partition and not "." in partition and not partition.isdigit():
-            filename_parts.append(partition)
-        
-        # Combine into final filename
-        custom_filename = "_".join(filename_parts)
+            Examples:
+            - /agroenviron/2016/Abstracts/1/ → 1002_agroenviron_2016_abstracts.pdf
+            - /series/doc/ → 1234_series.pdf  
+            - /series/section/subsection/doc/ → 5678_series_section_subsection.pdf
+            
+            Args:
+                event_url: The event page URL (e.g., https://docs.lib.purdue.edu/agroenviron/2016/Abstracts/1/)
+                article_number: The manuscript number extracted from Edit Event URL
+            
+            Returns:
+                Filename string with .pdf extension
+            """
+            try:
+                # Parse the URL path components
+                parsed_url = urlparse(event_url)
+                path_parts = [part for part in parsed_url.path.strip('/').split('/') if part]
+                
+                # Remove docs.lib.purdue.edu prefix if present in path
+                if 'docs.lib.purdue.edu' in path_parts:
+                    docs_index = path_parts.index('docs.lib.purdue.edu')
+                    path_parts = path_parts[docs_index + 1:]
+                
+                if not path_parts:
+                    logger.warning(f"No path components found in URL: {event_url}")
+                    return f"{article_number.zfill(4)}_unknown.pdf"
+                
+                # First component is always the series
+                series = path_parts[0]
+                filename_parts = [article_number.zfill(4), series]
+                
+                # Add remaining path components (excluding the final document number)
+                # Variable depth: /series/year/section/doc OR /series/doc OR /series/year/doc etc.
+                if len(path_parts) > 2:  # More than just series and doc number
+                    # Take all middle components, convert to lowercase and clean
+                    middle_components = path_parts[1:-1]  # Everything except series and doc number
+                    for component in middle_components:
+                        # Clean component: lowercase, remove special chars
+                        cleaned = re.sub(r'[^\w]', '', component.lower())
+                        if cleaned and (not cleaned.isdigit() or len(cleaned) == 4):  # Allow 4-digit years
+                            filename_parts.append(cleaned)
+                
+                # Join all parts with underscores
+                filename = "_".join(filename_parts)
+                
+                # Clean the filename to remove any remaining invalid characters
+                filename = re.sub(r'[\\/*?:"<>|]', "_", filename)
+                
+                # Add .pdf extension
+                if not filename.lower().endswith('.pdf'):
+                    filename = f"{filename}.pdf"
+                
+                logger.info(f"Generated flexible filename: {filename} from URL: {event_url}")
+                return filename
+                
+            except Exception as e:
+                logger.error(f"Error generating flexible filename: {e}")
+                # Fallback to simple naming
+                return f"{article_number.zfill(4)}_{series if 'series' in locals() else 'unknown'}.pdf"
+
+        # Use the new flexible filename generation
+        custom_filename = generate_flexible_filename(event_url, article_number).replace('.pdf', '')  # Remove .pdf since it's added later
         
         # Clean the filename to remove invalid characters
         custom_filename = re.sub(r'[\\/*?:"<>|]', "_", custom_filename)
@@ -1964,9 +2024,6 @@ def check_download_dir():
             logger.error(f"Could not create download directory: {e}")
             return False
     return True
-        except Exception as e:
-            logger.error(f"Error creating mount point: {e}")
-            return False
     
     # Check if anything is mounted there
     if not os.listdir('/mnt/s'):

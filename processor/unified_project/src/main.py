@@ -40,18 +40,6 @@ def process(
     title: str = typer.Option(None, help="Set the document title."),
     author: str = typer.Option(None, help="Set the document author."),
     language: str = typer.Option("en-US", help="Set the document language."),
-    use_adobe_autotag: bool = typer.Option(
-        None, "--use-adobe-autotag/--no-adobe-autotag", 
-        help="Enable Adobe PDF Services AutoTag cloud enhancement (auto-detects availability if not specified)."
-    ),
-    generate_accessibility_report: bool = typer.Option(
-        False, "--generate-accessibility-report/--no-generate-accessibility-report",
-        help="Generate accessibility compliance report (requires Adobe AutoTag)."
-    ),
-    shift_headings: bool = typer.Option(
-        False, "--shift-headings/--no-shift-headings",
-        help="Optimize heading structure (Adobe AutoTag option)."
-    ),
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Enable verbose logging."
     ),
@@ -74,9 +62,6 @@ def process(
         "title": title,
         "author": author,
         "language": language,
-        "use_adobe_autotag": use_adobe_autotag,
-        "generate_accessibility_report": generate_accessibility_report,
-        "shift_headings": shift_headings,
     }
 
     success = enhancement_service.enhance_document(
