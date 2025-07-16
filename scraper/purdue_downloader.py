@@ -182,64 +182,20 @@ def get_chrome_version():
     # Default to latest known version if we can't detect
     default_version = "136"
     
-    # For WSL, check Windows Chrome
-    if is_wsl():
-        chrome_paths = [
-            "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe",
-            "/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe"
-        ]
+    # For all platforms including WSL, try the local Chrome installation first
+    try:
+        version_output = subprocess.check_output(
+            ["google-chrome", "--version"], text=True
+        ).strip()
         
-        for chrome_path in chrome_paths:
-            if os.path.exists(chrome_path):
-                try:
-                    # Use wslpath and wmic for proper Windows path conversion
-                    win_path = subprocess.check_output(
-                        ["wslpath", "-w", chrome_path], text=True
-                    ).strip()
-                    
-                    version_output = subprocess.check_output(
-                        ["powershell.exe", f"(Get-Item '{win_path}').VersionInfo.ProductVersion"],
-                        text=True
-                    ).strip()
-                    
-                    if version_output:
-                        _chrome_version_cache = version_output.split('.')[0]  # Cache major version
-                        return _chrome_version_cache
-                    
-                except Exception as e:
-                    logger.debug(f"Error getting Chrome version with PowerShell: {e}")
-                    
-                # Alternative method: direct registry query
-                try:
-                    version_output = subprocess.check_output(
-                        ["cmd.exe", "/c", "reg", "query", 
-                         "HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon", "/v", "version"],
-                        text=True
-                    ).strip()
-                    
-                    # Extract version from registry output
-                    match = re.search(r'version\s+REG_SZ\s+(\d+)\.', version_output)
-                    if match:
-                        _chrome_version_cache = match.group(1)
-                        return _chrome_version_cache
-                        
-                except Exception as e:
-                    logger.debug(f"Error getting Chrome version from registry: {e}")
-    
-    # For Linux, use standard approaches
-    else:
-        try:
-            version_output = subprocess.check_output(
-                ["google-chrome", "--version"], text=True
-            ).strip()
+        match = re.search(r'Chrome\s+(\d+)\.', version_output)
+        if match:
+            _chrome_version_cache = match.group(1)
+            logger.info(f"Detected Chrome version from command: {_chrome_version_cache}")
+            return _chrome_version_cache
             
-            match = re.search(r'Chrome\s+(\d+)\.', version_output)
-            if match:
-                _chrome_version_cache = match.group(1)
-                return _chrome_version_cache
-                
-        except Exception as e:
-            logger.debug(f"Error getting Chrome version on Linux: {e}")
+    except Exception as e:
+        logger.debug(f"Error getting Chrome version on Linux: {e}")
     
     logger.warning(f"Could not detect Chrome version, using default: {default_version}")
     _chrome_version_cache = default_version
@@ -894,6 +850,19 @@ def setup_webdriver(download_directory):
         # Use headless mode for better WSL compatibility
         logger.info("Using headless Chrome for WSL environment")
         options.add_argument("--headless=new")
+        
+        # Explicitly set Chrome binary path for WSL
+        chrome_paths = [
+            "/usr/bin/google-chrome",
+            "/usr/bin/google-chrome-stable",
+            "/opt/google/chrome/google-chrome"
+        ]
+        
+        for chrome_path in chrome_paths:
+            if os.path.exists(chrome_path):
+                logger.info(f"Setting Chrome binary path to: {chrome_path}")
+                options.binary_location = chrome_path
+                break
     
     # Try to initialize Chrome with standard options first
     try:

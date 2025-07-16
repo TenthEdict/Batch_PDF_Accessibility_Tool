@@ -153,7 +153,12 @@ class OptimizedDownloadStrategy:
     
     def extract_document_pages_from_collection(self, driver, base_url: str) -> List[Dict]:
         """
-        Extract individual document page URLs from a collection page.
+        Extract individual document page URLs from a collection page with hierarchical navigation.
+        
+        This handles the hierarchical structure:
+        1. Collection page (e.g., /roadschool/)
+        2. Year/section pages (e.g., /roadschool/2025/presentations/)
+        3. Individual manuscript pages (e.g., /roadschool/2025/presentations/22/)
         
         Returns:
             List of dictionaries with 'url', 'text', 'title' information for document pages
@@ -161,27 +166,92 @@ class OptimizedDownloadStrategy:
         document_links = []
         
         try:
-            # Find individual document page links (not direct PDF links)
-            # These lead to document pages where we can follow Edit Event → View Revisions workflow
-            document_selectors = [
-                # Links to document pages (typically numbered at end of path)
-                "a[href*='/docs.lib.purdue.edu/'][href$='/']",
-                "a[href*='/docs.lib.purdue.edu/'][href*='/1/'], a[href*='/docs.lib.purdue.edu/'][href*='/2/'], a[href*='/docs.lib.purdue.edu/'][href*='/3/']",
-                "a[href*='/docs.lib.purdue.edu/'][href*='/4/'], a[href*='/docs.lib.purdue.edu/'][href*='/5/'], a[href*='/docs.lib.purdue.edu/'][href*='/6/']",
-                "a[href*='/docs.lib.purdue.edu/'][href*='/7/'], a[href*='/docs.lib.purdue.edu/'][href*='/8/'], a[href*='/docs.lib.purdue.edu/'][href*='/9/']",
-                # Alternative patterns for document links
-                "a[href^='https://docs.lib.purdue.edu/']",
-                "a[href^='/']"
+            # First, try to find manuscript pages directly (ends with number)
+            manuscript_links = self._find_manuscript_pages(driver, base_url)
+            if manuscript_links:
+                logger.info(f"✅ Found {len(manuscript_links)} manuscript pages directly on base page")
+                return manuscript_links
+            
+            # If no manuscript pages found, look for intermediate section/year pages
+            section_links = self._find_section_pages(driver, base_url)
+            if section_links:
+                logger.info(f"🔍 Found {len(section_links)} section pages to explore hierarchically")
+                # Navigate to each section and extract manuscript pages
+                for i, section_url in enumerate(section_links):
+                    logger.info(f"📁 Exploring section {i+1}/{len(section_links)}: {section_url}")
+                    driver.get(section_url)
+                    wait_for_page_load(driver)
+                    handle_cookie_banner(driver)
+                    
+                    # Find manuscript pages in this section
+                    section_manuscripts = self._find_manuscript_pages(driver, section_url)
+                    
+                    # If no manuscripts found, look for sub-sections to explore deeper
+                    if not section_manuscripts:
+                        logger.info(f"  📄 Found 0 manuscripts in this section - looking for sub-sections")
+                        sub_section_links = self._find_section_pages(driver, section_url)
+                        if sub_section_links:
+                            logger.info(f"  🔍 Found {len(sub_section_links)} sub-sections to explore")
+                            for j, sub_section_url in enumerate(sub_section_links):
+                                logger.info(f"    📁 Exploring sub-section {j+1}/{len(sub_section_links)}: {sub_section_url}")
+                                driver.get(sub_section_url)
+                                wait_for_page_load(driver)
+                                handle_cookie_banner(driver)
+                                
+                                # Find manuscript pages in this sub-section
+                                sub_section_manuscripts = self._find_manuscript_pages(driver, sub_section_url)
+                                document_links.extend(sub_section_manuscripts)
+                                logger.info(f"      📄 Found {len(sub_section_manuscripts)} manuscripts in this sub-section")
+                        else:
+                            logger.info(f"  📄 No sub-sections found in {section_url}")
+                    else:
+                        document_links.extend(section_manuscripts)
+                        logger.info(f"  📄 Found {len(section_manuscripts)} manuscripts in this section")
+                    
+                    # Return to base URL for next iteration
+                    driver.get(base_url)
+                    wait_for_page_load(driver)
+            
+            # Remove duplicates while preserving order
+            unique_links = []
+            seen_urls = set()
+            for link in document_links:
+                if link['url'] not in seen_urls:
+                    unique_links.append(link)
+                    seen_urls.add(link['url'])
+            
+            logger.info(f"Found {len(unique_links)} total document page links")
+            return unique_links
+            
+        except Exception as e:
+            logger.warning(f"Error extracting document page URLs: {e}")
+            return []
+    
+    def _find_manuscript_pages(self, driver, base_url: str) -> List[Dict]:
+        """
+        Find individual manuscript pages that end with a number (e.g., /22/, /1/).
+        These are the final pages where we can find Edit Event buttons.
+        """
+        manuscript_links = []
+        
+        try:
+            # Look for links that end with a number (manuscript pages)
+            # These selectors target manuscript pages specifically
+            manuscript_selectors = [
+                # Standard manuscript page patterns
+                "a[href*='docs.lib.purdue.edu']",
+                "a[href^='/']",
+                "a[href^='https://docs.lib.purdue.edu']"
             ]
             
-            for selector in document_selectors:
+            for selector in manuscript_selectors:
                 try:
                     elements = driver.find_elements(By.CSS_SELECTOR, selector)
                     for element in elements:
                         href = element.get_attribute("href")
-                        if href and self._is_document_page_url(href, base_url):
-                            if href not in [link['url'] for link in document_links]:
-                                document_links.append({
+                        if href and self._is_manuscript_page_url(href, base_url):
+                            if href not in [link['url'] for link in manuscript_links]:
+                                manuscript_links.append({
                                     'url': href,
                                     'text': element.text.strip(),
                                     'title': element.get_attribute("title") or "",
@@ -191,16 +261,165 @@ class OptimizedDownloadStrategy:
                     continue
             
             # Convert relative URLs to absolute
-            for link in document_links:
+            for link in manuscript_links:
                 if link['url'].startswith('/'):
                     link['url'] = urljoin(base_url, link['url'])
             
-            logger.info(f"Found {len(document_links)} document page links")
-            return document_links
+            return manuscript_links
             
         except Exception as e:
-            logger.warning(f"Error extracting document page URLs: {e}")
+            logger.warning(f"Error finding manuscript pages: {e}")
             return []
+    
+    def _find_section_pages(self, driver, base_url: str) -> List[str]:
+        """
+        Find intermediate section/year pages (e.g., /roadschool/2025/presentations/).
+        These contain links to individual manuscript pages.
+        """
+        section_links = []
+        
+        try:
+            # Look for links that represent sections/years but not manuscripts
+            section_selectors = [
+                "a[href*='docs.lib.purdue.edu']",
+                "a[href^='/']",
+                "a[href^='https://docs.lib.purdue.edu']"
+            ]
+            
+            for selector in section_selectors:
+                try:
+                    elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                    for element in elements:
+                        href = element.get_attribute("href")
+                        if href and self._is_section_page_url(href, base_url):
+                            if href not in section_links:
+                                # Convert relative to absolute
+                                if href.startswith('/'):
+                                    href = urljoin(base_url, href)
+                                section_links.append(href)
+                except:
+                    continue
+            
+            return section_links
+            
+        except Exception as e:
+            logger.warning(f"Error finding section pages: {e}")
+            return []
+    
+    def _is_manuscript_page_url(self, url: str, base_url: str) -> bool:
+        """
+        Check if URL is a manuscript page (ends with a number).
+        
+        Examples:
+        - /roadschool/2025/presentations/22/ → True (manuscript page)
+        - /roadschool/2025/presentations/ → False (section page)
+        - /roadschool/ → False (collection page)
+        """
+        try:
+            parsed_url = urlparse(url)
+            parsed_base = urlparse(base_url)
+            
+            # Must be from the same domain
+            if parsed_url.netloc and parsed_url.netloc != parsed_base.netloc:
+                return False
+            
+            path = parsed_url.path.strip('/')
+            base_path = parsed_base.path.strip('/')
+            
+            # Skip if it's the same as base URL
+            if path == base_path:
+                return False
+            
+            # Skip direct PDF URLs
+            if '.pdf' in path.lower() or 'viewcontent' in path.lower():
+                return False
+                
+            # Skip admin/system URLs
+            if any(skip in path.lower() for skip in ['search', 'browse', 'about', 'contact', 'admin', 'cgi']):
+                return False
+            
+            # Must be longer than base path (more specific)
+            if not path.startswith(base_path):
+                return False
+                
+            # Check if it ends with a number (manuscript page)
+            path_parts = path.split('/')
+            if path_parts and path_parts[-1].isdigit():
+                # Additional check: make sure it's not just a year (should be more specific)
+                # Years are typically 4 digits, manuscript numbers are usually shorter
+                # and there should be more path components for a real manuscript page
+                last_part = path_parts[-1]
+                if len(last_part) == 4 and last_part.isdigit() and int(last_part) > 1900:
+                    # This looks like a year, not a manuscript number
+                    # Need at least one more level (e.g., /roadschool/2025/presentations/22/)
+                    return False
+                return True
+                
+            return False
+            
+        except Exception as e:
+            logger.debug(f"Error checking manuscript page URL {url}: {e}")
+            return False
+    
+    def _is_section_page_url(self, url: str, base_url: str) -> bool:
+        """
+        Check if URL is a section/year page (intermediate level).
+        
+        Examples:
+        - /roadschool/2025/presentations/ → True (section page)
+        - /roadschool/2025/presentations/22/ → False (manuscript page)
+        - /roadschool/ → False (collection page)
+        """
+        try:
+            parsed_url = urlparse(url)
+            parsed_base = urlparse(base_url)
+            
+            # Must be from the same domain
+            if parsed_url.netloc and parsed_url.netloc != parsed_base.netloc:
+                return False
+            
+            path = parsed_url.path.strip('/')
+            base_path = parsed_base.path.strip('/')
+            
+            # Skip if it's the same as base URL
+            if path == base_path:
+                return False
+            
+            # Skip direct PDF URLs
+            if '.pdf' in path.lower() or 'viewcontent' in path.lower():
+                return False
+                
+            # Skip admin/system URLs
+            if any(skip in path.lower() for skip in ['search', 'browse', 'about', 'contact', 'admin', 'cgi']):
+                return False
+            
+            # Must be longer than base path (more specific)
+            if not path.startswith(base_path):
+                return False
+                
+            # Check if it's a section page (doesn't end with number, or ends with year)
+            path_parts = path.split('/')
+            if path_parts:
+                last_part = path_parts[-1]
+                
+                # Case 1: Doesn't end with number at all (e.g., /roadschool/2025/presentations/)
+                if not last_part.isdigit():
+                    base_parts = base_path.split('/') if base_path else []
+                    if len(path_parts) > len(base_parts):
+                        return True
+                
+                # Case 2: Ends with a 4-digit year (e.g., /roadschool/2025)
+                elif (len(last_part) == 4 and last_part.isdigit() and 
+                      int(last_part) > 1900 and int(last_part) < 2100):
+                    base_parts = base_path.split('/') if base_path else []
+                    if len(path_parts) > len(base_parts):
+                        return True
+                    
+            return False
+            
+        except Exception as e:
+            logger.debug(f"Error checking section page URL {url}: {e}")
+            return False
     
     def _is_document_page_url(self, url: str, base_url: str) -> bool:
         """
@@ -314,9 +533,10 @@ class OptimizedDownloadStrategy:
             
             # Primary selectors - look for Edit Event first (most specific)
             edit_event_selectors = [
-                ("xpath", "//a[contains(text(), 'Edit Event') and not(contains(text(), 'Manage'))]"),
+                ("xpath", "//a[text()='Edit Event' and not(contains(text(), 'Manage'))]"),  # Exact match first
+                ("xpath", "//a[contains(text(), 'Edit Event') and not(contains(text(), 'Manage'))]"),  # Contains match
                 ("css", "a[href*='editor.cgi'][href*='window=abstract']"),
-                ("xpath", "//a[contains(@href, 'editor.cgi') and contains(@href, 'window=abstract')]")
+                ("xpath", "//a[contains(@href, 'editor.cgi') and contains(@href, 'window=abstract') and not(contains(text(), 'Manage'))]")
             ]
             
             # Try Edit Event selectors first
@@ -584,7 +804,7 @@ class CrossPlatformChromeManager:
             pass
         return False
     
-    def get_optimized_chrome_options(self, download_dir: str) -> Options:
+    def get_optimized_chrome_options(self, download_dir: str, manual_login: bool = False) -> Options:
         """Get optimized Chrome options for the current platform."""
         options = Options()
         
@@ -598,9 +818,34 @@ class CrossPlatformChromeManager:
         # Platform-specific optimizations
         if self.is_wsl:
             # WSL-specific optimizations
-            options.add_argument("--headless=new")
-            options.add_argument("--disable-extensions")
-            options.add_argument("--disable-plugins")
+            if not manual_login:
+                options.add_argument("--headless=new")
+                options.add_argument("--disable-extensions")
+                options.add_argument("--disable-plugins")
+            else:
+                # Manual login mode - use visible browser
+                logger.info("Manual login mode - using visible browser in WSL")
+                logger.info("Using Linux Chrome for manual login in WSL")
+                
+                # Allow extensions and plugins for better manual browsing experience
+                # Don't disable extensions/plugins in manual mode
+                
+                # Explicitly set Chrome binary path for WSL
+                chrome_paths = [
+                    "/usr/bin/google-chrome",
+                    "/usr/bin/google-chrome-stable",
+                    "/opt/google/chrome/google-chrome"
+                ]
+                
+                for chrome_path in chrome_paths:
+                    if os.path.exists(chrome_path):
+                        logger.info(f"Setting Chrome binary path to: {chrome_path}")
+                        options.binary_location = chrome_path
+                        break
+                
+                # Set up X11 forwarding for WSL browser display
+                if not os.environ.get('DISPLAY'):
+                    os.environ['DISPLAY'] = ':0'
         elif self.platform == "darwin":
             # macOS-specific optimizations
             # Use visible browser for better compatibility with some sites
@@ -621,9 +866,9 @@ class CrossPlatformChromeManager:
         
         return options
     
-    def create_driver(self, download_dir: str) -> webdriver.Chrome:
+    def create_driver(self, download_dir: str, manual_login: bool = False) -> webdriver.Chrome:
         """Create an optimized Chrome driver for the current platform."""
-        options = self.get_optimized_chrome_options(download_dir)
+        options = self.get_optimized_chrome_options(download_dir, manual_login)
         
         try:
             # Try standard initialization first
@@ -632,8 +877,28 @@ class CrossPlatformChromeManager:
             return driver
         except Exception as e:
             logger.warning(f"Standard Chrome initialization failed: {e}")
-            # Fallback to existing setup_webdriver function
-            return setup_webdriver(download_dir)
+            
+            # Try with downloaded ChromeDriver
+            try:
+                from scraper.purdue_downloader import download_chromedriver
+                chromedriver_path = download_chromedriver()
+                if chromedriver_path:
+                    from selenium.webdriver.chrome.service import Service
+                    service = Service(executable_path=chromedriver_path)
+                    driver = webdriver.Chrome(service=service, options=options)
+                    logger.info(f"✅ Chrome driver created with downloaded driver at {chromedriver_path}")
+                    return driver
+                else:
+                    raise Exception("Failed to download ChromeDriver")
+            except Exception as e2:
+                logger.warning(f"ChromeDriver download failed: {e2}")
+                
+                # For manual login mode, don't use fallback that might be incompatible
+                if manual_login:
+                    logger.error("Manual login mode requires working Chrome setup")
+                    raise Exception("Cannot initialize Chrome for manual login mode")
+                # Fallback to existing setup_webdriver function for non-manual mode
+                return setup_webdriver(download_dir)
 
 
 def check_login_required_fixed(driver):
@@ -693,7 +958,7 @@ def handle_login_fixed(driver, username, password, manual_login=False):
         # If we're not on a login page and no login form is visible, navigate to login
         if "login.cgi" not in driver.current_url:
             username_inputs = driver.find_elements(By.CSS_SELECTOR, 
-                "input[name='username'], input[id='username'], input[name='user'], input[id='user']")
+                "input[name='username'], input[id='username'], input[name='user'], input[id='user'], input[name='auth_email'], input[id='auth_email']")
             if not username_inputs:
                 logger.info("No login form found, navigating to Purdue login page...")
                 login_url = "https://docs.lib.purdue.edu/cgi/login.cgi?return_to=https%3A%2F%2Fdocs.lib.purdue.edu%2Fcgi%2Fmyaccount.cgi%3Fcontext%3D&context=https://docs.lib.purdue.edu"
@@ -703,7 +968,7 @@ def handle_login_fixed(driver, username, password, manual_login=False):
         # Check if we're already on the login page with a form
         # Look for both email and username field patterns
         login_inputs = driver.find_elements(By.CSS_SELECTOR, 
-            "input[name='username'], input[id='username'], input[name='user'], input[id='user'], input[name='email'], input[type='email']")
+            "input[name='username'], input[id='username'], input[name='user'], input[id='user'], input[name='email'], input[type='email'], input[name='auth_email'], input[id='auth_email']")
         
         if not login_inputs:
             logger.info("No login fields found, checking if we need to navigate to login form...")
@@ -717,7 +982,7 @@ def handle_login_fixed(driver, username, password, manual_login=False):
             
             # Check again for login fields after waiting
             login_inputs = driver.find_elements(By.CSS_SELECTOR, 
-                "input[name='username'], input[id='username'], input[name='user'], input[id='user'], input[name='email'], input[type='email']")
+                "input[name='username'], input[id='username'], input[name='user'], input[id='user'], input[name='email'], input[type='email'], input[name='auth_email'], input[id='auth_email']")
             
             if not login_inputs:
                 logger.warning("Still no login fields found after direct navigation")
@@ -745,7 +1010,22 @@ def handle_login_fixed(driver, username, password, manual_login=False):
             print("Navigate to the correct login page if necessary.")
             print("Press ENTER here when you have completed login and are ready to continue...")
             print("="*60)
-            input()  # Wait for user to press enter
+            
+            # Handle input more robustly for different environments
+            try:
+                input()  # Wait for user to press enter
+            except EOFError:
+                # If no stdin available, wait for a period and check login status
+                logger.info("No stdin available, waiting 30 seconds for manual login...")
+                time.sleep(30)
+                
+                # Check if login was successful by looking for user menu
+                if check_login_required(driver):
+                    logger.warning("Login may not be complete. Waiting additional 30 seconds...")
+                    time.sleep(30)
+            except KeyboardInterrupt:
+                logger.info("User interrupted manual login process")
+                return False
             
             # Verify login was successful
             time.sleep(2)  # Give page time to redirect
@@ -754,12 +1034,22 @@ def handle_login_fixed(driver, username, password, manual_login=False):
                 logger.warning(f"Still on login/reset page: {driver.current_url}")
                 print("⚠️  It appears you may still be on a login or reset page.")
                 print("Would you like to continue anyway? (y/n): ")
-                response = input().lower().strip()
-                if response.startswith('y'):
-                    logger.info("User chose to continue despite being on login page")
+                
+                # Handle input more robustly for different environments
+                try:
+                    response = input().lower().strip()
+                    if response.startswith('y'):
+                        logger.info("User chose to continue despite being on login page")
+                        return True
+                    else:
+                        logger.info("User chose not to continue from login page")
+                        return False
+                except EOFError:
+                    # If no stdin available, assume user wants to continue
+                    logger.info("No stdin available, assuming user wants to continue")
                     return True
-                else:
-                    logger.info("User chose not to continue from login page")
+                except KeyboardInterrupt:
+                    logger.info("User interrupted login process")
                     return False
             else:
                 logger.info("✅ Manual login appears successful - continuing with scraping")
@@ -767,16 +1057,34 @@ def handle_login_fixed(driver, username, password, manual_login=False):
         
         # Try different login form patterns
         logger.info("Looking for username field...")
+        
+        # First, let's debug what's on the page
+        try:
+            logger.info("Debugging page content...")
+            inputs = driver.find_elements(By.TAG_NAME, "input")
+            logger.info(f"Found {len(inputs)} input elements on page")
+            for i, inp in enumerate(inputs[:10]):  # Show first 10 inputs
+                try:
+                    name = inp.get_attribute("name") or "no-name"
+                    id_attr = inp.get_attribute("id") or "no-id"
+                    type_attr = inp.get_attribute("type") or "no-type"
+                    logger.info(f"Input {i}: name='{name}', id='{id_attr}', type='{type_attr}'")
+                except:
+                    pass
+        except:
+            pass
+        
+        # Try broader selectors including email fields for Purdue login
         username_field = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 
-                "input[name='username'], input[id='username'], input[name='user'], input[id='user']"))
+                "input[name='username'], input[id='username'], input[name='user'], input[id='user'], input[name='email'], input[type='email'], input[name='login_name'], input[id='login_name'], input[name='auth_email'], input[id='auth_email']"))
         )
         logger.info("Found username field, entering credentials...")
         username_field.clear()
         username_field.send_keys(username)
         
         password_field = driver.find_element(By.CSS_SELECTOR, 
-            "input[name='password'], input[id='password'], input[type='password']")
+            "input[name='password'], input[id='password'], input[type='password'], input[name='auth_password'], input[id='auth_password']")
         password_field.clear()
         password_field.send_keys(password)
         
@@ -849,17 +1157,22 @@ def handle_login_fixed(driver, username, password, manual_login=False):
         return False
 
 
-def generate_flexible_filename(pdf_url: str, base_url: str, index: int = 1) -> str:
+def generate_flexible_filename(pdf_url: str, document_url: str, index: int = 1) -> str:
     """
-    Generate flexible filename: manuscriptNumber_series_pathComponents.pdf
+    Generate dynamic filename from document URL hierarchy: manuscriptNumber_series_pathComponents.pdf
     
     Args:
         pdf_url: The PDF download URL (e.g., viewcontent.cgi?article=1026&context=chempubs)
-        base_url: The base collection URL (e.g., https://docs.lib.purdue.edu/chempubs)
+        document_url: The document page URL (e.g., https://docs.lib.purdue.edu/roadschool/2025/presentations/22/)
         index: Fallback index if manuscript number cannot be extracted
     
     Returns:
         Filename string with .pdf extension
+    
+    Examples:
+        - /roadschool/2025/presentations/22/ → 1026_roadschool_2025_presentations.pdf
+        - /roadschool/1924/proceedings/1/ → 1027_roadschool_1924_proceedings.pdf
+        - /roadschool/2011/pres/26/ → 1028_roadschool_2011_pres.pdf
     """
     try:
         # Extract manuscript number from PDF URL
@@ -879,9 +1192,9 @@ def generate_flexible_filename(pdf_url: str, base_url: str, index: int = 1) -> s
             # Final fallback to index
             article_number = str(index).zfill(4)
         
-        # Extract series and path components from base URL
-        parsed_base = urlparse(base_url)
-        path_parts = [part for part in parsed_base.path.strip('/').split('/') if part]
+        # Extract series and path components from document URL (not base URL)
+        parsed_doc = urlparse(document_url)
+        path_parts = [part for part in parsed_doc.path.strip('/').split('/') if part]
         
         # Remove docs.lib.purdue.edu prefix if present
         if 'docs.lib.purdue.edu' in path_parts:
@@ -900,13 +1213,13 @@ def generate_flexible_filename(pdf_url: str, base_url: str, index: int = 1) -> s
             else:
                 filename_parts = [article_number.zfill(4), "unknown"]
         else:
-            # Use path components from base URL
+            # Use path components from document URL
             series = path_parts[0]
             filename_parts = [article_number.zfill(4), series]
             
-            # Add remaining path components (excluding any document numbers)
+            # Add remaining path components (excluding the final document number)
             if len(path_parts) > 1:
-                for component in path_parts[1:]:
+                for component in path_parts[1:-1]:  # Exclude the last part (document number)
                     # Clean component: lowercase, remove special chars
                     cleaned = re.sub(r'[^\w]', '', component.lower())
                     if cleaned and (not cleaned.isdigit() or len(cleaned) == 4):  # Allow 4-digit years
@@ -922,7 +1235,7 @@ def generate_flexible_filename(pdf_url: str, base_url: str, index: int = 1) -> s
         if not filename.lower().endswith('.pdf'):
             filename = f"{filename}.pdf"
         
-        logger.info(f"Generated flexible filename: {filename} from URL: {pdf_url}")
+        logger.info(f"Generated flexible filename: {filename} from document URL: {document_url}")
         return filename
         
     except Exception as e:
@@ -963,7 +1276,7 @@ def optimize_purdue_download(base_url: str, download_dir: str,
     driver = None
     try:
         # Create optimized driver
-        driver = chrome_manager.create_driver(download_dir)
+        driver = chrome_manager.create_driver(download_dir, manual_login)
         
         # Navigate to the base URL
         logger.info(f"🚀 Starting optimized download for: {base_url}")
@@ -1037,8 +1350,8 @@ def optimize_purdue_download(base_url: str, download_dir: str,
                 failed += 1
                 continue
             
-            # Generate proper filename using manuscript number
-            filename = generate_flexible_filename(manuscript_pdf_url, base_url, i + 1)
+            # Generate proper filename using manuscript number and document URL
+            filename = generate_flexible_filename(manuscript_pdf_url, document_url, i + 1)
             output_path = Path(download_dir) / filename
             
             logger.info(f"Downloading manuscript PDF {i+1}/{len(document_links)}: {manuscript_pdf_url}")

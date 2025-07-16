@@ -32,7 +32,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Unified Scraper-Processor Pipeline
 - Complete pipeline: `python processor/unified_project/src/orchestration/scrape_and_process.py --url https://docs.lib.purdue.edu/modvis/2024/va --mode academic`
 - Manual login mode: `python processor/unified_project/src/orchestration/scrape_and_process.py --url https://docs.lib.purdue.edu/modvis/2024/va --manual-login --mode academic`
-- Batch processing: `python processor/unified_project/src/orchestration/scrape_and_process.py --urls-file /Volumes/Accessibility_Project/urls.txt --manual-login --mode academic`
+- Batch processing: `python processor/unified_project/src/orchestration/scrape_and_process.py --urls /Volumes/Accessibility_Project/urls.txt --manual-login --mode academic`
 
 ## Project Architecture
 
