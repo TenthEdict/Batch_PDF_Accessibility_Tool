@@ -1,0 +1,298 @@
+{
+  "summary": {
+    "total_files": 11,
+    "successful_processing": 11,
+    "failed_processing": 0,
+    "title_extraction_accuracy": 90.9090909090909,
+    "file_size_reductions": [
+      67.00792471196259,
+      74.76179916148035,
+      43.78927526270295,
+      18.458554418010596,
+      6.3069385852769315,
+      20.911283537440404,
+      50.46882121190638,
+      31.378786415907395,
+      52.16851563179209,
+      43.2692974814792,
+      41.79434157345615
+    ],
+    "processing_times": [
+      18.90545415878296,
+      14.897640943527222,
+      9.294883966445923,
+      24.03159189224243,
+      27.59455418586731,
+      7.1154279708862305,
+      10.129822015762329,
+      13.327104091644287,
+      17.484674215316772,
+      14.521617889404297,
+      14.604401111602783
+    ],
+    "pdf_integrity_checks": [
+      {
+        "can_open": true,
+        "page_count": 14,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 16,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 11,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 12,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 1,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 26,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 11,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 17,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 23,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 17,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      },
+      {
+        "can_open": true,
+        "page_count": 15,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      }
+    ],
+    "errors": [],
+    "avg_processing_time": 15.627924767407505,
+    "max_processing_time": 27.59455418586731,
+    "avg_size_reduction": 40.937776181037734,
+    "min_size_reduction": 6.3069385852769315,
+    "max_size_reduction": 74.76179916148035,
+    "success_rate": 100.0
+  },
+  "detailed_results": [
+    {
+      "filename": "1-s2.0-S0148296321001661-main.pdf",
+      "success": true,
+      "processing_time": 18.90545415878296,
+      "initial_size": 2290935,
+      "final_size": 755827,
+      "size_reduction_percent": 67.00792471196259,
+      "extracted_title": "Share or hide? Investigating positive and negative employee intentions and organizational support in the context of knowledge sharing and hiding",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 14,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "Understanding students  motivation towards proactive career behaviours through goal-setting theory and the job demands resources model.pdf",
+      "success": true,
+      "processing_time": 14.897640943527222,
+      "initial_size": 1821782,
+      "final_size": 459785,
+      "size_reduction_percent": 74.76179916148035,
+      "extracted_title": "proactive career behaviours through goal-setting theory and the job demands\u2013resources model",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 16,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "1-s2.0-S0361476X20300254-main.pdf",
+      "success": true,
+      "processing_time": 9.294883966445923,
+      "initial_size": 960210,
+      "final_size": 539741,
+      "size_reduction_percent": 43.78927526270295,
+      "extracted_title": "Intrinsic and extrinsic motivation from a self-determination theory perspective: Definitions, theory, practices, and future directions",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 11,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "1-s2.0-S016412122200228X-main.pdf",
+      "success": true,
+      "processing_time": 24.03159189224243,
+      "initial_size": 1932329,
+      "final_size": 1575649,
+      "size_reduction_percent": 18.458554418010596,
+      "extracted_title": "Work-from-home is here to stay: Call for flexibility in post-pandemic",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 12,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "annotated-Bibliography.pdf",
+      "success": true,
+      "processing_time": 27.59455418586731,
+      "initial_size": 1836628,
+      "final_size": 1720793,
+      "size_reduction_percent": 6.3069385852769315,
+      "extracted_title": "No title extracted",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 1,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "J Occupat   Organ Psyc - 2016 - Miao - A meta\u2010analysis of emotional intelligence and work attitudes.pdf",
+      "success": true,
+      "processing_time": 7.1154279708862305,
+      "initial_size": 267425,
+      "final_size": 211503,
+      "size_reduction_percent": 20.911283537440404,
+      "extracted_title": "A meta-analysis of emotional intelligence and work , Ronald H. Humphrey and Shanshan Qian",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 26,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "1-s2.0-S0191886918306214-main.pdf",
+      "success": true,
+      "processing_time": 10.129822015762329,
+      "initial_size": 493685,
+      "final_size": 244528,
+      "size_reduction_percent": 50.46882121190638,
+      "extracted_title": "ve factor model of personality and emotion regulation: A meta-",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 11,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "10-1108_jmp-06-2018-0256.pdf",
+      "success": true,
+      "processing_time": 13.327104091644287,
+      "initial_size": 196789,
+      "final_size": 135039,
+      "size_reduction_percent": 31.378786415907395,
+      "extracted_title": "autonomy, and entrepreneurship in the gig economy",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 17,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "J History Behavioral Science - 2019 - Lussier - Of Maslow  motives  and managers  The hierarchy of needs in American.pdf",
+      "success": true,
+      "processing_time": 17.484674215316772,
+      "initial_size": 1483803,
+      "final_size": 709725,
+      "size_reduction_percent": 52.16851563179209,
+      "extracted_title": "Of Maslow, motives, and managers: The hierarchy of needs in American business",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 23,
+        "has_text": true,
+        "has_images": true,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "qt0r53q4kk.pdf",
+      "success": true,
+      "processing_time": 14.521617889404297,
+      "initial_size": 518876,
+      "final_size": 294362,
+      "size_reduction_percent": 43.2692974814792,
+      "extracted_title": "No title extracted",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 17,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      }
+    },
+    {
+      "filename": "10-1108_ccij-12-2017-0123.pdf",
+      "success": true,
+      "processing_time": 14.604401111602783,
+      "initial_size": 212780,
+      "final_size": 123850,
+      "size_reduction_percent": 41.79434157345615,
+      "extracted_title": "for increasing employees engagement in CSR",
+      "integrity_check": {
+        "can_open": true,
+        "page_count": 15,
+        "has_text": true,
+        "has_images": false,
+        "metadata_present": true
+      }
+    }
+  ]
+}

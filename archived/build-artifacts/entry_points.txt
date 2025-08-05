@@ -1,0 +1,3 @@
+[console_scripts]
+epubs = processor.unified_project.src.main:app
+epubs-scrape = scraper.purdue_downloader:main
