@@ -75,6 +75,20 @@ epubs --help
 epubs enhance sample.pdf
 ```
 
+## Batch Processing
+
+To process multiple files at once, use the batch processing command:
+
+### Mac/Linux
+```bash
+python -m processor.unified_project.src.main batch-process data/input data/output --verbose
+```
+
+### Windows
+```powershell
+python -m processor.unified_project.src.main batch-process data/input data/output --verbose
+```
+
 ## Common Issues
 
 ### Windows
