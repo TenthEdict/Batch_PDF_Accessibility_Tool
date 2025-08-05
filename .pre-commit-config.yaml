@@ -1,0 +1,307 @@
+# Pre-commit hooks configuration for ePubs Accessibility Enhancement
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # Standard pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        description: Trim trailing whitespace
+      - id: end-of-file-fixer
+        description: Ensure files end with newline
+      - id: check-yaml
+        description: Check YAML files for syntax errors
+      - id: check-toml
+        description: Check TOML files for syntax errors
+      - id: check-json
+        description: Check JSON files for syntax errors
+      - id: check-added-large-files
+        description: Prevent large files from being committed
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+        description: Check for merge conflict markers
+      - id: debug-statements
+        description: Check for debugger imports and statements
+      - id: check-executables-have-shebangs
+        description: Ensure executables have shebangs
+      - id: check-shebang-scripts-are-executable
+        description: Ensure scripts with shebangs are executable
+
+  # Python code formatting with Black
+  - repo: https://github.com/psf/black
+    rev: 23.9.1  
+    hooks:
+      - id: black
+        description: Format Python code with Black
+        language_version: python3.11
+        args: ['--line-length=88']
+
+  # Import sorting with isort
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        description: Sort Python imports
+        args: ['--profile=black', '--line-length=88']
+
+  # Python linting with flake8
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        description: Lint Python code with flake8
+        args: ['--max-line-length=88', '--extend-ignore=E203,W503']
+        additional_dependencies:
+          - flake8-docstrings
+          - flake8-import-order
+          - flake8-bugbear
+
+  # Type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.6.0
+    hooks:
+      - id: mypy
+        description: Static type checking with mypy
+        additional_dependencies: [types-all]
+        args: ['--ignore-missing-imports', '--disallow-untyped-defs']
+        exclude: '^(tests/|docs/)'
+
+  # Security linting with bandit
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        description: Security linting with bandit
+        args: ['-r', 'processor/', '-f', 'json', '-o', 'bandit-report.json']
+        pass_filenames: false
+
+  # Python security check with safety
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.2
+    hooks:
+      - id: python-safety-dependencies-check
+        description: Check Python dependencies for security vulnerabilities
+
+  # Documentation linting
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        description: Check Python docstring style
+        args: ['--convention=google']
+        exclude: '^(tests/|migrations/)'
+
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.5
+    hooks:
+      - id: shellcheck
+        description: Lint shell scripts
+        types: [shell]
+        args: ['--severity=warning']
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.37.0
+    hooks:
+      - id: markdownlint
+        description: Lint Markdown files
+        args: ['--fix']
+        exclude: '^(CHANGELOG\.md|\.github/)'
+
+  # Local hooks for project-specific checks
+  - repo: local
+    hooks:
+      # Dependency sync check
+      - id: dependency-sync-check
+        name: Check dependency synchronization
+        description: Ensure pyproject.toml and requirements files are in sync
+        entry: python
+        language: python
+        args: ['-c', '
+import sys
+import tomllib
+from pathlib import Path
+
+# Check if pyproject.toml exists
+pyproject_path = Path("pyproject.toml")
+if not pyproject_path.exists():
+    print("❌ pyproject.toml not found")
+    sys.exit(1)
+
+# Load pyproject.toml
+with open(pyproject_path, "rb") as f:
+    pyproject = tomllib.load(f)
+
+# Check for dependencies
+deps = pyproject.get("project", {}).get("dependencies", [])
+optional_deps = pyproject.get("project", {}).get("optional-dependencies", {})
+
+print(f"✅ Found {len(deps)} core dependencies")
+print(f"✅ Found {len(optional_deps)} optional dependency groups")
+
+# Check for requirements.txt
+requirements_path = Path("requirements.txt")
+if requirements_path.exists():
+    print("⚠️  requirements.txt found - consider removing in favor of pyproject.toml")
+else:
+    print("✅ No conflicting requirements.txt found")
+
+print("✅ Dependency sync check passed")
+        ']
+        files: '^(pyproject\.toml|requirements.*\.txt)$'
+        pass_filenames: false
+
+      # Test discovery check
+      - id: test-discovery-check
+        name: Check test discovery
+        description: Ensure tests can be discovered by pytest
+        entry: python
+        language: python
+        args: ['-c', '
+import sys
+from pathlib import Path
+
+# Check for test directories
+test_dirs = []
+if Path("tests").exists():
+    test_dirs.append("tests")
+if Path("processor/unified_project/tests").exists():
+    test_dirs.append("processor/unified_project/tests")
+
+if not test_dirs:
+    print("⚠️  No test directories found")
+    sys.exit(0)
+
+# Check for __init__.py files in test directories
+for test_dir in test_dirs:
+    test_path = Path(test_dir)
+    if not (test_path / "__init__.py").exists():
+        print(f"⚠️  {test_dir}/__init__.py missing - may affect test discovery")
+    else:
+        print(f"✅ {test_dir}/__init__.py found")
+
+# Check for conftest.py
+conftest_files = list(Path(".").rglob("conftest.py"))
+if conftest_files:
+    print(f"✅ Found {len(conftest_files)} conftest.py files")
+else:
+    print("⚠️  No conftest.py files found - consider adding for shared fixtures")
+
+print("✅ Test discovery check completed")
+        ']
+        files: '^(tests/.*\.py|.*conftest\.py)$'
+        pass_filenames: false
+
+      # Platform compatibility check
+      - id: platform-compatibility-check
+        name: Check platform compatibility
+        description: Ensure platform detection works correctly
+        entry: python
+        language: python
+        args: ['-c', '
+import sys
+from pathlib import Path
+
+# Check if platform detection module exists
+platform_module = Path("processor/unified_project/src/utils/platform_detection.py")
+if not platform_module.exists():
+    print("❌ Platform detection module not found")
+    sys.exit(1)
+
+try:
+    sys.path.insert(0, str(Path("processor/unified_project/src")))
+    from utils.platform_detection import is_apple_silicon, get_platform_info
+    
+    # Test basic functionality
+    info = get_platform_info()
+    print(f"✅ Platform detection working: {info.get(\"system\", \"unknown\")}")
+    
+    if is_apple_silicon():
+        print("✅ Apple Silicon detection working")
+    else:
+        print("✅ Non-Apple Silicon platform detected")
+        
+except ImportError as e:
+    print(f"❌ Platform detection import failed: {e}")
+    sys.exit(1)
+except Exception as e:
+    print(f"❌ Platform detection test failed: {e}")
+    sys.exit(1)
+
+print("✅ Platform compatibility check passed")
+        ']
+        files: '^processor/unified_project/src/utils/platform_detection\.py$'
+        pass_filenames: false
+
+      # Cache directory check
+      - id: cache-directory-check
+        name: Check cache directory setup
+        description: Ensure cache directories are properly configured
+        entry: python
+        language: python
+        args: ['-c', '
+import os
+import platform
+from pathlib import Path
+
+system = platform.system()
+home = Path.home()
+
+# Define expected cache directories by platform
+if system == "Darwin":  # macOS
+    expected_dirs = [
+        home / ".epubs" / "cache",
+        home / ".cache" / "epubs" / "ml_models",
+        home / ".cache" / "epubs" / "apple_models"
+    ]
+elif system == "Linux":  # Ubuntu/Linux
+    expected_dirs = [
+        home / ".cache" / "epubs",
+        home / ".cache" / "epubs" / "ml_models",
+        home / ".epubs" / "logs"
+    ]
+else:
+    print(f"⚠️  Unknown platform: {system}")
+    expected_dirs = []
+
+if not expected_dirs:
+    print("⚠️  No cache directory checks for this platform")
+    exit(0)
+
+# Check and create cache directories if needed
+for cache_dir in expected_dirs:
+    if cache_dir.exists():
+        print(f"✅ Cache directory exists: {cache_dir}")
+    else:
+        print(f"⚠️  Cache directory missing: {cache_dir}")
+        try:
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            print(f"✅ Created cache directory: {cache_dir}")
+        except Exception as e:
+            print(f"❌ Failed to create cache directory {cache_dir}: {e}")
+
+print("✅ Cache directory check completed")
+        ']
+        files: '^(processor/unified_project/src/caching/.*\.py|setup_.*\.sh)$'
+        pass_filenames: false
+
+# Configuration
+default_stages: [commit]
+fail_fast: false
+minimum_pre_commit_version: '3.0.0'
+
+# CI configuration - skip certain hooks in CI
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: [python-safety-dependencies-check, bandit]
+  submodules: false

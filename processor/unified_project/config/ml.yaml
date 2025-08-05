@@ -1,0 +1,91 @@
+# ML Enhancer Configuration
+# Configuration for machine learning-powered document analysis
+
+ml_enhancer:
+  # Model configuration
+  models:
+    # Document classification model
+    document_classifier:
+      model_name: "distilbert-base-uncased-finetuned-sst-2-english"
+      use_gpu: true  # Use GPU if available
+      max_length: 512
+      
+    # Structure analysis model  
+    structure_analyzer:
+      model_name: "bert-base-uncased"
+      use_gpu: true
+      max_length: 512
+      
+  # Cache configuration
+  cache:
+    enabled: true
+    cache_dir: "~/.cache/epubs/ml_models"
+    max_cache_size_gb: 2.0
+    cleanup_interval_days: 30
+    
+  # Analysis capabilities
+  capabilities:
+    document_classification:
+      enabled: true
+      confidence_threshold: 0.7
+      
+    structure_analysis:
+      enabled: true
+      min_heading_confidence: 0.5
+      max_headings_to_detect: 50
+      
+    quality_assessment:
+      enabled: true
+      min_word_count: 10
+      quality_score_threshold: 0.3
+      
+    table_detection:
+      enabled: true
+      detection_patterns:
+        - "|"
+        - "\t"
+        - "table"
+        - "column"
+        
+    figure_detection:
+      enabled: true
+      detection_patterns:
+        - "figure"
+        - "fig."
+        - "chart"
+        - "graph"
+        - "image"
+        
+  # Performance settings
+  performance:
+    batch_size: 8
+    max_workers: 2
+    timeout_seconds: 30
+    memory_limit_mb: 1024
+    
+  # Logging
+  logging:
+    level: "INFO"
+    log_model_loading: true
+    log_analysis_results: true
+    log_performance_metrics: true
+    
+# Integration with enhancement pipeline
+enhancement_integration:
+  # When to use ML enhancer in the pipeline
+  triggers:
+    - "academic"     # Use in academic processing mode
+    - "advanced"     # Use in advanced processing mode
+    
+  # Default capabilities to run
+  default_capabilities:
+    - "classify_document"
+    - "analyze_structure" 
+    - "assess_quality"
+    
+  # Output configuration
+  output:
+    save_analysis_results: true
+    include_in_metadata: true
+    results_format: "json"
+    embed_in_pdf: false  # Don't embed ML results in PDF by default
