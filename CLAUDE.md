@@ -40,6 +40,11 @@ Claude has access to multiple MCP servers that enhance capabilities. Always chec
 - **Usage Pattern**: Use in PLAN mode for complex architectural decisions
 - **Parameters**: thought, nextThoughtNeeded, thoughtNumber, totalThoughts, isRevision
 
+### Unified Scraper-Processor Pipeline Commands
+- Complete pipeline: `python processor/unified_project/src/orchestration/scrape_and_process.py --url https://docs.lib.purdue.edu/modvis/2024/va --mode academic`
+- Manual login mode: `python processor/unified_project/src/orchestration/scrape_and_process.py --url https://docs.lib.purdue.edu/modvis/2024/va --manual-login --mode academic`
+- Batch processing: `python processor/unified_project/src/orchestration/scrape_and_process.py --urls /Volumes/Accessibility_Project/urls.txt --manual-login --mode academic`
+
 #### 4. **context7** and **atlas-docs-mcp**: Library Documentation Access
 - **Purpose**: Fetch up-to-date, version-specific documentation
 - **Key Features**:

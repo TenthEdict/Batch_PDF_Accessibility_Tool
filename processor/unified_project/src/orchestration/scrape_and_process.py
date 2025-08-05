@@ -618,7 +618,7 @@ def main():
     
     parser = argparse.ArgumentParser(description='Unified Scraper-Processor Pipeline')
     parser.add_argument('--url', help='Single URL to scrape and process')
-    parser.add_argument('--urls-file', help='File containing list of URLs to process')
+    parser.add_argument('--urls', help='File containing list of URLs to process')
     parser.add_argument('--working-dir', help='Base working directory for pipeline operations')
     parser.add_argument('--username', help='Username for authentication')
     parser.add_argument('--password', help='Password for authentication')
@@ -638,15 +638,15 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
     
     # Validate arguments
-    if not args.url and not args.urls_file:
-        parser.error("Either --url or --urls-file must be specified")
+    if not args.url and not args.urls:
+        parser.error("Either --url or --urls must be specified")
     
     # Prepare URLs
     if args.url:
         urls = [args.url]
     else:
         try:
-            with open(args.urls_file, 'r') as f:
+            with open(args.urls, 'r') as f:
                 urls = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
         except Exception as e:
             print(f"Error reading URLs file: {e}")
@@ -674,11 +674,10 @@ def main():
     # Handle credential input based on login mode
     if args.manual_login:
         print("Manual login mode enabled - credentials will be entered in browser")
-        if not username:
-            username = input("Enter username (optional, for fallback): ").strip() or None
-        if not password and username:
-            import getpass
-            password = getpass.getpass("Enter password (optional, for fallback): ")
+        print("No credential input needed - you will login manually in the browser")
+        # In manual login mode, credentials are optional fallbacks
+        username = None
+        password = None
     else:
         # Traditional credential input
         if not username:

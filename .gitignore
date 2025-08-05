@@ -145,6 +145,7 @@ processor/unified_project/data/input/*
 processor/unified_project/data/output/*
 !processor/unified_project/data/input/.gitkeep
 !processor/unified_project/data/output/.gitkeep
+urls.txt
 
 # Archive directories for processed artifacts
 archived/
