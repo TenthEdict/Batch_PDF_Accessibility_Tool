@@ -3,15 +3,10 @@
 # ===================================================================
 # Python specific
 # ===================================================================
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -31,8 +26,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-# PyInstaller
 *.manifest
 *.spec
 
@@ -51,7 +44,7 @@ coverage.xml
 .pytest_cache/
 
 # Virtual environments
-.env
+.env*
 .venv
 env/
 venv/
@@ -59,30 +52,22 @@ ENV/
 env.bak/
 venv.bak/
 test_venv/
-/ocr_env
-/pdf_venv
-**/docling_venv
+ocr_env/
+pdf_venv/
+docling_venv/
+**/venv*/
 
 # ===================================================================
 # IDE and Editor files
 # ===================================================================
-# PyCharm
 .idea/
-
-# VSCode
 .vscode/
 *.code-workspace
-
-# Sublime Text
 *.sublime-project
 *.sublime-workspace
-
-# Vim
 *.swp
 *.swo
 *~
-
-# Emacs
 \#*\#
 /.emacs.desktop
 /.emacs.desktop.lock
@@ -132,44 +117,95 @@ $RECYCLE.BIN/
 .smbdelete*
 
 # ===================================================================
-# Project-specific artifacts
+# Project data and processing artifacts
 # ===================================================================
-# Processing data and output files
-data/output/
-temp_processing/
-processing_output/
-enhanced_pdfs/
+# Input/output directories
 input/
 output/
+data/
+temp/
+tmp/
+logs/
+cache/
+downloads/
+processing_output/
+enhanced_pdfs/
+validation_output/
+test_batch_output/
+test_batch_input/
+orchestration_output/
+pipeline_cache/
+scraper_cache/
+
+# Preserve directory structure but ignore contents
 processor/unified_project/data/input/*
 processor/unified_project/data/output/*
 !processor/unified_project/data/input/.gitkeep
 !processor/unified_project/data/output/.gitkeep
-urls.txt
 
-# Archive directories for processed artifacts
-archived/
-test_batch_output/
-validation_output/
-
-# Downloaded materials and automation artifacts
+# Processing artifacts
+temp_processing/
 automation/downloaded_materials/
 automation/logs/
 scraper/temp/
-
-# Log files
-logs/
-*.log
-*.log.*
-
-# Temporary files and directories
-temp/
-tmp/
-*.tmp
-*.temp
+processor/unified_project/src/orchestration/temp/
+processor/unified_project/src/orchestration/logs/
 
 # ===================================================================
-# Credentials and sensitive information
+# Document files
+# ===================================================================
+# PDF files (except test fixtures)
+*.pdf
+!processor/unified_project/tests/fixtures/*.pdf
+!**/test_*.pdf
+!**/sample_*.pdf
+
+# Document processing temporary files
+ocrmypdf_*
+tesseract_*
+*.hocr
+
+# Image files (except resources)
+*.png
+*.jpg
+*.jpeg
+*.tiff
+*.bmp
+*.gif
+*.webp
+*.svg
+!**/resources/*.png
+!**/resources/*.jpg
+!**/static/*.png
+!**/static/*.jpg
+!**/assets/*.png
+!**/assets/*.jpg
+
+# Office documents
+*.docx
+*.pptx
+*.xlsx
+*.doc
+*.ppt
+*.xls
+!**/test_*.docx
+!**/resources/*.docx
+
+# ===================================================================
+# Logs and temporary files
+# ===================================================================
+*.log
+*.log.*
+*.tmp
+*.temp
+*.backup
+*.bak
+*.orig
+*.rej
+*.patch
+
+# ===================================================================
+# Credentials and configuration
 # ===================================================================
 # Adobe PDF Services API credentials
 *credentials*.json
@@ -177,10 +213,7 @@ tmp/
 pdfservices-api-credentials.json
 adobe-credentials.json
 
-# Environment variables and secrets
-.env
-.env.local
-.env.*.local
+# Environment and secrets
 secrets.yaml
 secrets.yml
 config/secrets/
@@ -195,59 +228,73 @@ config.ini
 local_config.yaml
 local_settings.py
 
-# Authentication credentials
-credentials.txt
+# ===================================================================
+# URLs and scraping data
+# ===================================================================
+urls.txt
+downloaded_urls.txt
+*urls*.txt
 
 # ===================================================================
-# PDF and document processing artifacts
+# Browser automation
 # ===================================================================
-# Large PDF files (sample data)
-*.pdf
-!processor/unified_project/tests/fixtures/*.pdf
-!**/test_*.pdf
-!**/sample_*.pdf
+# WebDriver executables
+chromedriver*
+geckodriver*
+edgedriver*
+msedgedriver*
 
-# OCR temporary files
-ocrmypdf_*
-tesseract_*
-*.hocr
+# WebDriver cache and profiles
+.wdm/
+webdrivers/
+drivers/
+chrome-profile/
+firefox-profile/
+selenium-profile/
+user-data-dir/
+Default/
+Profile*/
 
-# Image processing temporary files
-*.png
-*.jpg
-*.jpeg
-*.tiff
-*.bmp
-!**/resources/*.png
-!**/resources/*.jpg
-!**/static/*.png
-!**/static/*.jpg
+# Browser logs and debug files
+*debug.log
+geckodriver.log
+chromedriver.log
+webdriver.log
+selenium.log
 
-# Document conversion temporary files
-*.docx
-*.pptx
-*.xlsx
-!**/test_*.docx
-!**/resources/*.docx
+# Screenshots
+screenshot*.png
+selenium_screenshot*.png
+test_screenshot*.png
+screen_recording*.mp4
 
-# ===================================================================
-# Adobe PDF Services SDK Samples (Third-party)
-# ===================================================================
-# Exclude the entire Adobe SDK samples directory
-PDFServicesSDK-PythonSamples/
-
-# ===================================================================
-# Docker and containerization
-# ===================================================================
-.dockerignore
-Dockerfile.dev
-docker-compose.override.yml
-.docker/
+# Session files
+*.session
+session-*
+selenium-cookies.json
+browser-cookies.json
+webdriver-session-*
 
 # ===================================================================
-# Machine Learning and AI models
+# Development and build artifacts
 # ===================================================================
-# Downloaded models
+# Jupyter notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Package managers
+poetry.lock
+Pipfile.lock
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# ===================================================================
+# Machine Learning models
+# ===================================================================
 models/
 *.pkl
 *.joblib
@@ -257,177 +304,27 @@ transformers_cache/
 .transformers_cache/
 
 # ===================================================================
-# Development and build artifacts
-# ===================================================================
-# Jupyter notebooks checkpoints
-.ipynb_checkpoints/
-*/.ipynb_checkpoints/*
-*.ipynb
-
-# Poetry
-poetry.lock
-
-# pipenv
-Pipfile.lock
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# ===================================================================
-# Backup and archive files
-# ===================================================================
-*.backup
-*.bak
-*.orig
-*.rej
-*.patch
-
 # Archive files
+# ===================================================================
 *.zip
 *.tar.gz
 *.7z
 *.rar
+*.tar
+*.gz
 
 # ===================================================================
-# Legacy project files
+# Reports and analysis
 # ===================================================================
-src.zip
-key.txt
-frontend.archive
-container_ub.sh
-container_ub_run.sh
-fix_output_paths.py
-migrate_structure.py
-/archive
-MoslerThesis/
-acrobat_scripts/
-
-# Test data
-test_files/
-temp_tests/
-*_test_output/
-*_enhanced.pdf
-validation_test_*.pdf
-
-# ===================================================================
-# Reports and analysis output
-# ===================================================================
-# Accessibility reports
 *_accessibility_report.xlsx
 *_report.json
 accessibility_reports/
 reports/
-
-# Performance and profiling
 profile_*.log
 *.prof
 
 # ===================================================================
-# Memory management files (specific to project)
+# Memory management and AI assistant files
 # ===================================================================
 .memory-bank/
 .clauderules
-GEMINI.md
-
-# ===================================================================
-# Orchestration and pipeline artifacts
-# ===================================================================
-processor/unified_project/src/orchestration/temp/
-processor/unified_project/src/orchestration/logs/
-orchestration_output/
-pipeline_cache/
-
-# ===================================================================
-# URLs and scraping artifacts
-# ===================================================================
-urls.txt
-downloaded_urls.txt
-scraper_cache/
-
-# ===================================================================
-# Selenium WebDriver and Browser Automation
-# ===================================================================
-# WebDriver executables
-chromedriver
-chromedriver.exe
-geckodriver
-geckodriver.exe
-edgedriver
-edgedriver.exe
-msedgedriver
-msedgedriver.exe
-
-# WebDriver manager cache
-.wdm/
-webdrivers/
-drivers/
-
-# ChromeDriver temporary downloads (project-specific)
-chromedriver_linux/
-chromedriver_*
-
-# Browser profiles and user data
-chrome-profile/
-firefox-profile/
-selenium-profile/
-user-data-dir/
-Default/
-Profile */
-
-# Browser session and cache files
-*.session
-session-*
-selenium-cookies.json
-browser-cookies.json
-webdriver-session-*
-
-# Browser logs and debug files
-chrome_debug.log
-firefox_debug.log
-geckodriver.log
-chromedriver.log
-webdriver.log
-selenium.log
-
-# Screenshots and recordings
-screenshot*.png
-selenium_screenshot*.png
-test_screenshot*.png
-screen_recording*.mp4
-
-# WebDriver manager configuration
-wdm.json
-webdriver-manager.json
-
-# Browser automation artifacts
-automation-*
-selenium-*
-webdriver-*
-browser-automation-*
-
-# Platform-specific browser files
-Google Chrome for Testing/
-chromium/
-firefox-bin/
-
-# ===================================================================
-# Migration and setup artifacts
-# ===================================================================
-migrate_dependencies.py
-dependency_backups/
-*requirements*.backup
-setup_backup/
-
-# ===================================================================
-# Deprecated and legacy files
-# ===================================================================
-*deprecated*
-*legacy*
-*old*
-*/brodie_code/
-processor/brodie_code/

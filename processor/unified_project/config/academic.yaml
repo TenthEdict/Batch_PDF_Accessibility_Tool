@@ -1,14 +1,21 @@
 # Configuration optimized for academic papers distributed on digital commons platforms
-# Aggressive web compression settings - NOT for print distribution
+# Intelligent OCR with compression settings - Prevents PDF corruption
 
-# OCR settings optimized for academic content with aggressive web compression
+# Intelligent OCR settings - only applies OCR when needed
 ocr:
   language: eng
   psm: 1  # Automatic page segmentation with OSD
   oem: 3  # LSTM + Legacy engine for academic content
   dpi: 150  # Reduced for web viewing (150 DPI optimal for screens)
   tessdata_dir: /usr/share/tesseract-ocr/5/tessdata
-  # Enhanced academic content recognition
+  
+  # Intelligent OCR detection settings
+  intelligent_ocr: true                       # Enable intelligent OCR detection
+  text_threshold: 100                         # Minimum avg chars/page to skip OCR
+  sample_pages: 3                             # Number of pages to analyze for text content
+  force_ocr_override: false                   # Override intelligent detection (force OCR always)
+  
+  # Enhanced academic content recognition (when OCR is applied)
   additional_params:
     textord_tablefind_recognize_tables: 1    # Enhanced table detection
     textord_tabfind_find_tables: 1          # Academic table processing
@@ -18,16 +25,16 @@ ocr:
     textord_heavy_nr: 1                     # Better layout analysis for papers
     textord_show_initial_words: 1           # Better word detection
 
-# Aggressive compression settings for web distribution
+# Adobe Acrobat compatible compression settings for academic papers
 compression:
-  target_dpi: 150                           # Optimal for web viewing
-  jpeg_quality: 60                          # Aggressive compression for web
-  png_quality: 60                           # Aggressive PNG compression
-  convert_png_to_jpeg: true                 # Convert PNG to JPEG where possible
-  max_image_width: 2000                     # Maximum width for academic figures
-  max_image_height: 2000                    # Maximum height for academic figures
-  optimize_fonts: true                      # Font subsetting and optimization
-  clean_metadata: true                      # Remove non-essential metadata
+  adobe_compatible: true                    # Prioritize Adobe Acrobat compatibility
+  preserve_image_structure: true           # Don't modify image objects
+  target_dpi: 150                          # Optimal for web viewing
+  stream_compression: true                 # Compress content streams only
+  optimize_fonts: true                     # Font subsetting and optimization
+  clean_metadata: true                     # Remove non-essential metadata
+  structure_preservation: true             # Maintain PDF structure integrity
+  garbage_collection_level: 2             # Moderate cleanup (safer than aggressive)
 
 # Content detection settings for academic papers
 content_detection:

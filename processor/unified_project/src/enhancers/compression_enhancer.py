@@ -43,15 +43,17 @@ class CompressionEnhancer(EnhancerBase):
     """
 
     def __init__(self, environment: Optional[str] = None):
-        """Initialize the compression enhancer."""
+        """Initialize the compression enhancer with figure-preserving settings."""
         super().__init__("compression_enhancer", environment)
         
-        # Academic web distribution settings
+        # Academic figure preservation settings - balanced compression
         self.target_dpi = 150          # Optimal for web viewing
-        self.jpeg_quality = 60         # Aggressive for web distribution
-        self.png_to_jpeg_threshold = 0.8  # Convert PNG to JPEG if compression ratio > 80%
-        self.max_image_width = 2000    # Max width for academic figures
-        self.max_image_height = 2000   # Max height for academic figures
+        self.jpeg_quality = 85         # Higher quality for academic figures
+        self.png_quality = 90          # High quality for diagrams and charts
+        self.png_to_jpeg_threshold = 0.5  # More conservative conversion threshold
+        self.max_image_width = 3000    # Higher limit for detailed academic figures
+        self.max_image_height = 3000   # Higher limit for detailed academic figures
+        self.min_compression_size = 50000  # Don't compress images smaller than 50KB
 
     def enhance_file(
         self, input_path: Union[str, Path], output_path: Union[str, Path], **kwargs
@@ -103,28 +105,23 @@ class CompressionEnhancer(EnhancerBase):
             return False
 
     def _compress_pdf_academic(self, input_path: Path, output_path: Path) -> bool:
-        """Apply academic paper specific compression techniques."""
+        """Apply academic paper specific compression techniques with Adobe Acrobat compatibility."""
         try:
             # Open document with PyMuPDF for compression
             doc = fitz.open(input_path)
             
-            # Compress each page
-            for page_num in range(len(doc)):
-                page = doc[page_num]
-                self._compress_page_images(doc, page, page_num)
-            
-            # Apply document-level optimizations
+            # Apply document-level optimizations without modifying image structures
             self._optimize_document_structure(doc)
             
-            # Save with maximum compression
+            # Save with conservative compression that maintains Adobe compatibility
             output_path.parent.mkdir(parents=True, exist_ok=True)
             doc.save(
                 output_path,
-                garbage=4,           # Maximum garbage collection
+                garbage=2,           # Moderate garbage collection (safer than aggressive)
                 deflate=True,        # Enable deflate compression
-                clean=True,          # Clean up document structure
-                ascii=False,         # Use binary encoding
-                linear=False,        # Don't linearize (web serving will handle)
+                clean=False,         # Don't clean structure (maintains Adobe compatibility)
+                ascii=False,         # Use binary encoding for better compression
+                linear=False,        # Don't linearize
                 no_new_id=True,      # Don't generate new ID
                 encryption=fitz.PDF_ENCRYPT_NONE  # No encryption
             )
@@ -136,121 +133,44 @@ class CompressionEnhancer(EnhancerBase):
             logger.error(f"Error in academic PDF compression: {e}")
             return False
 
-    def _compress_page_images(self, doc: fitz.Document, page: fitz.Page, page_num: int) -> None:
-        """Compress all images on a page for academic content."""
-        image_list = page.get_images()
+    def _log_image_analysis(self, doc: fitz.Document) -> None:
+        """Log image analysis for academic papers without modifying them."""
+        total_images = 0
+        total_size = 0
         
-        if not image_list:
-            return
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            images = page.get_images()
             
-        logger.info(f"Compressing {len(image_list)} images on page {page_num + 1}")
-        
-        for img_index, img in enumerate(image_list):
-            try:
-                # Get image data
-                xref = img[0]
-                base_image = doc.extract_image(xref)
-                image_bytes = base_image["image"]
-                image_ext = base_image["ext"]
+            if images:
+                logger.info(f"Page {page_num + 1}: {len(images)} images found")
+                total_images += len(images)
                 
-                # Process image with Pillow
-                pil_image = Image.open(io.BytesIO(image_bytes))
-                
-                # Apply academic paper specific compression
-                compressed_image = self._compress_academic_image(pil_image, image_ext)
-                
-                if compressed_image:
-                    # Replace image in PDF
-                    self._replace_image_in_pdf(doc, xref, compressed_image)
-                    
-            except Exception as e:
-                logger.warning(f"Could not compress image {img_index} on page {page_num + 1}: {e}")
-
-    def _compress_academic_image(self, pil_image: Image.Image, original_ext: str) -> bytes:
-        """
-        Apply academic paper specific image compression.
+                for img_index, img in enumerate(images):
+                    try:
+                        xref = img[0]
+                        base_image = doc.extract_image(xref)
+                        image_size = len(base_image["image"])
+                        total_size += image_size
+                        
+                        logger.debug(f"  Image {img_index}: {base_image['width']}x{base_image['height']}, "
+                                   f"{base_image['ext']}, {image_size:,} bytes")
+                        
+                    except Exception as e:
+                        logger.warning(f"Could not analyze image {img_index} on page {page_num + 1}: {e}")
         
-        Academic papers often contain:
-        - Figures and charts (good for JPEG)
-        - Diagrams (may need PNG)
-        - Tables (good for high compression)
-        - Photos (excellent for JPEG)
-        """
-        # Convert to RGB if necessary (for JPEG compatibility)
-        if pil_image.mode in ('RGBA', 'LA', 'P'):
-            # Check if image has transparency
-            if pil_image.mode == 'RGBA' and self._has_transparency(pil_image):
-                # Keep as PNG for transparency
-                format_to_use = 'PNG'
-                pil_image = pil_image.convert('RGBA')
-            else:
-                # Convert to RGB for JPEG
-                format_to_use = 'JPEG'
-                if pil_image.mode == 'RGBA':
-                    # Create white background for transparent images
-                    background = Image.new('RGB', pil_image.size, (255, 255, 255))
-                    background.paste(pil_image, mask=pil_image.split()[-1])
-                    pil_image = background
-                else:
-                    pil_image = pil_image.convert('RGB')
-        else:
-            # Default to JPEG for academic content
-            format_to_use = 'JPEG'
-            if pil_image.mode != 'RGB':
-                pil_image = pil_image.convert('RGB')
-        
-        # Resize if too large (academic papers rarely need huge images)
-        if pil_image.width > self.max_image_width or pil_image.height > self.max_image_height:
-            pil_image.thumbnail((self.max_image_width, self.max_image_height), Image.Resampling.LANCZOS)
-            logger.debug(f"Resized image to {pil_image.width}x{pil_image.height}")
-        
-        # Compress based on format
-        output_buffer = io.BytesIO()
-        
-        if format_to_use == 'JPEG':
-            pil_image.save(
-                output_buffer, 
-                format='JPEG', 
-                quality=self.jpeg_quality,
-                optimize=True,
-                progressive=True  # Better for web loading
-            )
-        else:  # PNG
-            pil_image.save(
-                output_buffer,
-                format='PNG',
-                optimize=True,
-                compress_level=9  # Maximum PNG compression
-            )
-        
-        return output_buffer.getvalue()
-
-    def _has_transparency(self, image: Image.Image) -> bool:
-        """Check if RGBA image has actual transparency."""
-        if image.mode != 'RGBA':
-            return False
-        
-        # Check alpha channel
-        alpha = image.split()[-1]
-        return alpha.getextrema()[0] < 255
-
-    def _replace_image_in_pdf(self, doc: fitz.Document, xref: int, image_bytes: bytes) -> None:
-        """Replace an image in the PDF with compressed version."""
-        try:
-            # Create new image from compressed bytes
-            new_image = fitz.open("png", image_bytes) if image_bytes[:4] == b'\x89PNG' else fitz.open("jpg", image_bytes)
-            
-            # Replace the image
-            doc.update_stream(xref, image_bytes)
-            new_image.close()
-            
-        except Exception as e:
-            logger.warning(f"Could not replace image with xref {xref}: {e}")
+        if total_images > 0:
+            logger.info(f"Document analysis: {total_images} images, {total_size / 1024:.1f} KB total")
+            logger.info(f"Images preserved without modification for Adobe Acrobat compatibility")
 
     def _optimize_document_structure(self, doc: fitz.Document) -> None:
-        """Apply document-level optimizations for academic papers."""
+        """Apply document-level optimizations for academic papers with Adobe compatibility."""
         try:
-            # Remove unused resources
+            # Log image analysis without modifying images
+            self._log_image_analysis(doc)
+            
+            # Conservative document optimization that maintains structure
+            # Remove unused resources without breaking image references
             doc.scrub()
             
             # Academic papers often have embedded fonts that can be optimized
@@ -258,6 +178,8 @@ class CompressionEnhancer(EnhancerBase):
             
             # Clean metadata (keep essential, remove bloat)
             self._clean_metadata(doc)
+            
+            logger.info("Applied Adobe-compatible document optimization")
             
         except Exception as e:
             logger.warning(f"Could not optimize document structure: {e}")
@@ -304,11 +226,12 @@ class CompressionEnhancer(EnhancerBase):
     def get_capabilities(self) -> List[str]:
         """Get compression capabilities."""
         return [
-            "compression.aggressive_web",
-            "compression.image_optimization", 
-            "compression.academic_specific",
-            "compression.png_to_jpeg",
+            "compression.adobe_compatible",
+            "compression.structure_preservation", 
+            "compression.academic_optimized",
+            "compression.safe_processing",
+            "compression.image_analysis",
             "compression.font_optimization",
-            "compression.structure_cleanup",
-            "compression.metadata_cleaning"
+            "compression.metadata_cleaning",
+            "compression.stream_compression"
         ]

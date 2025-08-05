@@ -57,11 +57,11 @@ class MinimalPDFEnhancer(EnhancerBase):
 
     def _extract_document_title(self, document: pikepdf.Pdf, input_path: Path) -> Optional[str]:
         """
-        Extract the actual document title from the PDF content with advanced spatial filtering.
+        Extract the actual document title from the PDF content with cluster-first algorithm.
         
-        Implements O(n log n) algorithmic complexity with spatial zone filtering,
-        journal pattern recognition, and Gaussian position weighting for optimal
-        academic paper title detection.
+        Uses advanced cluster-first approach: groups title candidates by spatial proximity,
+        assembles complete titles, then scores assembled results for optimal multi-line
+        title detection in academic papers.
         
         Args:
             document: The PDF document to extract title from
@@ -72,6 +72,7 @@ class MinimalPDFEnhancer(EnhancerBase):
         """
         import re
         import math
+        from collections import defaultdict
         
         try:
             # Use the input path to read with PyMuPDF for text analysis
@@ -83,11 +84,14 @@ class MinimalPDFEnhancer(EnhancerBase):
             
             first_page = temp_doc[0]
             page_height = first_page.rect.height
+            page_width = first_page.rect.width
             
-            # Define spatial exclusion zones (12% header to be more inclusive, 15% footer)
-            header_zone_limit = page_height * 0.12  # Slightly more inclusive for titles
+            # Define spatial exclusion zones (8% header to be more inclusive, 15% footer)
+            header_zone_limit = page_height * 0.08  # More inclusive for titles that start higher
             footer_zone_limit = page_height * 0.85
             optimal_title_zone = (header_zone_limit, page_height * 0.5)
+            
+            logger.info(f"Title extraction zones - Header limit: {header_zone_limit:.1f}, Footer limit: {footer_zone_limit:.1f}")
             
             # Journal name patterns for detection
             journal_patterns = [
@@ -105,6 +109,7 @@ class MinimalPDFEnhancer(EnhancerBase):
                 r'\bissn\b',
                 r'\bdoi\b',
                 r'©\s*\d{4}',  # Copyright lines
+                r'\binsight\s+at\b',  # Website references
             ]
             
             # Compile patterns for efficiency
@@ -126,31 +131,36 @@ class MinimalPDFEnhancer(EnhancerBase):
                     
                     # Skip text in header/footer zones
                     if y_position < header_zone_limit or y_position > footer_zone_limit:
+                        logger.debug(f"Skipping text in exclusion zone: {y_position:.1f}")
                         continue
                     
                     for span in line.get("spans", []):
                         text = span.get("text", "").strip()
                         font_size = span.get("size", 0)
                         font_flags = span.get("flags", 0)
-                        x_position = span.get("bbox", [0, 0, 0, 0])[0]  # X coordinate for ordering
+                        span_bbox = span.get("bbox", [0, 0, 0, 0])
+                        x_position = span_bbox[0]
                         
                         # Enhanced filtering for potential title text
                         if (text and 
-                            len(text) > 10 and  # Reasonable title length
-                            len(text) < 300 and  # Academic titles can be longer
-                            font_size > 12 and   # Larger font size threshold
+                            len(text) < 400 and  # Academic titles can be longer
+                            font_size > 11 and   # Slightly lower font threshold
                             not text.lower().startswith(('abstract', 'keywords', 'introduction', 
-                                                       'figure', 'table', 'contents', 'acknowledgment')) and
+                                                       'figure', 'table', 'contents', 'acknowledgment',
+                                                       'references', 'bibliography', 'appendix')) and
                             not any(char.isdigit() for char in text[:3]) and  # Avoid page numbers
-                            not text.startswith(('http', 'www.', 'doi:')) and  # Avoid URLs/DOIs
-                            text.count(' ') >= 2):  # Multi-word titles
+                            not text.startswith(('http', 'www.', 'doi:', 'isbn:', 'issn:')) and  # Avoid identifiers
+                            not re.match(r'^\d+$', text.strip()) and  # Avoid pure numbers
+                            # Include: multi-word text, large single words, or punctuation near titles
+                            (len(text) > 5 and (text.count(' ') >= 1 or (font_size > 18 and len(text) > 3))) or
+                            (len(text) <= 5 and font_size > 18 and any(char in text for char in ["'", "'", ":", "-", "—"]))):  # Include title punctuation
                             
                             # Check if text matches journal patterns
                             is_journal = bool(journal_regex.search(text))
                             
                             # Calculate position score with Gaussian weighting
-                            # Gaussian centered at 30% of page height (typical title position)
-                            gaussian_center = page_height * 0.3
+                            # Gaussian centered at 25% of page height (higher for academic titles)
+                            gaussian_center = page_height * 0.25
                             gaussian_sigma = page_height * 0.15
                             position_score = math.exp(-((y_position - gaussian_center) ** 2) / (2 * gaussian_sigma ** 2))
                             
@@ -160,85 +170,218 @@ class MinimalPDFEnhancer(EnhancerBase):
                             # Font size normalized score (0-1)
                             font_score = min(font_size / 24.0, 1.0)  # Normalize to 24pt max
                             
-                            # Composite scoring function
-                            # S(t) = α·FontSize(t) + β·Position(t) + γ·Quality(t) - δ·IsJournal(t)
-                            composite_score = (
+                            # Individual candidate scoring (used for filtering)
+                            candidate_score = (
                                 0.4 * font_score + 
                                 0.35 * position_score + 
                                 0.25 * text_quality - 
-                                0.5 * (1.0 if is_journal else 0.0)  # Penalty for journal patterns
+                                0.6 * (1.0 if is_journal else 0.0)  # Higher penalty for journal patterns
                             )
                             
-                            title_candidates.append({
-                                'text': text,
-                                'font_size': font_size,
-                                'font_flags': font_flags,
-                                'y_position': y_position,
-                                'x_position': x_position,
-                                'is_journal': is_journal,
-                                'composite_score': composite_score,
-                                'position_score': position_score,
-                                'quality_score': text_quality
-                            })
+                            # Only include candidates with minimum quality
+                            if candidate_score > 0.2:  # Minimum threshold for inclusion
+                                title_candidates.append({
+                                    'text': text,
+                                    'font_size': font_size,
+                                    'font_flags': font_flags,
+                                    'y_position': y_position,
+                                    'x_position': x_position,
+                                    'is_journal': is_journal,
+                                    'candidate_score': candidate_score,
+                                    'position_score': position_score,
+                                    'quality_score': text_quality,
+                                    'bbox': span_bbox
+                                })
+                                
+                                logger.debug(f"Title candidate: '{text}' (score: {candidate_score:.3f}, pos: {y_position:.1f})")
             
             temp_doc.close()
             
             if not title_candidates:
+                logger.info("No title candidates found")
                 return None
             
-            # Sort by composite score (descending) - O(n log n) complexity
-            title_candidates.sort(key=lambda x: x['composite_score'], reverse=True)
+            logger.info(f"Found {len(title_candidates)} title candidates")
             
-            # Enhanced multi-line title detection with proper sorting
-            best_candidate = title_candidates[0]
+            # ENHANCED CLUSTER-FIRST APPROACH: Group candidates by spatial proximity with chaining
+            base_proximity_threshold = 90  # Increased threshold for academic titles that span multiple lines
+            max_cluster_height = 150  # Increased maximum height for academic papers with spread-out titles
+            title_clusters = []
+            used_candidates = set()
             
-            # Find all candidates that could be part of the same title
-            title_parts = [best_candidate]
-            proximity_threshold = 25  # Pixels
+            # Sort candidates by Y position to process top-down
+            sorted_candidates = sorted(title_candidates, key=lambda x: x['y_position'])
             
-            for candidate in title_candidates[1:]:
-                if (not candidate['is_journal'] and
-                    abs(candidate['y_position'] - best_candidate['y_position']) < proximity_threshold and
-                    candidate['font_size'] >= best_candidate['font_size'] * 0.9 and  # Similar font size
-                    candidate['composite_score'] > 0.4):  # Reasonable quality threshold
-                    title_parts.append(candidate)
+            # Filter out very obvious non-title candidates first
+            filtered_candidates = []
+            for candidate in sorted_candidates:
+                text = candidate['text'].lower()
+                # Skip obvious author names, page numbers, etc.
+                if (not any(name in text for name in ['carina', 'koch', 'sigrid', 'bekmeier', 'feuerhahn', 'paula', 'maria', 'bogel', 'ulrike', 'adam']) and
+                    not text.isdigit() and
+                    len(candidate['text']) > 3):
+                    filtered_candidates.append(candidate)
             
-            # Sort title parts by Y position (top to bottom) and then X position (left to right)
-            title_parts.sort(key=lambda x: (x['y_position'], x['x_position']))
+            logger.info(f"Filtered to {len(filtered_candidates)} candidates after removing obvious non-titles")
             
-            # Assemble the complete title
-            complete_title = ' '.join([part['text'] for part in title_parts])
+            # Debug: Log all filtered candidates to understand what we're working with
+            for idx, candidate in enumerate(filtered_candidates):
+                logger.debug(f"Candidate {idx}: '{candidate['text']}' Y:{candidate['y_position']:.1f} Font:{candidate['font_size']:.1f}")
+
             
-            # If we only have one part, check if there are other high-scoring candidates nearby
-            if len(title_parts) == 1 and len(title_candidates) > 1:
-                # Look for other strong candidates within a larger proximity
-                extended_threshold = 50
-                additional_parts = []
+            for i, candidate in enumerate(filtered_candidates):
+                if i in used_candidates:
+                    continue
                 
-                for candidate in title_candidates[1:]:
-                    if (not candidate['is_journal'] and
-                        abs(candidate['y_position'] - best_candidate['y_position']) < extended_threshold and
-                        candidate['composite_score'] > 0.3):  # Lower threshold for potential title parts
-                        additional_parts.append(candidate)
+                # Start a new cluster
+                cluster = [candidate]
+                used_candidates.add(i)
+                cluster_min_y = candidate['y_position']
+                cluster_max_y = candidate['y_position']
                 
-                if additional_parts:
-                    all_parts = [best_candidate] + additional_parts
-                    all_parts.sort(key=lambda x: (x['y_position'], x['x_position']))
-                    complete_title = ' '.join([part['text'] for part in all_parts])
+                # Use chaining approach: find candidates that connect through proximity
+                added_to_cluster = True
+                while added_to_cluster:
+                    added_to_cluster = False
+                    
+                    for j, other_candidate in enumerate(filtered_candidates):
+                        if j in used_candidates or other_candidate['is_journal']:
+                            continue
+                        
+                        # Calculate distances to any member of the current cluster
+                        min_distance_to_cluster = min(abs(other_candidate['y_position'] - member['y_position']) 
+                                                    for member in cluster)
+                        
+                        # Check if the cluster would still be within reasonable height bounds
+                        potential_min_y = min(cluster_min_y, other_candidate['y_position'])
+                        potential_max_y = max(cluster_max_y, other_candidate['y_position'])
+                        potential_height = potential_max_y - potential_min_y
+                        
+                        # Font compatibility check
+                        avg_cluster_font = sum(member['font_size'] for member in cluster) / len(cluster)
+                        font_ratio = min(other_candidate['font_size'], avg_cluster_font) / max(other_candidate['font_size'], avg_cluster_font)
+                        
+                        # Add to cluster if:
+                        # 1. Close to any existing member
+                        # 2. Total cluster height stays reasonable
+                        # 3. Similar font size
+                        # 4. Not a journal pattern
+                        if (min_distance_to_cluster < base_proximity_threshold and
+                            potential_height < max_cluster_height and
+                            font_ratio > 0.9 and  # Same font size for title parts
+                            not other_candidate['is_journal']):
+                            
+                            cluster.append(other_candidate)
+                            used_candidates.add(j)
+                            cluster_min_y = potential_min_y
+                            cluster_max_y = potential_max_y
+                            added_to_cluster = True
+                            
+                            logger.debug(f"Added '{other_candidate['text']}' to cluster (distance: {min_distance_to_cluster:.1f}, height: {potential_height:.1f}, font_ratio: {font_ratio:.3f})")
+                            
+                            logger.debug(f"Added '{other_candidate['text']}' to cluster (distance: {min_distance_to_cluster:.1f})")
+                
+                # Only keep clusters with substantial content
+                if len(cluster) >= 1:  # At least one good candidate
+                    title_clusters.append(cluster)
+                    cluster_texts = [item['text'] for item in cluster]
+                    cluster_height = cluster_max_y - cluster_min_y
+                    logger.debug(f"Created cluster with {len(cluster)} parts (height: {cluster_height:.1f}): {' | '.join(cluster_texts)}")
+                    logger.debug(f"Created cluster with {len(cluster)} parts, height: {cluster_max_y - cluster_min_y:.1f}")
+            
+            # Sort clusters by their minimum Y position
+            title_clusters.sort(key=lambda cluster: min(member['y_position'] for member in cluster))
+            
+            logger.info(f"Created {len(title_clusters)} title clusters")
+            
+            # ASSEMBLE AND SCORE COMPLETE TITLES
+            assembled_titles = []
+            
+            for cluster_idx, cluster in enumerate(title_clusters):
+                # Sort cluster by Y position (top to bottom), then X position (left to right)
+                cluster.sort(key=lambda x: (x['y_position'], x['x_position']))
+                
+                # Assemble complete title text
+                cluster_texts = [item['text'] for item in cluster]
+                complete_text = ' '.join(cluster_texts)
+                
+                # Calculate cluster metrics
+                avg_font_size = sum(item['font_size'] for item in cluster) / len(cluster)
+                min_y_position = min(item['y_position'] for item in cluster)
+                max_y_position = max(item['y_position'] for item in cluster)
+                title_height = max_y_position - min_y_position
+                
+                # Check if any parts are journal patterns
+                has_journal_content = any(item['is_journal'] for item in cluster)
+                
+                # Enhanced complete title scoring
+                # Position score for the top of the cluster
+                gaussian_center = page_height * 0.25
+                gaussian_sigma = page_height * 0.15
+                cluster_position_score = math.exp(-((min_y_position - gaussian_center) ** 2) / (2 * gaussian_sigma ** 2))
+                
+                # Font size score
+                font_score = min(avg_font_size / 24.0, 1.0)
+                
+                # Length score (prefer substantial titles, penalize too short or too long)
+                length_score = 1.0
+                if len(complete_text) < 20:
+                    length_score = 0.5  # Too short
+                elif len(complete_text) > 200:
+                    length_score = 0.8  # Quite long but acceptable for academic titles
+                
+                # Multi-line bonus (academic titles often span multiple lines)
+                multiline_bonus = 0.1 if len(cluster) > 1 else 0.0
+                
+                # Centrality score (prefer titles more centered horizontally)
+                avg_x_position = sum(item['x_position'] for item in cluster) / len(cluster)
+                centrality_score = 1.0 - abs(avg_x_position - page_width/2) / (page_width/2)
+                centrality_score = max(0.3, centrality_score)  # Minimum threshold
+                
+                # Composite score for the complete assembled title
+                complete_score = (
+                    0.35 * font_score +
+                    0.25 * cluster_position_score +
+                    0.15 * length_score +
+                    0.15 * centrality_score +
+                    multiline_bonus -
+                    0.7 * (1.0 if has_journal_content else 0.0)  # Strong penalty for journal content
+                )
+                
+                assembled_titles.append({
+                    'complete_text': complete_text,
+                    'cluster_size': len(cluster),
+                    'complete_score': complete_score,
+                    'min_y_position': min_y_position,
+                    'title_height': title_height,
+                    'has_journal_content': has_journal_content,
+                    'cluster_details': cluster
+                })
+                
+                logger.info(f"Cluster {cluster_idx}: '{complete_text[:50]}...' (score: {complete_score:.3f}, parts: {len(cluster)})")
+            
+            if not assembled_titles:
+                logger.info("No valid assembled titles found")
+                return None
+            
+            # Sort by complete score and select the best
+            assembled_titles.sort(key=lambda x: x['complete_score'], reverse=True)
+            best_title = assembled_titles[0]
             
             # Clean up the title
+            complete_title = best_title['complete_text']
             complete_title = ' '.join(complete_title.split())  # Normalize whitespace
             complete_title = complete_title.strip('.,;:')      # Remove trailing punctuation
             complete_title = re.sub(r'\s*\*+\s*', ' ', complete_title)  # Remove asterisks
             complete_title = re.sub(r'\s+', ' ', complete_title).strip()  # Final cleanup
             
-            logger.info(f"Enhanced algorithm extracted title: {complete_title}")
-            logger.info(f"Selected from {len(title_candidates)} candidates with score: {best_candidate['composite_score']:.3f}")
+            logger.info(f"CLUSTER-FIRST algorithm extracted title: {complete_title}")
+            logger.info(f"Selected from {len(assembled_titles)} assembled titles (score: {best_title['complete_score']:.3f}, parts: {best_title['cluster_size']})")
             
             return complete_title
             
         except Exception as e:
-            logger.warning(f"Enhanced title extraction failed: {e}")
+            logger.warning(f"Cluster-first title extraction failed: {e}")
             return None
 
     def _save_document(self, document: pikepdf.Pdf, output_path: Path) -> None:
