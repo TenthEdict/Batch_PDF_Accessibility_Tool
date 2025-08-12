@@ -42,6 +42,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+test-results.xml
 
 # Virtual environments
 .env*
@@ -66,7 +67,7 @@ docling_venv/
 *.sublime-project
 *.sublime-workspace
 *.swp
-*.swo
+*.swp
 *~
 \#*\#
 /.emacs.desktop
@@ -159,6 +160,7 @@ processor/unified_project/src/orchestration/logs/
 !processor/unified_project/tests/fixtures/*.pdf
 !**/test_*.pdf
 !**/sample_*.pdf
+!tests/data/sample_pdfs/*.pdf
 
 # Document processing temporary files
 ocrmypdf_*
@@ -328,3 +330,50 @@ profile_*.log
 # ===================================================================
 .memory-bank/
 .clauderules
+
+# ===================================================================
+# Production and deployment
+# ===================================================================
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+performance_metrics.db
+epubs_cache.db
+
+# Cache directories
+.cache/
+cache/
+~/.cache/epubs/
+~/.epubs/cache/
+
+# Performance and monitoring
+metrics/
+monitoring/
+health_checks/
+
+# ===================================================================
+# Archived and legacy content
+# ===================================================================
+# Exclude entire archived directory from version control
+archived/
+
+# Legacy files that should be removed
+legacy_*.py
+old_*.py
+deprecated_*.py
+*_old.py
+*_backup.py
+
+# ===================================================================
+# Security and compliance
+# ===================================================================
+# Security scan results
+bandit-report.json
+safety-report.json
+vulnerability-report.json
+
+# Compliance and audit files
+audit_*.log
+compliance_*.json
+security_*.txt

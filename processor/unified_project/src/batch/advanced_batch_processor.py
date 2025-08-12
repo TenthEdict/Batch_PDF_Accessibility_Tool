@@ -77,13 +77,14 @@ class BatchProcessingConfiguration:
     to ensure consistent behavior across batch operations.
     """
     
-    def __init__(self, input_dir: str = 'data/input', output_dir: str = 'data/output/enhanced_batch'):
+    def __init__(self, input_dir: str = 'data/input', output_dir: str = 'data/output/enhanced_batch', 
+                 log_dir: str = 'logs', enable_detailed_logging: bool = True, enhancement_params: Optional[Dict] = None):
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
-        self.log_dir = Path('logs')
+        self.log_dir = Path(log_dir)
         
         # Processing parameters optimized from component testing
-        self.enhancement_params = {
+        self.enhancement_params = enhancement_params or {
             'language': 'en-US',
             'extract_title_from_h1': True,
             'extract_title_from_filename': True,
@@ -92,7 +93,7 @@ class BatchProcessingConfiguration:
         
         # Operational configuration
         self.enable_progress_bar = TQDM_AVAILABLE
-        self.enable_detailed_logging = True
+        self.enable_detailed_logging = enable_detailed_logging
         self.enable_quality_validation = True
         self.generate_processing_report = True
         self.force_ocr = True  # Always perform OCR on all files        

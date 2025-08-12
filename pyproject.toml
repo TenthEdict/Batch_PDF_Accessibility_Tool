@@ -1,7 +1,6 @@
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
-
 [project]
 name = "epubs-accessibility"
 version = "2.0.0"
@@ -23,7 +22,6 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: XML",
     "Topic :: Multimedia :: Graphics :: Graphics Conversion",
 ]
-
 # Core dependencies (always required)
 dependencies = [
     # PDF Processing (Critical Path)
@@ -61,9 +59,9 @@ dependencies = [
     "pathlib-mate>=1.0.0,<2.0.0",
     "python-magic>=0.4.27,<1.0.0",
     
-
+    # Performance monitoring
+    "psutil>=5.9.0,<6.0.0",
 ]
-
 [project.optional-dependencies]
 # Document format support
 docs = [
@@ -71,26 +69,23 @@ docs = [
     "python-pptx>=0.6.21,<1.0.0",
     "openpyxl>=3.0.7,<4.0.0",
     "python-xmp-toolkit>=2.0.2,<3.0.0",
+    "reportlab>=4.0.0,<5.0.0",  # For test PDF generation
 ]
-
 # Machine Learning and AI features (Heavy dependencies)
 ml = [
     "torch>=2.0.0,<3.0.0",
     "transformers>=4.49.0,<5.0.0",
     "huggingface-hub>=0.20.0,<1.0.0",
     "anthropic>=0.18.0,<1.0.0",
+    "scikit-learn>=1.3.0,<2.0.0",
+    "joblib>=1.3.0,<2.0.0",
+    "numpy>=1.24.0,<2.0.0",
+    "scipy>=1.7.0,<2.0.0",
 ]
-
 # Apple Silicon optimizations
 apple = [
     "mlx-vlm>=0.0.3,<1.0.0",
 ]
-
-# Advanced document analysis
-advanced = [
-    # Note: docling-core removed per user request
-]
-
 # Web scraping capabilities
 web = [
     "selenium>=4.0.0,<5.0.0",
@@ -98,7 +93,6 @@ web = [
     "beautifulsoup4>=4.11.0,<5.0.0",
     "urllib3>=1.26.0,<3.0.0",
 ]
-
 # Development dependencies
 dev = [
     "pytest>=7.0.0,<8.0.0",
@@ -111,8 +105,9 @@ dev = [
     "mypy>=1.0.0,<2.0.0",
     "pre-commit>=3.0.0,<4.0.0",
     "coverage>=7.0.0,<8.0.0",
+    "bandit>=1.7.0,<2.0.0",  # Security linting
+    "safety>=2.3.0,<3.0.0",  # Dependency vulnerability scanning
 ]
-
 # Testing dependencies (lighter than dev)
 test = [
     "pytest>=7.0.0,<8.0.0",
@@ -121,8 +116,8 @@ test = [
     "pytest-xdist>=3.0.0,<4.0.0",
     "hypothesis>=6.0.0,<7.0.0",    # Property-based testing
     "factory-boy>=3.2.0,<4.0.0",  # Test fixtures
+    "reportlab>=4.0.0,<5.0.0",    # For test PDF generation
 ]
-
 # All optional dependencies combined (for convenience)
 all = [
     "python-docx>=1.0.0,<2.0.0",
@@ -132,26 +127,21 @@ all = [
     "selenium>=4.0.0,<5.0.0",
     "requests>=2.28.0,<3.0.0",
     "beautifulsoup4>=4.11.0,<5.0.0",
-    "docling-core>=0.0.1,<1.0.0",
+    "reportlab>=4.0.0,<5.0.0",
 ]
-
 [project.scripts]
 # Unified CLI entry point
 epubs = "processor.unified_project.src.main:app"
-
 # Scraper CLI (functional component)
 epubs-scrape = "scraper.purdue_downloader:main"
-
 [project.urls]
 Homepage = "https://github.com/schipp0/ePubs_Main"
 Repository = "https://github.com/schipp0/ePubs_Main"
 Documentation = "https://epubs-accessibility.readthedocs.io"
 "Bug Tracker" = "https://github.com/schipp0/ePubs_Main/issues"
-
 [tool.setuptools.packages.find]
 # Use current directory structure, exclude unneeded directories
-exclude = ["venv*", "test_venv*", "build*", "dist*", "*.egg-info*", "temp_processing*", "logs*"]
-
+exclude = ["venv*", "test_venv*", "build*", "dist*", "*.egg-info*", "temp_processing*", "logs*", "archived*"]
 [tool.setuptools.package-data]
 "*" = [
     "config/*.yaml", 
@@ -161,7 +151,6 @@ exclude = ["venv*", "test_venv*", "build*", "dist*", "*.egg-info*", "temp_proces
     "*.md",
     "*.txt",
 ]
-
 # Testing configuration
 [tool.pytest.ini_options]
 minversion = "7.0"
@@ -170,12 +159,14 @@ addopts = [
     "-q", 
     "--strict-markers",
     "--strict-config",
-    "--cov=epubs_accessibility",
+    "--cov=processor",
+    "--cov=scraper",
     "--cov-report=term-missing",
     "--cov-report=html:htmlcov",
     "--cov-report=xml",
+    "--junit-xml=test-results.xml",
 ]
-testpaths = ["tests"]
+testpaths = ["tests", "processor/unified_project/tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
@@ -185,8 +176,10 @@ markers = [
     "unit: marks tests as unit tests",
     "ocr: marks tests that require OCR engine",
     "gpu: marks tests that require GPU",
+    "macos: marks tests as macOS specific",
+    "windows: marks tests as Windows specific",
+    "linux: marks tests as Linux specific",
 ]
-
 # Code formatting with Black
 [tool.black]
 line-length = 88
@@ -206,21 +199,20 @@ extend-exclude = '''
   | buck-out
   | build
   | dist
+  | archived
 )/
 '''
-
 # Import sorting with isort
 [tool.isort]
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["epubs_accessibility"]
+known_first_party = ["processor", "scraper"]
 known_third_party = [
     "numpy", "pandas", "PIL", "cv2", "pytesseract", 
     "pikepdf", "fitz", "yaml", "click", "rich"
 ]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
-
 # Type checking with mypy
 [tool.mypy]
 python_version = "3.9"
@@ -239,7 +231,6 @@ no_implicit_optional = true
 warn_no_return = true
 warn_unreachable = true
 strict_equality = true
-
 [[tool.mypy.overrides]]
 module = [
     "cv2.*",
@@ -247,14 +238,12 @@ module = [
     "fitz.*",
     "pikepdf.*",
     "pdf2image.*",
-    "docling_core.*",
     "mlx_vlm.*",
 ]
 ignore_missing_imports = true
-
 # Coverage configuration
 [tool.coverage.run]
-source = ["processor", "scraper", "automation"]
+source = ["processor", "scraper"]
 omit = [
     "*/tests/*",
     "*/test_*",
@@ -264,8 +253,8 @@ omit = [
     "*/dist/*",
     "*/temp_processing/*",
     "*/logs/*",
+    "*/archived/*",
 ]
-
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
@@ -281,8 +270,7 @@ exclude_lines = [
 ]
 show_missing = true
 skip_covered = false
-
-# Flake8 configuration (in setup.cfg format for compatibility)
+# Flake8 configuration
 [tool.flake8]
 max-line-length = 88
 extend-ignore = [
@@ -299,5 +287,42 @@ exclude = [
     "venv",
     ".eggs",
     "*.egg",
+    "archived",
 ]
 max-complexity = 10
+# Security scanning with bandit
+# Pre-commit hooks
+[tool.pre-commit]
+repos = [
+    {
+        "repo": "https://github.com/pre-commit/pre-commit-hooks",
+        "rev": "v4.4.0",
+        "hooks": [
+            {"id": "trailing-whitespace"},
+            {"id": "end-of-file-fixer"},
+            {"id": "check-yaml"},
+            {"id": "check-added-large-files"},
+            {"id": "check-merge-conflict"},
+        ],
+    },
+    {
+        "repo": "https://github.com/psf/black",
+        "rev": "23.3.0",
+        "hooks": [{"id": "black"}],
+    },
+    {
+        "repo": "https://github.com/pycqa/isort",
+        "rev": "5.12.0",
+        "hooks": [{"id": "isort"}],
+    },
+    {
+        "repo": "https://github.com/pycqa/flake8",
+        "rev": "6.0.0",
+        "hooks": [{"id": "flake8"}],
+    },
+    {
+        "repo": "https://github.com/pre-commit/mirrors-mypy",
+        "rev": "v1.3.0",
+        "hooks": [{"id": "mypy"}],
+    },
+]

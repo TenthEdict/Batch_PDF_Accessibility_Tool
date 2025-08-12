@@ -303,9 +303,195 @@ def cleanup(
         logger.error(f"Metrics cleanup failed: {e}")
 
 
+# Health check subcommand group
+health_app = typer.Typer(help="Health check and system monitoring commands")
+
+
+@health_app.command()
+def check(
+    detailed: bool = typer.Option(
+        False, "--detailed", "-d", help="Show detailed health information."
+    ),
+    format: str = typer.Option(
+        "text", "--format", "-f", help="Output format: text, json"
+    ),
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="Enable verbose logging."
+    ),
+):
+    """Perform comprehensive system health check."""
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    try:
+        from processor.unified_project.src.monitoring.health_checks import health_check, detailed_health_check
+        
+        if detailed:
+            result = detailed_health_check()
+        else:
+            result = health_check()
+        
+        if format.lower() == "json":
+            import json
+            print(json.dumps(result, indent=2))
+        else:
+            # Text format
+            status_emoji = {
+                "healthy": "✅",
+                "degraded": "⚠️",
+                "unhealthy": "❌"
+            }
+            
+            print(f"{status_emoji.get(result['status'], '❓')} System Health: {result['status'].upper()}")
+            print(f"Success Rate: {result['success_rate']}%")
+            print(f"Timestamp: {result['timestamp']}")
+            
+            if 'summary' in result:
+                summary = result['summary']
+                print(f"\n📊 Summary:")
+                print(f"   Total Checks: {summary['total_checks']}")
+                print(f"   Healthy: {summary['healthy']}")
+                print(f"   Degraded: {summary['degraded']}")
+                print(f"   Unhealthy: {summary['unhealthy']}")
+            
+            if 'checks' in result:
+                print(f"\n🔍 Individual Checks:")
+                for check in result['checks']:
+                    check_emoji = status_emoji.get(check['status'], '❓')
+                    print(f"   {check_emoji} {check['name']}: {check['status']}")
+                    if check['message']:
+                        print(f"      {check['message']}")
+        
+        logger.info(f"Health check completed: {result['status']}")
+        
+    except ImportError:
+        print("❌ Health check system not available")
+        logger.error("Health check module not found")
+    except Exception as e:
+        print(f"❌ Health check failed: {e}")
+        logger.error(f"Health check failed: {e}")
+
+
+@health_app.command()
+def status(
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="Enable verbose logging."
+    ),
+):
+    """Show current system health status."""
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    try:
+        from processor.unified_project.src.monitoring.health_checks import get_health_status
+        
+        status = get_health_status()
+        
+        status_emoji = {
+            "healthy": "✅",
+            "degraded": "⚠️",
+            "unhealthy": "❌",
+            "unknown": "❓"
+        }
+        
+        print(f"{status_emoji.get(status['status'], '❓')} Current Status: {status['status'].upper()}")
+        
+        if status.get('last_check'):
+            print(f"Last Check: {status['last_check']}")
+        if status.get('checks_performed'):
+            print(f"Checks Performed: {status['checks_performed']}")
+        if status.get('recent_statuses'):
+            recent = status['recent_statuses']
+            print(f"Recent Statuses: {', '.join(recent)}")
+        
+        logger.info(f"Health status retrieved: {status['status']}")
+        
+    except ImportError:
+        print("❌ Health check system not available")
+        logger.error("Health check module not found")
+    except Exception as e:
+        print(f"❌ Status check failed: {e}")
+        logger.error(f"Status check failed: {e}")
+
+
+@health_app.command()
+def diagnose(
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="Enable verbose logging."
+    ),
+):
+    """Run diagnostic health checks and provide recommendations."""
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    try:
+        from processor.unified_project.src.monitoring.health_checks import get_health_checker
+        
+        checker = get_health_checker()
+        result = checker.run_comprehensive_health_check()
+        
+        print("🔍 ePubs System Diagnostics")
+        print("=" * 50)
+        
+        # Overall status
+        status_emoji = {
+            "healthy": "✅",
+            "degraded": "⚠️",
+            "unhealthy": "❌"
+        }
+        
+        print(f"\n{status_emoji.get(result['status'], '❓')} Overall Status: {result['status'].upper()}")
+        print(f"Success Rate: {result['success_rate']}%")
+        
+        # Individual check details
+        print(f"\n📋 Detailed Analysis:")
+        for check in result['checks']:
+            check_emoji = status_emoji.get(check['status'], '❓')
+            print(f"\n{check_emoji} {check['name'].replace('_', ' ').title()}")
+            print(f"   Status: {check['status']}")
+            if check['message']:
+                print(f"   Message: {check['message']}")
+            
+            # Show key details
+            if check['details']:
+                details = check['details']
+                if 'cpu_percent' in details:
+                    print(f"   CPU: {details['cpu_percent']}%")
+                if 'memory_percent' in details:
+                    print(f"   Memory: {details['memory_percent']}%")
+                if 'disk_percent' in details:
+                    print(f"   Disk: {details['disk_percent']}%")
+                if 'missing_dependencies' in details and details['missing_dependencies']:
+                    print(f"   Missing: {', '.join(details['missing_dependencies'])}")
+        
+        # Recommendations
+        print(f"\n💡 Recommendations:")
+        if result['status'] == 'unhealthy':
+            print("   • Address critical issues before processing documents")
+            print("   • Check system resources and dependencies")
+            print("   • Verify file system permissions")
+        elif result['status'] == 'degraded':
+            print("   • Monitor system resources closely")
+            print("   • Consider optimizing performance")
+            print("   • Review recent changes that may have caused degradation")
+        else:
+            print("   • System is healthy and ready for production use")
+            print("   • Continue regular monitoring")
+        
+        logger.info(f"Diagnostic completed: {result['status']}")
+        
+    except ImportError:
+        print("❌ Health check system not available")
+        logger.error("Health check module not found")
+    except Exception as e:
+        print(f"❌ Diagnostic failed: {e}")
+        logger.error(f"Diagnostic failed: {e}")
+
+
 # Add subcommands to main app
 app.add_typer(cache_app, name="cache", help="Cache management commands")
 app.add_typer(stats_app, name="stats", help="Performance statistics and reporting")
+app.add_typer(health_app, name="health", help="Health check and system monitoring commands")
 
 
 @cache_app.command()

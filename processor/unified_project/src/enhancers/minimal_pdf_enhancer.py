@@ -9,6 +9,7 @@ clean PDFs ready for manual accessibility tagging.
 
 import logging
 import io
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
@@ -55,13 +56,44 @@ class MinimalPDFEnhancer(EnhancerBase):
             logger.error(f"Failed to load PDF document: {e}")
             raise
 
+    def _is_historical_document(self, input_path: Path) -> bool:
+        """
+        Detect if this is a historical document that needs specialized title extraction.
+        
+        Args:
+            input_path: Path to the original PDF file
+            
+        Returns:
+            bool: True if this appears to be a historical document
+        """
+        filename = input_path.name.lower()
+        
+        # Historical document patterns
+        historical_patterns = [
+            r'\b(18|19)\d{2}_',  # Year prefixes like 1860_, 1925_
+            r'roadschool',       # Road school proceedings
+            r'proceedings',      # Historical proceedings
+            r'historical',       # Explicitly historical
+            r'archive',          # Archived documents
+            r'heritage',         # Heritage documents
+            r'\b\d{4}_\w+_\d{4}', # Pattern like YYYY_name_YYYY
+        ]
+        
+        for pattern in historical_patterns:
+            if re.search(pattern, filename):
+                logger.debug(f"Historical document detected via pattern '{pattern}': {filename}")
+                return True
+                
+        return False
+
     def _extract_document_title(self, document: pikepdf.Pdf, input_path: Path) -> Optional[str]:
         """
         Extract the actual document title from the PDF content with cluster-first algorithm.
         
-        Uses advanced cluster-first approach: groups title candidates by spatial proximity,
-        assembles complete titles, then scores assembled results for optimal multi-line
-        title detection in academic papers.
+        Uses advanced cluster-first approach with historical document support: groups title 
+        candidates by spatial proximity, assembles complete titles, then scores assembled 
+        results for optimal multi-line title detection in both modern academic papers and 
+        historical documents.
         
         Args:
             document: The PDF document to extract title from
@@ -86,12 +118,27 @@ class MinimalPDFEnhancer(EnhancerBase):
             page_height = first_page.rect.height
             page_width = first_page.rect.width
             
-            # Define spatial exclusion zones (8% header to be more inclusive, 15% footer)
-            header_zone_limit = page_height * 0.08  # More inclusive for titles that start higher
-            footer_zone_limit = page_height * 0.85
-            optimal_title_zone = (header_zone_limit, page_height * 0.5)
+            # Detect if this is a historical document for specialized processing
+            is_historical = self._is_historical_document(input_path)
             
-            logger.info(f"Title extraction zones - Header limit: {header_zone_limit:.1f}, Footer limit: {footer_zone_limit:.1f}")
+            if is_historical:
+                logger.info("Historical document detected - using specialized title extraction")
+                # Historical documents: more inclusive zones and relaxed criteria
+                header_zone_limit = page_height * 0.12  # More inclusive for historical titles
+                footer_zone_limit = page_height * 0.88  # Higher footer threshold
+                optimal_title_zone = (header_zone_limit, page_height * 0.6)  # Broader search area
+                min_font_size = 10  # Lower font size threshold for historical documents
+                min_candidate_score = 0.15  # Lower minimum threshold
+            else:
+                # Modern academic papers: current settings
+                header_zone_limit = page_height * 0.08
+                footer_zone_limit = page_height * 0.85
+                optimal_title_zone = (header_zone_limit, page_height * 0.5)
+                min_font_size = 11  # Current threshold
+                min_candidate_score = 0.2  # Current threshold
+            
+            # Define spatial exclusion zones
+            logger.info(f"Title extraction zones ({'Historical' if is_historical else 'Academic'}) - Header limit: {header_zone_limit:.1f}, Footer limit: {footer_zone_limit:.1f}")
             
             # Journal name patterns for detection
             journal_patterns = [
@@ -141,27 +188,46 @@ class MinimalPDFEnhancer(EnhancerBase):
                         span_bbox = span.get("bbox", [0, 0, 0, 0])
                         x_position = span_bbox[0]
                         
-                        # Enhanced filtering for potential title text
-                        if (text and 
-                            len(text) < 400 and  # Academic titles can be longer
-                            font_size > 11 and   # Slightly lower font threshold
-                            not text.lower().startswith(('abstract', 'keywords', 'introduction', 
-                                                       'figure', 'table', 'contents', 'acknowledgment',
-                                                       'references', 'bibliography', 'appendix')) and
-                            not any(char.isdigit() for char in text[:3]) and  # Avoid page numbers
-                            not text.startswith(('http', 'www.', 'doi:', 'isbn:', 'issn:')) and  # Avoid identifiers
-                            not re.match(r'^\d+$', text.strip()) and  # Avoid pure numbers
-                            # Include: multi-word text, large single words, or punctuation near titles
-                            (len(text) > 5 and (text.count(' ') >= 1 or (font_size > 18 and len(text) > 3))) or
-                            (len(text) <= 5 and font_size > 18 and any(char in text for char in ["'", "'", ":", "-", "—"]))):  # Include title punctuation
+                        # Enhanced filtering for potential title text with dynamic thresholds
+                        # Relax criteria for historical documents
+                        if is_historical:
+                            # Historical documents: more lenient filtering
+                            basic_checks = (text and 
+                                          len(text) < 500 and  # Longer titles allowed for historical docs
+                                          font_size > min_font_size and
+                                          not text.lower().startswith(('figure', 'table', 'page')) and
+                                          not re.match(r'^\d+$', text.strip()) and  # Avoid pure numbers
+                                          len(text) > 2)  # Accept shorter text for historical titles
+                        else:
+                            # Modern academic papers: current strict filtering  
+                            basic_checks = (text and 
+                                          len(text) < 400 and
+                                          font_size > min_font_size and
+                                          not text.lower().startswith(('abstract', 'keywords', 'introduction', 
+                                                                     'figure', 'table', 'contents', 'acknowledgment',
+                                                                     'references', 'bibliography', 'appendix')) and
+                                          not any(char.isdigit() for char in text[:3]) and  # Avoid page numbers
+                                          not text.startswith(('http', 'www.', 'doi:', 'isbn:', 'issn:')) and  # Avoid identifiers
+                                          not re.match(r'^\d+$', text.strip()) and  # Avoid pure numbers
+                                          # Include: multi-word text, large single words, or punctuation near titles
+                                          ((len(text) > 5 and (text.count(' ') >= 1 or (font_size > 18 and len(text) > 3))) or
+                                           (len(text) <= 5 and font_size > 18 and any(char in text for char in ["'", "'", ":", "-", "—"]))))
+                        
+                        if basic_checks:
                             
                             # Check if text matches journal patterns
                             is_journal = bool(journal_regex.search(text))
                             
-                            # Calculate position score with Gaussian weighting
-                            # Gaussian centered at 25% of page height (higher for academic titles)
-                            gaussian_center = page_height * 0.25
-                            gaussian_sigma = page_height * 0.15
+                            # Position scoring: adjust for historical documents
+                            if is_historical:
+                                # Historical documents: broader center area and more tolerance
+                                gaussian_center = page_height * 0.35  # Lower center for historical titles
+                                gaussian_sigma = page_height * 0.2    # Broader acceptance
+                            else:
+                                # Academic papers: current settings
+                                gaussian_center = page_height * 0.25
+                                gaussian_sigma = page_height * 0.15
+                            
                             position_score = math.exp(-((y_position - gaussian_center) ** 2) / (2 * gaussian_sigma ** 2))
                             
                             # Text quality score based on characteristics
@@ -178,8 +244,8 @@ class MinimalPDFEnhancer(EnhancerBase):
                                 0.6 * (1.0 if is_journal else 0.0)  # Higher penalty for journal patterns
                             )
                             
-                            # Only include candidates with minimum quality
-                            if candidate_score > 0.2:  # Minimum threshold for inclusion
+                            # Only include candidates with minimum quality (dynamic threshold)
+                            if candidate_score > min_candidate_score:
                                 title_candidates.append({
                                     'text': text,
                                     'font_size': font_size,
@@ -384,6 +450,79 @@ class MinimalPDFEnhancer(EnhancerBase):
             logger.warning(f"Cluster-first title extraction failed: {e}")
             return None
 
+    def _remove_existing_accessibility_tags(self, document: pikepdf.Pdf) -> List[str]:
+        """
+        Remove existing accessibility tags and structure trees from the document.
+        
+        This ensures the document starts with a clean slate before applying new
+        accessibility enhancements, preventing conflicts between old and new tagging systems.
+        
+        Args:
+            document: The PDF document to clean
+            
+        Returns:
+            List[str]: List of accessibility elements that were removed
+        """
+        removed_items = []
+        
+        try:
+            # Remove structure tree root and all its children
+            if Name.StructTreeRoot in document.Root:
+                del document.Root[Name.StructTreeRoot]
+                removed_items.append("StructTreeRoot (structure tree)")
+                logger.info("Removed existing structure tree root")
+            
+            # Remove parent tree (maps structure elements to content)
+            if Name.ParentTree in document.Root:
+                del document.Root[Name.ParentTree]
+                removed_items.append("ParentTree (structure mapping)")
+                logger.info("Removed existing parent tree")
+            
+            # Remove parent tree next key counter
+            if Name.ParentTreeNextKey in document.Root:
+                del document.Root[Name.ParentTreeNextKey]
+                removed_items.append("ParentTreeNextKey (counter)")
+                logger.info("Removed parent tree next key")
+            
+            # Remove role map (custom role mappings)
+            if Name.RoleMap in document.Root:
+                del document.Root[Name.RoleMap]
+                removed_items.append("RoleMap (custom roles)")
+                logger.info("Removed existing role map")
+            
+            # Remove class map (attribute class mappings)
+            if Name.ClassMap in document.Root:
+                del document.Root[Name.ClassMap]
+                removed_items.append("ClassMap (attribute classes)")
+                logger.info("Removed existing class map")
+            
+            # Remove StructParents from all page objects
+            pages_cleaned = 0
+            if Name.Pages in document.Root and document.Root.Pages:
+                try:
+                    for page in document.pages:
+                        if Name.StructParents in page:
+                            del page[Name.StructParents]
+                            pages_cleaned += 1
+                except Exception as e:
+                    logger.warning(f"Could not clean all page StructParents: {e}")
+            
+            if pages_cleaned > 0:
+                removed_items.append(f"StructParents from {pages_cleaned} pages")
+                logger.info(f"Removed StructParents from {pages_cleaned} page(s)")
+            
+            # Log summary
+            if removed_items:
+                logger.info(f"Cleaned existing accessibility tags: {', '.join(removed_items)}")
+            else:
+                logger.info("No existing accessibility tags found to remove")
+                
+        except Exception as e:
+            logger.warning(f"Error removing existing accessibility tags: {e}")
+            removed_items.append(f"Error during cleanup: {str(e)}")
+        
+        return removed_items
+
     def _save_document(self, document: pikepdf.Pdf, output_path: Path) -> None:
         """Save a PDF document to a file."""
         document.save(output_path)
@@ -435,6 +574,9 @@ class MinimalPDFEnhancer(EnhancerBase):
         Returns:
             pikepdf.Pdf: The enhanced PDF document
         """
+        # First, remove any existing accessibility tags to ensure clean processing
+        removed_items = self._remove_existing_accessibility_tags(document)
+        
         # Extract parameters with academic paper defaults
         title = kwargs.get("title")
         author = kwargs.get("author")
@@ -494,6 +636,14 @@ class MinimalPDFEnhancer(EnhancerBase):
 
         # Log applied enhancements
         logger.info("Applied minimal enhancements:")
+        
+        # Log removed items first
+        if removed_items:
+            logger.info("- Cleaned existing accessibility tags:")
+            for item in removed_items:
+                logger.info(f"  · Removed {item}")
+        
+        # Log new enhancements
         for enhancement in enhancements:
             logger.info(f"- {enhancement}")
 
@@ -754,6 +904,9 @@ class MinimalPDFEnhancer(EnhancerBase):
         Returns:
             pikepdf.Pdf: The enhanced PDF document
         """
+        # First, remove any existing accessibility tags to ensure clean processing
+        removed_items = self._remove_existing_accessibility_tags(document)
+        
         # Extract parameters with academic paper defaults
         title = kwargs.get("title")
         author = kwargs.get("author")
@@ -813,6 +966,14 @@ class MinimalPDFEnhancer(EnhancerBase):
 
         # Log applied enhancements
         logger.info("Applied minimal enhancements:")
+        
+        # Log removed items first
+        if removed_items:
+            logger.info("- Cleaned existing accessibility tags:")
+            for item in removed_items:
+                logger.info(f"  · Removed {item}")
+        
+        # Log new enhancements
         for enhancement in enhancements:
             logger.info(f"- {enhancement}")
 

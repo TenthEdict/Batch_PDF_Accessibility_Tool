@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  epubs-processor:
+    build:
+      context: ../..
+      dockerfile: processor/unified_project/Dockerfile
+      target: production
+    image: epubs-processor:latest
+    container_name: epubs-processor
+    volumes:
+      # Mount input and output directories
+      - ./input:/data/input:ro
+      - ./output:/data/output
+      - ./logs:/data/logs
+      # Mount configuration if needed
+      - ./config:/app/processor/unified_project/config:ro
+    environment:
+      - PYTHONPATH=/app
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import processor.unified_project.src.main; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    # Restart policy
+    restart: unless-stopped
+    # Command to show help by default
+    command: ["--help"]
+
+  # Development service with additional tools
+  epubs-processor-dev:
+    build:
+      context: ../..
+      dockerfile: processor/unified_project/Dockerfile
+      target: development
+    image: epubs-processor-dev:latest
+    container_name: epubs-processor-dev
+    volumes:
+      # Mount source code for development
+      - ../../processor:/app/processor
+      - ../../scraper:/app/scraper
+      - ./input:/data/input:ro
+      - ./output:/data/output
+      - ./logs:/data/logs
+      - ./config:/app/processor/unified_project/config:ro
+    environment:
+      - PYTHONPATH=/app
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+      - PYTHONUNBUFFERED=1
+    # Development doesn't need health check
+    # Resource limits for development
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+          cpus: '3.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    # Restart policy
+    restart: unless-stopped
+    # Command to show help by default
+    command: ["--help"]
+
+volumes:
+  input:
+    driver: local
+  output:
+    driver: local
+  logs:
+    driver: local

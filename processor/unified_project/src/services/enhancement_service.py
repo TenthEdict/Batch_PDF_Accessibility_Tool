@@ -16,13 +16,21 @@ from ..enhancers.ocr_enhancer import OCREnhancer
 from ..enhancers.minimal_pdf_enhancer import MinimalPDFEnhancer
 from ..enhancers.compression_enhancer import CompressionEnhancer
 
-# Optional ML enhancer import
+# Optional ML enhancer imports
 try:
     from ..enhancers.ml_enhancer import MLEnhancer
     ML_ENHANCER_AVAILABLE = True
 except ImportError:
     MLEnhancer = None
     ML_ENHANCER_AVAILABLE = False
+
+# Optional intelligent OCR enhancer import
+try:
+    from ..enhancers.intelligent_ocr_enhancer import IntelligentOCREnhancer
+    INTELLIGENT_OCR_AVAILABLE = True
+except ImportError:
+    IntelligentOCREnhancer = None
+    INTELLIGENT_OCR_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +50,17 @@ class EnhancementService:
         self.compression_enhancer = CompressionEnhancer()
         self.minimal_pdf_enhancer = MinimalPDFEnhancer()
         
-        # Initialize optional ML enhancer (will be activated per processing mode)
+        # Initialize optional ML enhancers
         self.ml_enhancer = None
+        self.intelligent_ocr_enhancer = None
+        
+        # Try to initialize intelligent OCR enhancer
+        if INTELLIGENT_OCR_AVAILABLE:
+            try:
+                self.intelligent_ocr_enhancer = IntelligentOCREnhancer()
+                self.logger.info("Intelligent OCR enhancer initialized")
+            except Exception as e:
+                self.logger.warning(f"Could not initialize intelligent OCR enhancer: {e}")
 
     def enhance_document(
         self,
@@ -82,15 +99,29 @@ class EnhancementService:
                 ocr_output_path = temp_path / "ocr_enhanced.pdf"
                 compressed_output_path = temp_path / "compressed.pdf"
 
-                # Step 1: OCR with Aggressive Web Compression
-                self.logger.info("Step 1: Applying OCR with aggressive web compression for academic papers...")
-                ocr_success = self.ocr_enhancer.enhance_file(
-                    input_path, ocr_output_path
-                )
+                # Step 1: Intelligent OCR Processing (Default for academic documents)
+                if self.intelligent_ocr_enhancer:
+                    self.logger.info("Step 1: Applying intelligent OCR with ML-enhanced processing for academic documents...")
+                    ocr_success = self.intelligent_ocr_enhancer.enhance_file(
+                        input_path, ocr_output_path
+                    )
+                    if ocr_success:
+                        # Get processing statistics
+                        stats = self.intelligent_ocr_enhancer.get_processing_statistics()
+                        self.logger.info(f"Intelligent OCR completed. Success rate: {stats.get('success_rate', 0):.2%}")
+                    else:
+                        self.logger.warning("Intelligent OCR failed, falling back to standard OCR...")
+                        ocr_success = self.ocr_enhancer.enhance_file(input_path, ocr_output_path)
+                else:
+                    self.logger.info("Step 1: Applying standard OCR with aggressive web compression...")
+                    ocr_success = self.ocr_enhancer.enhance_file(
+                        input_path, ocr_output_path
+                    )
+                
                 if not ocr_success:
                     self.logger.error("OCR enhancement failed.")
                     return False
-                self.logger.info("OCR enhancement with web compression completed successfully.")
+                self.logger.info("OCR enhancement completed successfully.")
 
                 # Step 2: Additional Image Compression Optimization
                 self.logger.info("Step 2: Applying additional image compression optimization...")
@@ -144,6 +175,8 @@ class EnhancementService:
             "ocr_enhancer": True,           # Always available if class loads
             "compression_enhancer": True,   # Always available if class loads  
             "minimal_pdf_enhancer": True,   # Always available if class loads
+            "ml_enhancer": ML_ENHANCER_AVAILABLE,
+            "intelligent_ocr_enhancer": INTELLIGENT_OCR_AVAILABLE,
         }
     
     def get_enhancement_capabilities(self) -> Dict[str, List[str]]:
@@ -153,9 +186,125 @@ class EnhancementService:
         Returns:
             Dict[str, List[str]]: Dictionary mapping enhancer names to their capabilities
         """
-        return {
+        capabilities = {
             "ocr_enhancer": self.ocr_enhancer.get_capabilities(),
             "compression_enhancer": self.compression_enhancer.get_capabilities(),
             "minimal_pdf_enhancer": self.minimal_pdf_enhancer.get_capabilities()
         }
+        
+        # Add optional enhancers if available
+        if self.ml_enhancer:
+            capabilities["ml_enhancer"] = self.ml_enhancer.get_capabilities()
+        
+        if self.intelligent_ocr_enhancer:
+            capabilities["intelligent_ocr_enhancer"] = self.intelligent_ocr_enhancer.get_capabilities()
+        
+        return capabilities
+
+    def _get_enhancement_pipeline(self, mode: str) -> List[str]:
+        """
+        Get the enhancement pipeline for a specific mode.
+        
+        Args:
+            mode: Processing mode (academic, basic, etc.)
+            
+        Returns:
+            List[str]: List of enhancement steps for the pipeline
+            
+        Raises:
+            ValueError: If mode is not supported
+        """
+        pipelines = {
+            "academic": ["ocr", "compression", "pdf_enhancement"],
+            "basic": ["ocr", "pdf_enhancement"],
+            "minimal": ["pdf_enhancement"]
+        }
+        
+        if mode not in pipelines:
+            raise ValueError(f"Unsupported processing mode: {mode}")
+        
+        return pipelines[mode]
+
+    def _load_configuration(self, mode: str) -> Dict[str, Any]:
+        """
+        Load configuration for a specific mode.
+        
+        Args:
+            mode: Processing mode
+            
+        Returns:
+            Dict[str, Any]: Configuration dictionary
+        """
+        try:
+            from ..config.config_manager import ConfigManager
+            config_manager = ConfigManager()
+            return config_manager.load_config(mode)
+        except ImportError:
+            # Fallback to default configuration
+            return {
+                "mode": mode,
+                "language": "en-US",
+                "enable_ocr": True,
+                "enable_compression": True
+            }
+
+    def _validate_input_file(self, input_path: Path) -> bool:
+        """
+        Validate input file exists and is a PDF.
+        
+        Args:
+            input_path: Path to input file
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        if not input_path.exists():
+            self.logger.error(f"Input file does not exist: {input_path}")
+            return False
+        
+        if not input_path.suffix.lower() == '.pdf':
+            self.logger.error(f"Input file is not a PDF: {input_path}")
+            return False
+        
+        return True
+
+    def _run_enhancement_pipeline(self, input_path: Path, output_path: Path, 
+                                 pipeline: List[str], **kwargs) -> bool:
+        """
+        Run the enhancement pipeline.
+        
+        Args:
+            input_path: Input file path
+            output_path: Output file path
+            pipeline: List of enhancement steps
+            **kwargs: Additional parameters
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            current_input = input_path
+            
+            for step in pipeline:
+                if step == "ocr":
+                    temp_output = output_path.parent / f"temp_ocr_{output_path.name}"
+                    if not self.ocr_enhancer.enhance_file(current_input, temp_output):
+                        return False
+                    current_input = temp_output
+                
+                elif step == "compression":
+                    temp_output = output_path.parent / f"temp_comp_{output_path.name}"
+                    if not self.compression_enhancer.enhance_file(current_input, temp_output):
+                        return False
+                    current_input = temp_output
+                
+                elif step == "pdf_enhancement":
+                    if not self.minimal_pdf_enhancer.enhance_file(current_input, output_path, **kwargs):
+                        return False
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Pipeline execution failed: {e}")
+            return False
     

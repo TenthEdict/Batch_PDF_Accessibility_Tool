@@ -90,7 +90,6 @@ if [ "$VERBOSE" = true ]; then
     VERBOSE_FLAG="--verbose"
 fi
 
-
 # Execute main python processing script using the unified CLI
 if [ "$BATCH_MODE" = true ]; then
     log "Processing batch of documents from $INPUT to $OUTPUT"
@@ -99,21 +98,21 @@ if [ "$BATCH_MODE" = true ]; then
     FILE_COUNT=$(find "$INPUT" -type f -name "*.pdf" | wc -l)
     log "Found $FILE_COUNT PDF files to process"
     
-    # Process each PDF in the input directory
+    # Process each PDF in the input directory using the new CLI structure
     find "$INPUT" -type f -name "*.pdf" | while read -r pdf_file; do
         rel_path=$(realpath --relative-to="$INPUT" "$pdf_file")
         output_file="$OUTPUT/${rel_path%.pdf}_enhanced.pdf"
         mkdir -p "$(dirname "$output_file")"
         
         log "Processing: $rel_path"
-        timeout "$TIMEOUT" python3 -m processor.unified_project.src.main "$pdf_file" "$output_file" --mode "$MODE" $VERBOSE_FLAG 2>&1 | tee -a "$LOG_FILE" || {
+        timeout "$TIMEOUT" epubs process "$pdf_file" "$output_file" --mode "$MODE" $VERBOSE_FLAG 2>&1 | tee -a "$LOG_FILE" || {
             log "Failed to process: $rel_path"
             continue
         }
     done
 else
     log "Processing single document: $(basename "$INPUT")"
-    timeout "$TIMEOUT" python3 -m processor.unified_project.src.main "$INPUT" "$OUTPUT" --mode "$MODE" $VERBOSE_FLAG 2>&1 | tee -a "$LOG_FILE"
+    timeout "$TIMEOUT" epubs process "$INPUT" "$OUTPUT" --mode "$MODE" $VERBOSE_FLAG 2>&1 | tee -a "$LOG_FILE"
 fi
 
 # Check for successful completion

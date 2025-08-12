@@ -1,121 +1,90 @@
-# ePubs Accessibility Enhancement Project
+# ePubs Accessibility Enhancement
 
-A comprehensive toolkit for enhancing document accessibility across academic and historical publications. The system provides specialized tools for PDF processing, OCR enhancement, and accessibility compliance validation.
+PDF accessibility enhancement toolkit for academic and historical publications with specialized title extraction.
 
-## Quick Start
+## Features
 
-### Windows Users
+- **Intelligent Title Extraction**: Automatic detection and extraction of document titles from both modern academic papers and historical documents
+- **Dual-Mode Processing**: Specialized parameters for historical documents (1800s-1900s) and modern academic papers  
+- **ML-Enhanced OCR**: Adaptive machine learning optimization for document-specific OCR configuration
+- **PDF/UA-1 Compliance**: Clean accessibility compliance without auto-generated content structure
+- **Cross-Platform Support**: Native Windows, macOS, and Linux compatibility
 
-1. **Install Required Software**
-   ```powershell
-   # Option 1: Using Chocolatey (easiest)
-   # First install Chocolatey from https://chocolatey.org/install
-   choco install python tesseract
-
-   # Option 2: Manual installation
-   # Download Python from python.org
-   # Download Tesseract from https://github.com/UB-Mannheim/tesseract/wiki
-   ```
-
-2. **Set Up the Project**
-   ```powershell
-   # Clone the repository
-   git clone https://github.itap.purdue.edu/schipp0/ePubs_Main.git
-   cd ePubs_Main
-
-   # Create virtual environment
-   python -m venv venv
-   .\venv\Scripts\activate
-
-   # Install the toolkit
-   pip install -e .[all]
-   ```
-
-### Mac/Linux Users
-
-1. **Install Required Software**
-   ```bash
-   # macOS (using Homebrew)
-   brew install python tesseract poppler
-
-   # Ubuntu/Debian
-   sudo apt-get install python3 python3-pip tesseract-ocr poppler-utils
-   ```
-
-2. **Set Up the Project**
-   ```bash
-   # Clone the repository
-   git clone https://github.itap.purdue.edu/schipp0/ePubs_Main.git
-   cd ePubs_Main
-
-   # Create virtual environment
-   python3 -m venv venv
-   source venv/bin/activate
-
-   # Install the toolkit
-   pip install -e .[all]
-   ```
-
-## System Requirements
-
-- **Python**: Version 3.9 or newer
-- **Tesseract OCR**: For text recognition in images and scanned PDFs
-- **Poppler** (Mac/Linux only): For PDF processing utilities
-
-
-## Quick Test
-
-After installation, test that everything works:
-
-```bash
-# Test the installation
-epubs --help
-
-# Test with a sample PDF (if you have one)
-epubs enhance sample.pdf
-```
-
-## Batch Processing
-
-To process multiple files at once, use the batch processing command:
-
-### Mac/Linux
-```bash
-python -m processor.unified_project.src.main batch-process data/input data/output --verbose
-```
+## Setup
 
 ### Windows
 ```powershell
+# Install dependencies
+choco install python tesseract
+
+# Setup project
+git clone https://github.itap.purdue.edu/schipp0/ePubs_Main.git
+cd ePubs_Main
+python -m venv venv
+.\venv\Scripts\activate
+pip install -e .[all]
+```
+
+### Mac/Linux
+```bash
+# Install dependencies
+brew install python tesseract poppler  # macOS
+sudo apt-get install python3 python3-pip tesseract-ocr poppler-utils  # Ubuntu
+
+# Setup project
+git clone https://github.itap.purdue.edu/schipp0/ePubs_Main.git
+cd ePubs_Main
+python3 -m venv venv
+source venv/bin/activate
+pip install -e .[all]
+```
+
+## Scraping
+
+Download documents from Purdue ePubs:
+```bash
+python scraper/purdue_downloader.py --url "https://docs.lib.purdue.edu/etd/" --output data/input
+```
+
+## Processing
+
+### Single File
+```bash
+python -m processor.unified_project.src.main process input.pdf output.pdf --mode academic
+```
+
+### Batch Processing
+```bash
 python -m processor.unified_project.src.main batch-process data/input data/output --verbose
 ```
 
-## Common Issues
+## Pipeline Usage
 
-### Windows
+### Academic Documents (Default)
+```bash
+# Uses intelligent ML-based OCR and enhancement
+python -m processor.unified_project.src.main process document.pdf enhanced.pdf
+```
 
-**"tesseract not found" error:**
-- Make sure Tesseract is installed and added to your PATH
-- Try restarting your command prompt after installation
-- If using manual installation, add the Tesseract folder to your Windows PATH environment variable
+### Basic Processing
+```bash
+python -m processor.unified_project.src.main process document.pdf enhanced.pdf --mode basic
+```
 
-**Permission errors when creating virtual environment:**
-- Run PowerShell as Administrator
-- Or try: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+### Minimal Processing
+```bash
+python -m processor.unified_project.src.main process document.pdf enhanced.pdf --mode minimal
+```
 
-### All Platforms
+### Cache Management
+```bash
+python -m processor.unified_project.src.main cache stats
+python -m processor.unified_project.src.main cache clear
+```
 
-**"pip install" fails:**
-- Make sure you're using Python 3.9 or newer: `python --version`
-- Try updating pip first: `pip install --upgrade pip`
-- On some systems, use `python3` instead of `python`
+## System Requirements
 
-**Out of memory errors:**
-- Large PDFs require significant RAM
-- Try processing smaller files first
-- Consider closing other applications
-
-## Need Help?
-
-- Check the project documentation for detailed guides
-- Submit issues on the project repository
-- Make sure all system requirements are properly installed
+- Python 3.9+
+- Tesseract OCR
+- Poppler (Mac/Linux)
+- 4GB+ RAM for batch processing
