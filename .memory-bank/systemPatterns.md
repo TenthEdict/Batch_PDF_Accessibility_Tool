@@ -16,10 +16,21 @@
 EnhancerBase (Abstract)
 ├── OCREnhancer - Academic OCR with aggressive web compression and enhanced Tesseract
 ├── CompressionEnhancer - Academic paper specific image optimization for web distribution
-├── MinimalPDFEnhancer - Clean PDF/UA-1 compliance without auto-generated content structure
+├── MinimalPDFEnhancer - Clean PDF/UA-1 compliance with integrated mathematical accessibility
+│   ├── Mathematical Content Detection - MathematicalNotationDetector integration
+│   ├── Equation Boundary Extraction - Precise mathematical element identification
+│   ├── Mathematical Accessibility Tagging - PDF/UA-1 compliant mathematical structure
+│   └── Structure Tree Integration - Clean mathematical element inclusion
 ├── AdaptiveMLEnhancer - Python-based ML optimization for document-level OCR adaptation
 └── AppleOptimizedEnhancer - Optional Apple Silicon hardware acceleration
 ```
+
+**Mathematical Accessibility Integration Pattern** (NEW):
+- **Detection Phase**: MathematicalNotationDetector identifies equations, formulas, symbols
+- **Extraction Phase**: EquationBoundaryExtractor determines precise boundaries with enhanced clustering
+- **Tagging Phase**: MathematicalAccessibilityTagger creates comprehensive accessibility structure
+- **Integration Phase**: Clean PDF/UA-1 structure tree includes mathematical semantic elements
+- **Compliance Phase**: Multi-standard compliance (PDF/UA-1, Section 508, ADA, WCAG 2.1)
 
 **ML Architecture Decision: Python-Only Stack**
 - **Language Choice**: Python maintained for all ML operations (not Julia)
@@ -91,6 +102,62 @@ Academic Paper Processing:
 **Logging Strategy**: Structured logging with configurable verbosity levels
 **Cross-Platform Fallbacks**: Consistent error handling across macOS and Linux
 **Compression Failure Handling**: Graceful degradation when compression fails
+
+### Accessibility Training System Architecture Pattern (NEW - UNTESTED)
+
+```
+Accessibility Training Infrastructure
+├── AccessibilityDataExtractor - 884-line PDF tag tree extraction engine
+│   ├── PDF Structure Analysis - PyMuPDF + pikepdf comprehensive parsing
+│   ├── Tag Tree Extraction - Complete accessibility hierarchy analysis  
+│   ├── Compliance Pattern Recognition - WCAG/PDF-UA/ADA mapping
+│   ├── Feature Vector Generation - 128-dimensional ML training vectors
+│   └── Batch Processing - Parallel extraction with progress tracking
+├── TrainingDataOrganizer - Automated 1600+ PDF dataset management
+│   ├── PDF Validation - File integrity and compliance verification
+│   ├── Training Splits - 70/15/15 train/validation/test organization
+│   ├── Metadata Extraction - Dataset analysis and characterization
+│   └── Manifest Generation - Complete training configuration persistence
+├── CLI Integration - Seamless Phase 2B command extension
+│   ├── organize-training-data - Dataset preparation automation
+│   ├── extract-accessibility-patterns - Pattern extraction pipeline
+│   └── train-accessibility-models - Model training framework (Phase 2)
+└── Phase 2B Infrastructure Integration
+    ├── FAISS Vector Database - Extended 32→128 dimensions for accessibility
+    ├── Hierarchical Caching - Accessibility pattern storage and retrieval
+    ├── AdaptiveMLEnhancer Extension - Accessibility learning capabilities
+    └── Thread-Safe Processing - Concurrent training and inference support
+```
+
+**Accessibility Feature Engineering Pattern** (128-dimensional vectors):
+- **Document Features (12)**: Page count, compliance patterns, PDF metadata indicators
+- **Accessibility Features (96)**: 
+  - Heading structure compliance (WCAG 1.3.1, 2.4.6, 2.4.10)
+  - List structure patterns (WCAG 1.3.1)
+  - Table accessibility (WCAG 1.3.1, 1.3.2)
+  - Image alt text coverage (WCAG 1.1.1)
+  - Reading order optimization (WCAG 1.3.2, 2.4.3)
+  - Language specification (WCAG 3.1.1, 3.1.2)
+- **Legacy Phase 2B Features (32)**: Document similarity, OCR optimization, academic patterns
+
+**Training Pipeline Architecture** (IMPLEMENTATION COMPLETE - UNTESTED):
+```
+Training Data Flow:
+├── 1600+ Compliant PDFs → PDF Validation → Training Splits (70/15/15)
+├── Tag Tree Extraction → Compliance Analysis → Pattern Recognition
+├── Feature Engineering → Vector Generation → Training Dataset Creation
+├── FAISS Integration → Pattern Storage → Similarity Search Optimization
+└── Model Training Ready → Phase 2 Implementation → Production Integration
+```
+
+**Strategic Training Objectives**:
+- Document Classification Models: Optimal accessibility tagging strategy prediction
+- Tag Tree Prediction Models: Automated compliant structure generation  
+- Compliance Validation Models: Real-time WCAG/PDF-UA/ADA verification
+- Pattern Learning System: Continuous improvement through processing feedback
+- Automated Compliance Engine: End-to-end accessibility without manual intervention
+
+**Implementation Status**: ✅ COMPLETE (1,600+ lines) ⚠️ REQUIRES VALIDATION WITH ACTUAL TRAINING DATA
 
 ## Deployment Patterns
 

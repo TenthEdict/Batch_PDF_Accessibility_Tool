@@ -670,6 +670,112 @@ def prune(
 
 
 @app.command()
+def monitor_performance(
+    mode: str = typer.Option(
+        "overview", "--mode", "-m",
+        help="Dashboard mode: 'overview', 'faiss', 'cache', 'ml', 'resources', 'recommendations'"
+    ),
+    auto_refresh: bool = typer.Option(
+        True, "--auto-refresh/--static", 
+        help="Enable automatic dashboard refresh (default: enabled)"
+    ),
+    update_interval: float = typer.Option(
+        2.0, "--interval", "-i",
+        help="Dashboard update interval in seconds (default: 2.0)"
+    ),
+    time_window: int = typer.Option(
+        1, "--window", "-w",
+        help="Analysis time window in hours (default: 1)"
+    ),
+    export_path: Optional[Path] = typer.Option(
+        None, "--export", "-e",
+        help="Export performance metrics to specified path"
+    ),
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="Enable verbose logging"
+    )
+):
+    """
+    Launch Phase 2B Performance Monitoring Dashboard.
+    
+    Real-time analytics for:
+    - FAISS Vector Database performance and optimization
+    - Hierarchical Cache (L1/L2/L3) hit rates and efficiency  
+    - ML Pattern Learning effectiveness and convergence
+    - Resource Optimization with intelligent recommendations
+    
+    Interactive dashboard with Rich CLI visualization for institutional deployment confidence.
+    
+    Examples:
+      epubs monitor-performance                           # Launch overview dashboard
+      epubs monitor-performance --mode faiss             # FAISS-focused analytics
+      epubs monitor-performance --mode cache             # Cache performance analysis
+      epubs monitor-performance --static --interval 5    # Static mode, 5-second updates
+      epubs monitor-performance --export metrics.json    # Export analytics data
+    """
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    logger.info("Starting Phase 2B Performance Monitoring Dashboard")
+    
+    try:
+        # Import performance dashboard components
+        from processor.unified_project.src.monitoring.performance_dashboard import (
+            launch_performance_dashboard, DashboardMode
+        )
+        
+        # Validate dashboard mode
+        valid_modes = ["overview", "faiss", "cache", "ml", "resources", "recommendations"]
+        if mode not in valid_modes:
+            logger.error(f"Invalid dashboard mode: {mode}")
+            logger.info(f"Valid modes: {', '.join(valid_modes)}")
+            raise typer.Exit(code=1)
+        
+        # Map CLI mode to dashboard mode
+        mode_mapping = {
+            "overview": DashboardMode.OVERVIEW,
+            "faiss": DashboardMode.FAISS_DETAIL,
+            "cache": DashboardMode.CACHE_DETAIL,
+            "ml": DashboardMode.ML_DETAIL,
+            "resources": DashboardMode.RESOURCE_DETAIL,
+            "recommendations": DashboardMode.RECOMMENDATIONS
+        }
+        
+        dashboard_mode = mode_mapping[mode]
+        
+        logger.info(f"Launching dashboard in {mode} mode")
+        logger.info(f"Auto-refresh: {auto_refresh}, Update interval: {update_interval}s")
+        
+        # Launch performance dashboard
+        launch_performance_dashboard(
+            mode=dashboard_mode,
+            auto_refresh=auto_refresh,
+            update_interval=update_interval
+        )
+        
+        # Export metrics if requested
+        if export_path:
+            logger.info(f"Exporting performance metrics to {export_path}")
+            
+            from processor.unified_project.src.monitoring.performance_dashboard import PerformanceDashboard
+            dashboard = PerformanceDashboard(export_enabled=True)
+            exported_file = dashboard.export_dashboard_data(export_path.parent if export_path.is_dir() else None)
+            
+            logger.info(f"Performance metrics exported to {exported_file}")
+        
+    except ImportError as e:
+        logger.error("Performance monitoring components not available")
+        logger.error(f"Import error: {e}")
+        logger.info("This may indicate missing Rich dependencies or monitoring modules")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        logger.error(f"Dashboard error: {e}")
+        raise typer.Exit(code=1)
+    
+    logger.info("Performance monitoring dashboard session completed")
+
+
+@app.command()
 def validate_phase2b(
     input_dir: Optional[Path] = typer.Argument(
         None, help="Directory containing PDF files for testing (optional, uses data/input if not specified)"
@@ -751,6 +857,131 @@ def validate_phase2b(
         
     except Exception as e:
         logger.error(f"Phase 2B validation failed: {e}")
+        if verbose:
+            import traceback
+            logger.error(traceback.format_exc())
+        raise typer.Exit(code=1)
+
+
+# Training commands for accessibility compliance
+@app.command(name="organize-training-data")
+def organize_training_data_cmd(
+    source_dir: Path = typer.Argument(
+        ..., help="Source directory containing 1600+ compliant PDF files", exists=True, dir_okay=True
+    ),
+    output_dir: Path = typer.Argument(
+        ..., help="Output directory for organized training data"
+    ),
+    train_ratio: float = typer.Option(0.7, "--train-ratio", help="Training set ratio"),
+    val_ratio: float = typer.Option(0.15, "--val-ratio", help="Validation set ratio"),
+    test_ratio: float = typer.Option(0.15, "--test-ratio", help="Test set ratio"),
+    metadata_sample: int = typer.Option(50, "--metadata-sample", help="Number of files for metadata extraction"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output"),
+):
+    """Organize compliant PDF files for accessibility training."""
+    from processor.unified_project.src.training.organize_training_data import TrainingDataOrganizer
+    
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Validate ratios
+        total_ratio = train_ratio + val_ratio + test_ratio
+        if abs(total_ratio - 1.0) > 1e-6:
+            logger.error(f"Train/validation/test ratios must sum to 1.0 (got {total_ratio})")
+            raise typer.Exit(code=1)
+        
+        # Initialize organizer
+        organizer = TrainingDataOrganizer(source_dir, output_dir)
+        
+        # Run organization
+        success = organizer.organize_complete_dataset(metadata_sample)
+        
+        if success:
+            typer.echo(f"✅ Training data organization completed successfully!")
+            typer.echo(f"📁 Training data organized in: {output_dir}")
+            typer.echo(f"📊 Training manifest: {output_dir}/training_manifest.json")
+            typer.echo(f"📈 Metadata analysis: {output_dir}/metadata/training_metadata_analysis.json")
+            typer.echo(f"🚀 Ready for accessibility model training!")
+        else:
+            typer.echo(f"❌ Training data organization failed. Check logs for details.")
+            raise typer.Exit(code=1)
+            
+    except Exception as e:
+        logger.error(f"Training data organization failed: {str(e)}")
+        if verbose:
+            import traceback
+            logger.error(traceback.format_exc())
+        raise typer.Exit(code=1)
+
+
+@app.command(name="extract-accessibility-patterns")
+def extract_accessibility_patterns_cmd(
+    input_dir: Path = typer.Argument(
+        ..., help="Directory containing compliant PDF files for pattern extraction", exists=True, dir_okay=True
+    ),
+    output_dir: Path = typer.Argument(
+        ..., help="Directory to store extracted accessibility patterns"
+    ),
+    max_files: Optional[int] = typer.Option(None, "--max-files", help="Maximum number of files to process"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output"),
+):
+    """Extract accessibility patterns from compliant PDF documents for training."""
+    from processor.unified_project.src.training.accessibility_data_extractor import AccessibilityDataExtractor
+    
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Initialize extractor
+        extractor = AccessibilityDataExtractor(output_dir)
+        
+        # Extract profiles
+        profiles = extractor.batch_extract_profiles(
+            input_dir, 
+            max_files=max_files
+        )
+        
+        typer.echo(f"✅ Successfully extracted {len(profiles)} accessibility profiles")
+        typer.echo(f"📁 Training data saved to: {output_dir}")
+        typer.echo(f"📊 Document profiles: {output_dir}/document_profiles/")
+        typer.echo(f"📈 Extracted patterns: {output_dir}/extracted_patterns/")
+        
+    except Exception as e:
+        logger.error(f"Accessibility pattern extraction failed: {str(e)}")
+        if verbose:
+            import traceback
+            logger.error(traceback.format_exc())
+        raise typer.Exit(code=1)
+
+
+@app.command(name="train-accessibility-models")
+def train_accessibility_models_cmd(
+    training_data_dir: Path = typer.Argument(
+        ..., help="Directory containing extracted accessibility training data", exists=True, dir_okay=True
+    ),
+    model_output_dir: Path = typer.Argument(
+        ..., help="Directory to store trained accessibility models"
+    ),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output"),
+):
+    """Train machine learning models for accessibility compliance prediction."""
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    try:
+        typer.echo("🚧 Accessibility model training implementation coming in Phase 2...")
+        typer.echo("📋 Current status: Phase 1 (Data Extraction) completed")
+        typer.echo("🎯 Next: Implement AccessibilityFeatureEngineer and AccessibilityModelTrainer")
+        typer.echo("🔗 Integration: Extend existing Phase 2B ML infrastructure")
+        
+        # TODO: Implement in Phase 2 of training system
+        # from processor.unified_project.src.training.accessibility_model_trainer import AccessibilityModelTrainer
+        # trainer = AccessibilityModelTrainer(training_data_dir, model_output_dir)
+        # success = trainer.train_all_models()
+        
+    except Exception as e:
+        logger.error(f"Accessibility model training failed: {str(e)}")
         if verbose:
             import traceback
             logger.error(traceback.format_exc())
