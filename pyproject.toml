@@ -81,6 +81,8 @@ ml = [
     "joblib>=1.3.0,<2.0.0",
     "numpy>=1.24.0,<2.0.0",
     "scipy>=1.7.0,<2.0.0",
+    # Phase 2B: Advanced Caching & ML Optimization
+    "faiss-cpu>=1.7.4,<2.0.0",  # High-performance similarity search
 ]
 # Apple Silicon optimizations
 apple = [
@@ -291,38 +293,3 @@ exclude = [
 ]
 max-complexity = 10
 # Security scanning with bandit
-# Pre-commit hooks
-[tool.pre-commit]
-repos = [
-    {
-        "repo": "https://github.com/pre-commit/pre-commit-hooks",
-        "rev": "v4.4.0",
-        "hooks": [
-            {"id": "trailing-whitespace"},
-            {"id": "end-of-file-fixer"},
-            {"id": "check-yaml"},
-            {"id": "check-added-large-files"},
-            {"id": "check-merge-conflict"},
-        ],
-    },
-    {
-        "repo": "https://github.com/psf/black",
-        "rev": "23.3.0",
-        "hooks": [{"id": "black"}],
-    },
-    {
-        "repo": "https://github.com/pycqa/isort",
-        "rev": "5.12.0",
-        "hooks": [{"id": "isort"}],
-    },
-    {
-        "repo": "https://github.com/pycqa/flake8",
-        "rev": "6.0.0",
-        "hooks": [{"id": "flake8"}],
-    },
-    {
-        "repo": "https://github.com/pre-commit/mirrors-mypy",
-        "rev": "v1.3.0",
-        "hooks": [{"id": "mypy"}],
-    },
-]

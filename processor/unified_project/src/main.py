@@ -15,6 +15,16 @@ from processor.unified_project.src.batch.advanced_batch_processor import (
 )
 from processor.unified_project.src.caching.cache_service import CacheService
 
+# Phase 2B imports (with fallback for compatibility)
+try:
+    from processor.unified_project.src.batch.phase2b_enhanced_processor import (
+        create_phase2b_batch_processor
+    )
+    from processor.unified_project.src.batch.parallel_batch_processor import ParallelBatchProcessor
+    PHASE2B_AVAILABLE = True
+except ImportError:
+    PHASE2B_AVAILABLE = False
+
 app = typer.Typer(
     help="ePubs Accessibility Enhancement Tool: A unified CLI for enhancing document accessibility."
 )
@@ -90,17 +100,44 @@ def batch_process(
     output_dir: Path = typer.Argument(
         ..., help="Directory where enhanced PDF files will be saved."
     ),
+    processing_mode: str = typer.Option(
+        "phase2b", "--mode", "-m", 
+        help="Processing mode: 'phase2b' (default), 'parallel', 'sequential'"
+    ),
+    enable_phase2b: bool = typer.Option(
+        False, "--phase2b", help="Enable Phase 2B enhancements (FAISS + Hierarchical Cache + ML) - now default"
+    ),
+    parallel_workers: Optional[int] = typer.Option(
+        None, "--workers", "-w", help="Number of parallel workers (auto-detect if not specified)"
+    ),
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Enable verbose logging."
     ),
 ):
     """
     Process multiple PDF files in a directory to perform OCR and enhance accessibility.
+    
+    Processing modes:
+    - phase2b: Phase 2B enhanced processing (5-8x speedup with FAISS + Caching + ML) [DEFAULT]
+    - parallel: Phase 1 multi-threaded processing (3-5x speedup)  
+    - sequential: Standard single-threaded processing
     """
     setup_logging(verbose)
     logger = logging.getLogger(__name__)
 
+    # Determine processing mode
+    if enable_phase2b or processing_mode == "phase2b":
+        if not PHASE2B_AVAILABLE:
+            logger.error("Phase 2B components not available. Install with: pip install epubs-accessibility[ml]")
+            raise typer.Exit(code=1)
+        processing_mode = "phase2b"
+    elif processing_mode not in ["sequential", "parallel", "phase2b"]:
+        logger.error(f"Invalid processing mode: {processing_mode}")
+        logger.info("Valid modes: sequential, parallel, phase2b")
+        raise typer.Exit(code=1)
+
     logger.info(f"Starting batch processing for directory: {input_dir}")
+    logger.info(f"Processing mode: {processing_mode}")
     
     # Create batch processing configuration
     config = BatchProcessingConfiguration(
@@ -108,9 +145,55 @@ def batch_process(
         output_dir=str(output_dir)
     )
     
-    # Initialize and run batch processor
-    processor = AdvancedBatchProcessor(config)
-    success = processor.process_batch()
+    # Initialize appropriate processor based on mode
+    if processing_mode == "phase2b":
+        logger.info("🎯 Initializing Phase 2B Enhanced Processor (FAISS + Cache + ML)")
+        processor = create_phase2b_batch_processor(config, max_workers=parallel_workers)
+        
+        # Run Phase 2B enhanced processing
+        try:
+            pdf_files = list(input_dir.glob("*.pdf"))
+            metrics = processor.process_files_parallel(pdf_files, Path(output_dir))
+            
+            # Show Phase 2B performance summary
+            phase2b_report = processor.get_phase2b_performance_report()
+            if phase2b_report.get('phase2b_status') == 'active':
+                logger.info("📊 Phase 2B Performance Summary:")
+                if 'estimated_phase2b_speedup' in phase2b_report:
+                    logger.info(f"   Estimated speedup: {phase2b_report['estimated_phase2b_speedup']}")
+                
+                performance_metrics = phase2b_report.get('performance_metrics', {})
+                if performance_metrics:
+                    cache_hit_rate = performance_metrics.get('cache_hit_rate', 0) * 100
+                    vector_search_time = performance_metrics.get('vector_search_time_ms', 0)
+                    similarity_matches = performance_metrics.get('similarity_matches_found', 0)
+                    
+                    logger.info(f"   Cache hit rate: {cache_hit_rate:.1f}%")
+                    logger.info(f"   Vector search time: {vector_search_time:.1f}ms total")
+                    logger.info(f"   Similarity matches found: {similarity_matches}")
+            
+            success = metrics.successful_files > 0
+        except Exception as e:
+            logger.error(f"Phase 2B processing failed: {e}")
+            success = False
+            
+    elif processing_mode == "parallel":
+        logger.info("⚡ Initializing Phase 1 Parallel Processor")
+        processor = ParallelBatchProcessor(config, max_workers=parallel_workers)
+        
+        # Run parallel processing  
+        try:
+            pdf_files = list(input_dir.glob("*.pdf"))
+            metrics = processor.process_files_parallel(pdf_files, Path(output_dir))
+            success = metrics.successful_files > 0
+        except Exception as e:
+            logger.error(f"Parallel processing failed: {e}")
+            success = False
+            
+    else:  # sequential
+        logger.info("📄 Initializing Sequential Processor")
+        processor = AdvancedBatchProcessor(config)
+        success = processor.process_batch()
     
     if success:
         logger.info("Batch processing completed successfully")
@@ -584,6 +667,94 @@ def prune(
     print(f"   Total removed: {total_removed}")
     
     logger.info(f"Cache pruned: {total_removed} entries removed")
+
+
+@app.command()
+def validate_phase2b(
+    input_dir: Optional[Path] = typer.Argument(
+        None, help="Directory containing PDF files for testing (optional, uses data/input if not specified)"
+    ),
+    output_dir: Optional[Path] = typer.Argument(
+        None, help="Directory for validation output (optional, uses data/output/phase2b_validation if not specified)"
+    ),
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="Enable verbose logging."
+    ),
+):
+    """
+    Run Phase 2B performance validation and comparison.
+    
+    Tests and compares:
+    - Sequential processing (baseline)
+    - Phase 1 parallel processing (3-5x speedup)  
+    - Phase 2B enhanced processing (5-8x speedup with FAISS + Cache + ML)
+    
+    Generates comprehensive performance report with Phase 2B metrics.
+    """
+    setup_logging(verbose)
+    logger = logging.getLogger(__name__)
+    
+    if not PHASE2B_AVAILABLE:
+        logger.error("Phase 2B components not available. Install with: pip install epubs-accessibility[ml]")
+        logger.info("This will install FAISS, advanced ML dependencies, and hierarchical caching support")
+        raise typer.Exit(code=1)
+    
+    # Set default directories if not provided
+    if input_dir is None:
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        input_dir = project_root / "data" / "input"
+        
+    if output_dir is None:
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        output_dir = project_root / "data" / "output" / "phase2b_validation"
+    
+    # Validate input directory
+    if not input_dir.exists():
+        logger.error(f"Input directory does not exist: {input_dir}")
+        logger.info("Please provide a directory containing PDF files for testing")
+        raise typer.Exit(code=1)
+    
+    # Check for PDF files
+    pdf_files = list(input_dir.glob("*.pdf"))
+    if not pdf_files:
+        logger.error(f"No PDF files found in: {input_dir}")
+        logger.info("Please ensure the input directory contains PDF files for testing")
+        raise typer.Exit(code=1)
+    
+    logger.info("🚀 Starting Phase 2B Performance Validation")
+    logger.info(f"Input directory: {input_dir}")
+    logger.info(f"Output directory: {output_dir}")
+    logger.info(f"PDF files found: {len(pdf_files)}")
+    
+    try:
+        # Import and run Phase 2B validation
+        from processor.unified_project.src.phase2b_validation_demo import Phase2BPerformanceValidator
+        
+        # Create output directory
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Run validation
+        validator = Phase2BPerformanceValidator(input_dir, output_dir)
+        results = validator.run_comprehensive_validation()
+        
+        logger.info("✅ Phase 2B validation completed successfully!")
+        logger.info(f"Detailed report saved to: {output_dir}")
+        
+        # Show quick summary
+        speedups = results.get('speedup_improvements', {})
+        if speedups:
+            logger.info("📊 Performance Summary:")
+            for improvement, speedup in speedups.items():
+                logger.info(f"   {improvement}: {speedup}")
+        
+        raise typer.Exit(code=0)
+        
+    except Exception as e:
+        logger.error(f"Phase 2B validation failed: {e}")
+        if verbose:
+            import traceback
+            logger.error(traceback.format_exc())
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

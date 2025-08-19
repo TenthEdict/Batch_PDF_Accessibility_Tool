@@ -36,6 +36,14 @@ except ImportError:
     ML_AVAILABLE = False
     AdaptiveMLEnhancer = None
 
+# Thread-safe ML imports
+try:
+    from .thread_safe_ml_enhancer import ThreadSafeAdaptiveMLEnhancer
+    THREAD_SAFE_ML_AVAILABLE = True
+except ImportError:
+    THREAD_SAFE_ML_AVAILABLE = False
+    ThreadSafeAdaptiveMLEnhancer = None
+
 from .enhancer_base import EnhancerBase
 from .pdf_text_analyzer import PDFTextAnalyzer
 
@@ -66,16 +74,32 @@ class IntelligentOCREnhancer(EnhancerBase):
     - Continuous learning
     """
     
-    def __init__(self, component_name: str = "intelligent_ocr_enhancer", environment: Optional[str] = None):
+    def __init__(self, component_name: str = "intelligent_ocr_enhancer", environment: Optional[str] = None, force_thread_safe: bool = None):
         """Initialize intelligent OCR enhancer."""
         super().__init__(component_name, environment)
         
         # Core components
         self.text_analyzer = PDFTextAnalyzer()
         
+        # Determine if we should use thread-safe ML enhancer
+        use_thread_safe = self._should_use_thread_safe_ml(force_thread_safe)
+        
         # ML components (optional)
         self.adaptive_ml = None
-        if ML_AVAILABLE:
+        if use_thread_safe and THREAD_SAFE_ML_AVAILABLE:
+            try:
+                self.adaptive_ml = ThreadSafeAdaptiveMLEnhancer()
+                logger.info("Thread-safe adaptive ML enhancer initialized for parallel processing")
+            except Exception as e:
+                logger.warning(f"Could not initialize thread-safe ML enhancer: {e}")
+                # Fallback to regular ML enhancer
+                if ML_AVAILABLE:
+                    try:
+                        self.adaptive_ml = AdaptiveMLEnhancer()
+                        logger.info("Fallback to regular adaptive ML enhancer")
+                    except Exception as e2:
+                        logger.warning(f"Could not initialize ML enhancer: {e2}")
+        elif ML_AVAILABLE:
             try:
                 self.adaptive_ml = AdaptiveMLEnhancer()
                 logger.info("Adaptive ML enhancer initialized for intelligent OCR")
@@ -88,10 +112,44 @@ class IntelligentOCREnhancer(EnhancerBase):
             'successful_ocr': 0,
             'pattern_matches': 0,
             'avg_processing_time': 0.0,
-            'avg_confidence': 0.0
+            'avg_confidence': 0.0,
+            'ml_enhancer_type': 'thread_safe' if use_thread_safe else 'regular'
         }
         
         logger.info("Intelligent OCR Enhancer initialized successfully")
+    
+    def _should_use_thread_safe_ml(self, force_thread_safe: Optional[bool] = None) -> bool:
+        """
+        Determine if thread-safe ML enhancer should be used.
+        
+        Args:
+            force_thread_safe: Force thread-safe mode (overrides auto-detection)
+            
+        Returns:
+            bool: True if thread-safe ML enhancer should be used
+        """
+        if force_thread_safe is not None:
+            return force_thread_safe
+        
+        # Auto-detection based on environment
+        import threading
+        import os
+        
+        # Check if we're in a multi-threaded environment
+        thread_name = threading.current_thread().name
+        
+        # Detect parallel processing indicators
+        parallel_indicators = [
+            'PDFWorker' in thread_name,  # Our parallel batch processor threads
+            'ThreadPoolExecutor' in thread_name,
+            os.environ.get('EPUBS_PARALLEL_MODE', '').lower() == 'true',
+            hasattr(threading.current_thread(), 'parallel_processing_mode')
+        ]
+        
+        use_thread_safe = any(parallel_indicators)
+        
+        logger.debug(f"Thread-safe ML auto-detection: {use_thread_safe} (thread: {thread_name})")
+        return use_thread_safe
     
     def get_capabilities(self) -> List[str]:
         """Get intelligent OCR enhancement capabilities."""
