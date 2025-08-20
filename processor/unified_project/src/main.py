@@ -879,7 +879,7 @@ def organize_training_data_cmd(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output"),
 ):
     """Organize compliant PDF files for accessibility training."""
-    from processor.unified_project.src.training.organize_training_data import TrainingDataOrganizer
+    from processor.unified_project.src.training.training_data_organizer import TrainingDataOrganizer
     
     setup_logging(verbose)
     logger = logging.getLogger(__name__)
@@ -942,7 +942,12 @@ def extract_accessibility_patterns_cmd(
             max_files=max_files
         )
         
+        # Aggregate patterns from extracted profiles
+        typer.echo("🔄 Aggregating accessibility patterns from document profiles...")
+        aggregated_patterns = extractor.aggregate_patterns_from_profiles()
+        
         typer.echo(f"✅ Successfully extracted {len(profiles)} accessibility profiles")
+        typer.echo(f"🧠 Aggregated {len(aggregated_patterns)} pattern types for ML training")
         typer.echo(f"📁 Training data saved to: {output_dir}")
         typer.echo(f"📊 Document profiles: {output_dir}/document_profiles/")
         typer.echo(f"📈 Extracted patterns: {output_dir}/extracted_patterns/")

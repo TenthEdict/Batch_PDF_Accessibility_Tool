@@ -36,3 +36,11 @@ try:
 except (ImportError, RuntimeError):
     AppleOptimizedEnhancer = None
     APPLE_ENHANCER_AVAILABLE = False
+
+# Optional AccessibilityML enhancer - only available if accessibility training dependencies installed
+try:
+    from .accessibility_ml_enhancer import AccessibilityMLEnhancer
+    ACCESSIBILITY_ML_ENHANCER_AVAILABLE = True
+except ImportError:
+    AccessibilityMLEnhancer = None
+    ACCESSIBILITY_ML_ENHANCER_AVAILABLE = False

@@ -603,18 +603,20 @@ class MinimalPDFEnhancer(EnhancerBase):
         try:
             logger.info("Starting mathematical content detection and accessibility processing")
             
-            # Initialize mathematical notation detector with academic settings
+            # Initialize mathematical notation detector with correct parameters
             math_detector = MathematicalNotationDetector(
-                detection_mode='academic',
-                enable_equation_detection=True,
-                enable_symbol_detection=True,
-                enable_formula_detection=True
+                detection_threshold=0.7,
+                min_element_area=100,
+                max_element_area=50000,
+                enable_monitoring=True
             )
             
-            # Extract equation boundaries from document
+            # Extract equation boundaries from document with correct parameters
             boundary_extractor = EquationBoundaryExtractor(
-                extraction_method='enhanced_clustering',
-                confidence_threshold=0.7
+                boundary_precision=0.7,
+                context_expansion_ratio=0.15,
+                enable_faiss_similarity=True,
+                enable_monitoring=True
             )
             
             # Detect mathematical content in the document

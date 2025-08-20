@@ -32,6 +32,14 @@ except ImportError:
     IntelligentOCREnhancer = None
     INTELLIGENT_OCR_AVAILABLE = False
 
+# Optional AccessibilityML enhancer import
+try:
+    from ..enhancers.accessibility_ml_enhancer import AccessibilityMLEnhancer
+    ACCESSIBILITY_ML_AVAILABLE = True
+except ImportError:
+    AccessibilityMLEnhancer = None
+    ACCESSIBILITY_ML_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,6 +61,7 @@ class EnhancementService:
         # Initialize optional ML enhancers
         self.ml_enhancer = None
         self.intelligent_ocr_enhancer = None
+        self.accessibility_ml_enhancer = None
         
         # Try to initialize intelligent OCR enhancer
         if INTELLIGENT_OCR_AVAILABLE:
@@ -61,6 +70,14 @@ class EnhancementService:
                 self.logger.info("Intelligent OCR enhancer initialized")
             except Exception as e:
                 self.logger.warning(f"Could not initialize intelligent OCR enhancer: {e}")
+        
+        # Try to initialize AccessibilityML enhancer
+        if ACCESSIBILITY_ML_AVAILABLE:
+            try:
+                self.accessibility_ml_enhancer = AccessibilityMLEnhancer()
+                self.logger.info("AccessibilityML enhancer initialized")
+            except Exception as e:
+                self.logger.warning(f"Could not initialize AccessibilityML enhancer: {e}")
 
     def enhance_document(
         self,
@@ -149,12 +166,54 @@ class EnhancementService:
                     self.logger.error("Minimal PDF enhancement failed.")
                     return False
                 self.logger.info("Minimal PDF/UA-1 compliance completed successfully.")
+                
+                # Step 4: ML-Powered Accessibility Enhancement (Optional)
+                if self.accessibility_ml_enhancer and kwargs.get('enable_ml_accessibility', True):
+                    self.logger.info("Step 4: Applying ML-powered accessibility compliance...")
+                    
+                    # Create temporary path for ML enhancement
+                    ml_output_path = temp_path / "ml_enhanced.pdf"
+                    
+                    # Apply ML accessibility enhancement
+                    ml_kwargs = kwargs.copy()
+                    ml_kwargs['preserve_existing_accessibility'] = True  # Preserve mathematical accessibility
+                    
+                    try:
+                        ml_enhancement_result = self.accessibility_ml_enhancer.enhance(
+                            output_path, ml_output_path, **ml_kwargs
+                        )
+                        
+                        if ml_enhancement_result and ml_enhancement_result.get('enhancement_successful', False):
+                            # Copy ML enhanced result to final output
+                            import shutil
+                            shutil.copy2(ml_output_path, output_path)
+                            self.logger.info("ML-powered accessibility enhancement completed successfully.")
+                            
+                            # Log ML enhancement details
+                            if ml_enhancement_result.get('ml_enhancement_applied', False):
+                                confidence = ml_enhancement_result.get('compliance_confidence', 0.0)
+                                wcag_tags = ml_enhancement_result.get('wcag_tags_generated', 0)
+                                pdf_ua_elements = ml_enhancement_result.get('pdf_ua_elements_added', 0)
+                                
+                                self.logger.info(f"ML accessibility metrics: confidence={confidence:.3f}, "
+                                               f"WCAG_tags={wcag_tags}, PDF-UA_elements={pdf_ua_elements}")
+                        else:
+                            self.logger.warning("ML accessibility enhancement failed or was skipped - continuing with basic enhancement")
+                            if ml_enhancement_result and ml_enhancement_result.get('fallback_used', False):
+                                self.logger.info("ML fallback enhancement applied")
+                    
+                    except Exception as e:
+                        self.logger.warning(f"ML accessibility enhancement failed: {e} - continuing without ML enhancement")
 
             enhancement_summary = [
                 "OCR with aggressive web compression and academic Tesseract settings",
                 "Additional image compression optimization for web distribution",
                 "Minimal PDF/UA-1 compliance with clean structure (no auto-tagging)"
             ]
+            
+            # Add ML enhancement to summary if applied
+            if self.accessibility_ml_enhancer and kwargs.get('enable_ml_accessibility', True):
+                enhancement_summary.append("ML-powered WCAG/PDF-UA/ADA accessibility compliance")
             
             self.logger.info(f"Successfully enhanced academic paper with: {', '.join(enhancement_summary)}")
             self.logger.info(f"Enhanced document saved to: {output_path}")
@@ -177,6 +236,7 @@ class EnhancementService:
             "minimal_pdf_enhancer": True,   # Always available if class loads
             "ml_enhancer": ML_ENHANCER_AVAILABLE,
             "intelligent_ocr_enhancer": INTELLIGENT_OCR_AVAILABLE,
+            "accessibility_ml_enhancer": ACCESSIBILITY_ML_AVAILABLE,
         }
     
     def get_enhancement_capabilities(self) -> Dict[str, List[str]]:

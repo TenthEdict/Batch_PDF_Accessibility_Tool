@@ -121,13 +121,22 @@ class ProcessingMetrics:
     and operational statistics for production monitoring and optimization.
     """
     
-    def __init__(self):
+    def __init__(self, total_files: int = 0, successful_files: int = 0, failed_files: int = 0, 
+                 processing_time: float = 0.0, total_size_mb: float = 0.0, compression_ratio: float = 0.0):
         self.start_time = datetime.now()
         self.end_time: Optional[datetime] = None
         self.successful_files: List[Dict] = []
         self.failed_files: List[Dict] = []
         self.processing_times: List[float] = []
         self.file_size_statistics: Dict = {}
+        
+        # Phase 2B Enhanced Processor compatibility parameters
+        self.total_files_count = total_files
+        self.initial_successful_count = successful_files
+        self.initial_failed_count = failed_files
+        self.initial_processing_time = processing_time
+        self.total_size_mb = total_size_mb
+        self.compression_ratio = compression_ratio
         
     def record_success(self, input_file: Path, output_file: Path, processing_time: float):
         """Record successful file processing with comprehensive metrics."""

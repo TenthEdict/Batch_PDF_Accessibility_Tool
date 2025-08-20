@@ -6,7 +6,7 @@
 # Set the directory path
 if [ $# -eq 0 ]; then
     # Default directory if no argument provided
-    DIRECTORY="/Users/broderickschipp/work/ePubs_Main/data/input"
+    DIRECTORY="~/ePubs_Main/data/input"
 else
     DIRECTORY="$1"
 fi
@@ -25,10 +25,10 @@ renamed_count=0
 skipped_count=0
 
 # Process files in the directory
-for file in "$DIRECTORY"/*_enhanced_compressed*; do
+for file in "$DIRECTORY"/*_enhanced*; do
     # Check if file exists (handles case where no matching files found)
     if [ ! -e "$file" ]; then
-        echo "No files matching pattern '*_enhanced_compressed*' found."
+        echo "No files matching pattern '*_enhanced*' found."
         break
     fi
     
@@ -36,8 +36,8 @@ for file in "$DIRECTORY"/*_enhanced_compressed*; do
     dir=$(dirname "$file")
     filename=$(basename "$file")
     
-    # Create new filename by removing "_enhanced_compressed"
-    new_filename="${filename/_enhanced_compressed/}"
+    # Create new filename by removing "_enhanced"
+    new_filename="${filename/_enhanced/}"
     
     # Full paths
     old_path="$file"

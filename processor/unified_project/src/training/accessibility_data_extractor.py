@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 from dataclasses import dataclass, asdict
 import time
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 # PDF processing imports (existing infrastructure)
 try:
@@ -349,25 +349,54 @@ class AccessibilityDataExtractor:
                 level=0
             )
             
-            # Extract tag tree from PDF using pikepdf
-            if pike_pdf.Root.get('/StructTreeRoot'):
-                struct_tree_root = pike_pdf.Root.StructTreeRoot
-                
-                # Parse structure tree
-                if struct_tree_root.get('/K'):
-                    children = struct_tree_root.K
-                    if not isinstance(children, list):
-                        children = [children]
-                    
-                    for child in children:
-                        child_node = self._parse_structure_element(child, pike_pdf, 1)
-                        if child_node:
-                            root_node.children.append(child_node)
+            # Extract tag tree from PDF using pikepdf with better error handling
+            import pikepdf
             
-            # If no structure tree found, create basic structure from content
+            try:
+                # Check if StructTreeRoot exists
+                if hasattr(pike_pdf.Root, 'StructTreeRoot') and pike_pdf.Root.StructTreeRoot is not None:
+                    struct_tree_root = pike_pdf.Root.StructTreeRoot
+                    logger.debug(f"Found StructTreeRoot of type: {type(struct_tree_root)}")
+                    
+                    # Parse structure tree if it has children
+                    if self._is_pikepdf_dictionary(struct_tree_root):
+                        children_obj = self._safe_pikepdf_get(struct_tree_root, '/K')
+                        if children_obj is not None:
+                            logger.debug(f"Found structure children of type: {type(children_obj)}")
+                            
+                            # Handle both single objects and arrays
+                            if not isinstance(children_obj, list):
+                                children = [children_obj]
+                            else:
+                                children = children_obj
+                            
+                            processed_children = 0
+                            for child in children:
+                                if self._is_pikepdf_dictionary(child):
+                                    child_node = self._parse_structure_element(child, pike_pdf, 1)
+                                    if child_node:
+                                        root_node.children.append(child_node)
+                                        processed_children += 1
+                                else:
+                                    logger.debug(f"Skipping non-dictionary structure child: {type(child)}")
+                            
+                            logger.debug(f"Processed {processed_children} structure tree children")
+                        else:
+                            logger.debug("StructTreeRoot has no /K children")
+                    else:
+                        logger.debug("StructTreeRoot is not accessible as dictionary")
+                else:
+                    logger.debug("No StructTreeRoot found in PDF")
+                    
+            except Exception as e:
+                logger.warning(f"Error processing StructTreeRoot: {str(e)}")
+            
+            # If no structure tree found or processed, create basic structure from content
             if not root_node.children:
-                logger.warning("No structure tree found, creating basic structure from content")
+                logger.info("No valid structure tree found, creating basic structure from content")
                 root_node = self._create_basic_structure_from_content(fitz_doc)
+            else:
+                logger.debug(f"Successfully extracted structure tree with {len(root_node.children)} top-level children")
             
             return root_node
             
@@ -385,34 +414,95 @@ class AccessibilityDataExtractor:
                 level=0
             )
     
+    def _is_pikepdf_dictionary(self, obj):
+        """Check if object is a pikepdf dictionary that can be accessed like a dict."""
+        import pikepdf
+        
+        # Check for pikepdf Dictionary types
+        if isinstance(obj, pikepdf.Dictionary):
+            return True
+        
+        # Check for pikepdf Objects that might be dictionaries
+        if isinstance(obj, pikepdf.Object):
+            try:
+                # Try to access it as a dictionary
+                if hasattr(obj, 'get') or (hasattr(obj, '__getitem__') and hasattr(obj, '__contains__')):
+                    return True
+            except:
+                pass
+        
+        # Check for regular dict
+        if isinstance(obj, dict):
+            return True
+        
+        return False
+    
+    def _safe_pikepdf_get(self, obj, key, default=None):
+        """Safely get a value from a pikepdf object."""
+        try:
+            if key in obj:
+                return obj[key]
+            return default
+        except:
+            return default
+    
     def _parse_structure_element(self, element, pike_pdf, level: int) -> Optional[AccessibilityTagNode]:
         """Parse a single structure element from the PDF tag tree."""
         try:
-            if not hasattr(element, 'get') or element is None:
+            # Check if element is valid
+            if element is None:
                 return None
             
-            # Extract tag type and role
-            tag_type = str(element.get('/S', 'Unknown'))
-            role = str(element.get('/T', tag_type))  # Title or tag type as role
+            # Check if element can be accessed as a dictionary
+            if not self._is_pikepdf_dictionary(element):
+                logger.debug(f"Skipping non-dictionary element of type: {type(element)}")
+                return None
             
-            # Extract attributes
+            # Extract tag type and role with safer access
+            tag_type = 'Unknown'
+            try:
+                s_value = self._safe_pikepdf_get(element, '/S')
+                if s_value is not None:
+                    tag_type = str(s_value)
+            except Exception as e:
+                logger.debug(f"Failed to extract tag type: {e}")
+            
+            role = tag_type  # Default role is tag type
+            try:
+                t_value = self._safe_pikepdf_get(element, '/T')
+                if t_value is not None:
+                    role = str(t_value)
+            except Exception as e:
+                logger.debug(f"Failed to extract role: {e}")
+            
+            # Extract attributes with safer access
             attributes = {}
-            if element.get('/A'):  # Attributes dictionary
-                attr_dict = element.A
-                if hasattr(attr_dict, 'get'):
-                    # Parse common attributes
-                    attributes.update({
-                        'bbox': str(attr_dict.get('/BBox', '')),
-                        'layout': str(attr_dict.get('/Layout', '')),
-                        'placement': str(attr_dict.get('/Placement', ''))
-                    })
+            try:
+                attr_dict = self._safe_pikepdf_get(element, '/A')
+                if attr_dict is not None and self._is_pikepdf_dictionary(attr_dict):
+                    # Parse common attributes safely
+                    for attr_key, attr_name in [('/BBox', 'bbox'), ('/Layout', 'layout'), ('/Placement', 'placement')]:
+                        try:
+                            attr_value = self._safe_pikepdf_get(attr_dict, attr_key)
+                            if attr_value is not None:
+                                attributes[attr_name] = str(attr_value)
+                        except Exception as e:
+                            logger.debug(f"Failed to extract attribute {attr_name}: {e}")
+            except Exception as e:
+                logger.debug(f"Failed to process attributes: {e}")
             
-            # Extract text content if available
+            # Extract text content with safer access
             text_content = None
-            if element.get('/ActualText'):
-                text_content = str(element.ActualText)
-            elif element.get('/Alt'):
-                text_content = str(element.Alt)
+            try:
+                actual_text = self._safe_pikepdf_get(element, '/ActualText')
+                if actual_text is not None:
+                    text_content = str(actual_text)
+                else:
+                    alt_text = self._safe_pikepdf_get(element, '/Alt')
+                    if alt_text is not None:
+                        text_content = str(alt_text)
+            except Exception as e:
+                logger.debug(f"Failed to extract text content: {e}")
             
             # Create tag node
             tag_node = AccessibilityTagNode(
@@ -421,21 +511,31 @@ class AccessibilityDataExtractor:
                 attributes=attributes,
                 text_content=text_content,
                 children=[],
-                bounding_box=None,  # TODO: Extract from page content
-                page_number=0,      # TODO: Determine page number
+                bounding_box=None,
+                page_number=0,
                 level=level
             )
             
-            # Parse children recursively
-            if element.get('/K'):
-                children = element.K
-                if not isinstance(children, list):
-                    children = [children]
-                
-                for child in children:
-                    child_node = self._parse_structure_element(child, pike_pdf, level + 1)
-                    if child_node:
-                        tag_node.children.append(child_node)
+            # Parse children recursively with safer access
+            try:
+                children_obj = self._safe_pikepdf_get(element, '/K')
+                if children_obj is not None:
+                    # Handle both single objects and arrays
+                    if not isinstance(children_obj, list):
+                        children = [children_obj]
+                    else:
+                        children = children_obj
+                    
+                    for child in children:
+                        # Process child if it's a valid dictionary-like object
+                        if self._is_pikepdf_dictionary(child):
+                            child_node = self._parse_structure_element(child, pike_pdf, level + 1)
+                            if child_node:
+                                tag_node.children.append(child_node)
+                        else:
+                            logger.debug(f"Skipping non-dictionary child of type: {type(child)}")
+            except Exception as e:
+                logger.debug(f"Failed to process children: {e}")
             
             return tag_node
             
@@ -1002,6 +1102,241 @@ class AccessibilityDataExtractor:
             
         except Exception as e:
             logger.error(f"Failed to save batch summary: {str(e)}")
+
+    def aggregate_patterns_from_profiles(self) -> Dict[str, Any]:
+        """
+        Analyze all document profiles to extract common accessibility patterns.
+        
+        Returns:
+            Dictionary containing aggregated patterns for ML training
+        """
+        logger.info("Starting pattern aggregation from document profiles")
+        
+        # Load all document profiles
+        profile_files = list(self.profiles_dir.glob("doc_*.json"))
+        if not profile_files:
+            logger.warning("No document profiles found for pattern aggregation")
+            return {}
+        
+        profiles = []
+        for profile_file in profile_files:
+            try:
+                with open(profile_file, 'r', encoding='utf-8') as f:
+                    profile_data = json.loads(f.read())
+                    profiles.append(profile_data)
+            except Exception as e:
+                logger.warning(f"Failed to load profile {profile_file.name}: {str(e)}")
+        
+        logger.info(f"Loaded {len(profiles)} document profiles for analysis")
+        
+        # Aggregate patterns
+        aggregated_patterns = self._extract_common_patterns(profiles)
+        
+        # Save aggregated patterns
+        self._save_aggregated_patterns(aggregated_patterns)
+        
+        logger.info(f"Pattern aggregation complete. Extracted {len(aggregated_patterns)} pattern types")
+        return aggregated_patterns
+    
+    def _extract_common_patterns(self, profiles: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Extract common accessibility patterns from document profiles."""
+        from collections import defaultdict, Counter
+        
+        # Initialize pattern collectors
+        wcag_patterns = defaultdict(list)
+        pdf_ua_patterns = defaultdict(list)
+        content_type_patterns = defaultdict(list)
+        feature_patterns = []
+        compliance_distribution = Counter()
+        
+        for profile in profiles:
+            # Collect WCAG patterns
+            for pattern in profile.get('compliance_patterns', []):
+                wcag_criteria = pattern.get('wcag_criteria', [])
+                content_type = pattern.get('content_type', 'unknown')
+                
+                for criterion in wcag_criteria:
+                    wcag_patterns[criterion].append({
+                        'content_type': content_type,
+                        'confidence_score': pattern.get('confidence_score', 0.0),
+                        'semantic_roles': pattern.get('semantic_roles', []),
+                        'document_characteristics': pattern.get('document_characteristics', {})
+                    })
+            
+            # Collect PDF/UA patterns
+            pdf_ua_version = profile.get('pdf_ua_version', 'unknown')
+            wcag_level = profile.get('wcag_level', 'unknown')
+            compliance_key = f"PDF/UA-{pdf_ua_version}_WCAG-{wcag_level}"
+            compliance_distribution[compliance_key] += 1
+            
+            # Collect feature vectors
+            feature_vector = profile.get('feature_vector', [])
+            if feature_vector:
+                feature_patterns.append(feature_vector)
+            
+            # Collect content type patterns
+            for pattern in profile.get('compliance_patterns', []):
+                content_type = pattern.get('content_type', 'unknown')
+                content_type_patterns[content_type].append(pattern)
+        
+        # Create aggregated patterns
+        aggregated = {
+            'pattern_summary': {
+                'total_documents': len(profiles),
+                'extraction_timestamp': time.time(),
+                'pattern_types_found': len(wcag_patterns)
+            },
+            'wcag_compliance_patterns': dict(wcag_patterns),
+            'compliance_distribution': dict(compliance_distribution),
+            'content_type_analysis': self._analyze_content_types(content_type_patterns),
+            'feature_vector_statistics': self._analyze_feature_vectors(feature_patterns),
+            'common_accessibility_structures': self._extract_common_structures(profiles)
+        }
+        
+        return aggregated
+    
+    def _analyze_content_types(self, content_type_patterns: Dict[str, List]) -> Dict[str, Any]:
+        """Analyze patterns by content type."""
+        analysis = {}
+        
+        for content_type, patterns in content_type_patterns.items():
+            confidence_scores = [p.get('confidence_score', 0.0) for p in patterns]
+            semantic_roles = []
+            for p in patterns:
+                semantic_roles.extend(p.get('semantic_roles', []))
+            
+            analysis[content_type] = {
+                'count': len(patterns),
+                'avg_confidence': sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0,
+                'common_semantic_roles': list(set(semantic_roles))
+            }
+        
+        return analysis
+    
+    def _analyze_feature_vectors(self, feature_vectors: List[List[float]]) -> Dict[str, Any]:
+        """Analyze feature vector statistics for ML training."""
+        if not feature_vectors:
+            return {}
+        
+        # Convert to numpy array for analysis
+        import numpy as np
+        features_array = np.array(feature_vectors)
+        
+        return {
+            'dimension_count': features_array.shape[1],
+            'sample_count': features_array.shape[0],
+            'feature_means': features_array.mean(axis=0).tolist(),
+            'feature_stds': features_array.std(axis=0).tolist(),
+            'feature_mins': features_array.min(axis=0).tolist(),
+            'feature_maxs': features_array.max(axis=0).tolist()
+        }
+    
+    def _extract_common_structures(self, profiles: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Extract common document structure patterns."""
+        from collections import Counter
+        
+        tag_structure_patterns = Counter()
+        language_patterns = Counter()
+        page_count_distribution = []
+        
+        for profile in profiles:
+            # Analyze tag structures
+            tag_tree = profile.get('tag_tree', {})
+            if tag_tree:
+                self._analyze_tag_tree_recursive(tag_tree, tag_structure_patterns)
+            
+            # Language patterns
+            language = profile.get('language', 'unknown')
+            language_patterns[language] += 1
+            
+            # Page count distribution
+            page_count = profile.get('page_count', 0)
+            page_count_distribution.append(page_count)
+        
+        return {
+            'common_tag_structures': dict(tag_structure_patterns.most_common(20)),
+            'language_distribution': dict(language_patterns),
+            'page_count_stats': {
+                'mean': sum(page_count_distribution) / len(page_count_distribution) if page_count_distribution else 0,
+                'min': min(page_count_distribution) if page_count_distribution else 0,
+                'max': max(page_count_distribution) if page_count_distribution else 0
+            }
+        }
+    
+    def _analyze_tag_tree_recursive(self, tag_node: Dict[str, Any], counter: Counter):
+        """Recursively analyze tag tree structure."""
+        tag_type = tag_node.get('tag_type', 'Unknown')
+        role = tag_node.get('role', 'Unknown')
+        
+        # Count tag type and role combinations
+        counter[f"{tag_type}:{role}"] += 1
+        
+        # Recurse into children
+        children = tag_node.get('children', [])
+        for child in children:
+            self._analyze_tag_tree_recursive(child, counter)
+    
+    def _save_aggregated_patterns(self, patterns: Dict[str, Any]):
+        """Save aggregated patterns to files for ML training."""
+        try:
+            # Save main aggregated patterns file
+            main_file = self.patterns_dir / "aggregated_patterns.json"
+            with open(main_file, 'w', encoding='utf-8') as f:
+                json.dump(patterns, f, indent=2, ensure_ascii=False)
+            logger.info(f"Saved main patterns file: {main_file}")
+            
+            # Save individual pattern type files for focused training
+            pattern_types = {
+                'wcag_compliance': patterns.get('wcag_compliance_patterns', {}),
+                'content_type_analysis': patterns.get('content_type_analysis', {}),
+                'feature_statistics': patterns.get('feature_vector_statistics', {}),
+                'structure_patterns': patterns.get('common_accessibility_structures', {})
+            }
+            
+            for pattern_type, pattern_data in pattern_types.items():
+                if pattern_data:
+                    type_file = self.patterns_dir / f"{pattern_type}_patterns.json"
+                    with open(type_file, 'w', encoding='utf-8') as f:
+                        json.dump(pattern_data, f, indent=2, ensure_ascii=False)
+                    logger.info(f"Saved {pattern_type} patterns: {type_file}")
+            
+            # Save training-ready datasets
+            self._create_training_datasets(patterns)
+            
+        except Exception as e:
+            logger.error(f"Failed to save aggregated patterns: {str(e)}")
+    
+    def _create_training_datasets(self, patterns: Dict[str, Any]):
+        """Create ML-ready training datasets."""
+        try:
+            # Create WCAG compliance training data
+            wcag_training = []
+            for criterion, examples in patterns.get('wcag_compliance_patterns', {}).items():
+                for example in examples:
+                    wcag_training.append({
+                        'wcag_criterion': criterion,
+                        'content_type': example.get('content_type'),
+                        'confidence_score': example.get('confidence_score'),
+                        'semantic_roles': example.get('semantic_roles', []),
+                        'characteristics': example.get('document_characteristics', {})
+                    })
+            
+            if wcag_training:
+                wcag_file = self.patterns_dir / "wcag_training_data.json"
+                with open(wcag_file, 'w', encoding='utf-8') as f:
+                    json.dump(wcag_training, f, indent=2, ensure_ascii=False)
+                logger.info(f"Created WCAG training dataset: {wcag_file}")
+            
+            # Create feature vector training data
+            feature_stats = patterns.get('feature_vector_statistics', {})
+            if feature_stats:
+                feature_file = self.patterns_dir / "feature_vector_stats.json"
+                with open(feature_file, 'w', encoding='utf-8') as f:
+                    json.dump(feature_stats, f, indent=2, ensure_ascii=False)
+                logger.info(f"Created feature vector statistics: {feature_file}")
+            
+        except Exception as e:
+            logger.error(f"Failed to create training datasets: {str(e)}")
 
 
 def main():
