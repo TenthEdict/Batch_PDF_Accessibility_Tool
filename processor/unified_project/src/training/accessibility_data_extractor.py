@@ -353,32 +353,28 @@ class AccessibilityDataExtractor:
             import pikepdf
             
             try:
-                # Check if StructTreeRoot exists
-                if hasattr(pike_pdf.Root, 'StructTreeRoot') and pike_pdf.Root.StructTreeRoot is not None:
-                    struct_tree_root = pike_pdf.Root.StructTreeRoot
-                    logger.debug(f"Found StructTreeRoot of type: {type(struct_tree_root)}")
+                # Check if StructTreeRoot exists using safer access
+                struct_tree_root = self._safe_pikepdf_root_access(pike_pdf, 'StructTreeRoot')
+                
+                if struct_tree_root is not None:
+                    logger.debug(f"Found StructTreeRoot of type: {self._get_pikepdf_object_type(struct_tree_root)}")
                     
                     # Parse structure tree if it has children
                     if self._is_pikepdf_dictionary(struct_tree_root):
                         children_obj = self._safe_pikepdf_get(struct_tree_root, '/K')
                         if children_obj is not None:
-                            logger.debug(f"Found structure children of type: {type(children_obj)}")
+                            obj_type = self._get_pikepdf_object_type(children_obj)
+                            logger.debug(f"Found structure children of type: {obj_type}")
                             
-                            # Handle both single objects and arrays
-                            if not isinstance(children_obj, list):
-                                children = [children_obj]
-                            else:
-                                children = children_obj
+                            # Handle different object types appropriately
+                            children = self._extract_structure_children(children_obj)
                             
                             processed_children = 0
                             for child in children:
-                                if self._is_pikepdf_dictionary(child):
-                                    child_node = self._parse_structure_element(child, pike_pdf, 1)
-                                    if child_node:
-                                        root_node.children.append(child_node)
-                                        processed_children += 1
-                                else:
-                                    logger.debug(f"Skipping non-dictionary structure child: {type(child)}")
+                                child_node = self._parse_structure_element_safely(child, pike_pdf, 1)
+                                if child_node:
+                                    root_node.children.append(child_node)
+                                    processed_children += 1
                             
                             logger.debug(f"Processed {processed_children} structure tree children")
                         else:
@@ -418,91 +414,247 @@ class AccessibilityDataExtractor:
         """Check if object is a pikepdf dictionary that can be accessed like a dict."""
         import pikepdf
         
+        if obj is None:
+            return False
+        
         # Check for pikepdf Dictionary types
         if isinstance(obj, pikepdf.Dictionary):
             return True
-        
-        # Check for pikepdf Objects that might be dictionaries
-        if isinstance(obj, pikepdf.Object):
-            try:
-                # Try to access it as a dictionary
-                if hasattr(obj, 'get') or (hasattr(obj, '__getitem__') and hasattr(obj, '__contains__')):
-                    return True
-            except:
-                pass
         
         # Check for regular dict
         if isinstance(obj, dict):
             return True
         
+        # Check for pikepdf Objects that might be dictionaries
+        if isinstance(obj, pikepdf.Object):
+            try:
+                # Test if we can access it as a dictionary by checking for dictionary-like behavior
+                # This is more robust than just checking for methods
+                obj.get('/test_key_that_should_not_exist', None)
+                return True
+            except (AttributeError, TypeError):
+                # If get() fails, try alternative dictionary access methods
+                try:
+                    '/test_key' in obj
+                    return True
+                except:
+                    return False
+        
         return False
     
+    def _get_pikepdf_object_type(self, obj):
+        """Identify the specific type of pikepdf object for appropriate handling."""
+        import pikepdf
+        
+        if obj is None:
+            return 'null'
+        
+        if isinstance(obj, pikepdf.Dictionary):
+            return 'dictionary'
+        elif isinstance(obj, pikepdf.Array):
+            return 'array'
+        elif isinstance(obj, pikepdf.Name):
+            return 'name'
+        elif isinstance(obj, pikepdf.Stream):
+            return 'stream'
+        elif isinstance(obj, (str, int, float, bool)):
+            return 'primitive'
+        elif isinstance(obj, pikepdf.Object):
+            # Try to determine what kind of object this is
+            try:
+                # Test for dictionary-like access
+                obj.get('/test', None)
+                return 'dictionary_object'
+            except:
+                try:
+                    # Test for array-like access
+                    len(obj)
+                    return 'array_object'
+                except:
+                    return 'unknown_object'
+        else:
+            return 'unknown'
+    
     def _safe_pikepdf_get(self, obj, key, default=None):
-        """Safely get a value from a pikepdf object."""
+        """Safely get a value from a pikepdf object with comprehensive type handling."""
         try:
-            if key in obj:
-                return obj[key]
-            return default
-        except:
+            if obj is None:
+                return default
+            
+            obj_type = self._get_pikepdf_object_type(obj)
+            
+            if obj_type in ['dictionary', 'dictionary_object']:
+                if key in obj:
+                    return obj[key]
+                return default
+            elif obj_type == 'name':
+                # For Name objects, return the string representation if key matches
+                import pikepdf
+                if isinstance(obj, pikepdf.Name) and str(obj) == key.lstrip('/'):
+                    return obj
+                return default
+            else:
+                logger.debug(f"Cannot access key '{key}' on pikepdf object type: {obj_type}")
+                return default
+        except Exception as e:
+            logger.debug(f"Error accessing pikepdf object: {str(e)}")
             return default
     
-    def _parse_structure_element(self, element, pike_pdf, level: int) -> Optional[AccessibilityTagNode]:
-        """Parse a single structure element from the PDF tag tree."""
+    def _safe_pikepdf_root_access(self, pike_pdf, attribute_path):
+        """Safely access PDF root attributes with comprehensive error handling."""
         try:
-            # Check if element is valid
+            current = pike_pdf.Root
+            
+            # Split attribute path and traverse safely
+            for attr in attribute_path.split('.'):
+                if hasattr(current, attr):
+                    current = getattr(current, attr)
+                    if current is None:
+                        return None
+                else:
+                    return None
+            
+            return current
+        except Exception as e:
+            logger.debug(f"Error accessing root attribute '{attribute_path}': {str(e)}")
+            return None
+    
+    def _extract_pikepdf_value(self, obj):
+        """Extract value from any pikepdf object type."""
+        import pikepdf
+        
+        if obj is None:
+            return None
+        
+        obj_type = self._get_pikepdf_object_type(obj)
+        
+        try:
+            if obj_type == 'name':
+                return str(obj)
+            elif obj_type == 'primitive':
+                return obj
+            elif obj_type in ['dictionary', 'dictionary_object']:
+                return obj  # Return as-is for further processing
+            elif obj_type in ['array', 'array_object']:
+                return list(obj)  # Convert to Python list
+            elif obj_type == 'stream':
+                return obj  # Return stream object as-is
+            else:
+                # Try to convert to string as fallback
+                return str(obj)
+        except Exception as e:
+            logger.debug(f"Error extracting value from pikepdf object: {str(e)}")
+            return None
+    
+    def _extract_structure_children(self, children_obj):
+        """Extract children from structure object with proper type handling."""
+        import pikepdf
+        
+        obj_type = self._get_pikepdf_object_type(children_obj)
+        
+        if obj_type in ['array', 'array_object']:
+            # Handle array of children
+            try:
+                return list(children_obj)
+            except Exception as e:
+                logger.debug(f"Failed to convert children array: {e}")
+                return []
+        elif obj_type in ['dictionary', 'dictionary_object']:
+            # Single dictionary child
+            return [children_obj]
+        elif obj_type == 'name':
+            # Single name object (unlikely but possible)
+            return [children_obj]
+        else:
+            # Unknown type, try to handle as single object
+            logger.debug(f"Unexpected children object type: {obj_type}")
+            return [children_obj] if children_obj is not None else []
+    
+    def _parse_structure_element_safely(self, element, pike_pdf, level: int) -> Optional[AccessibilityTagNode]:
+        """Parse structure element with comprehensive pikepdf object type handling."""
+        try:
             if element is None:
                 return None
             
-            # Check if element can be accessed as a dictionary
-            if not self._is_pikepdf_dictionary(element):
-                logger.debug(f"Skipping non-dictionary element of type: {type(element)}")
-                return None
+            obj_type = self._get_pikepdf_object_type(element)
+            logger.debug(f"Parsing structure element of type: {obj_type}")
             
+            # Handle different pikepdf object types appropriately
+            if obj_type == 'name':
+                # Handle Name objects as tag types
+                return self._create_name_tag_node(element, level)
+            elif obj_type in ['dictionary', 'dictionary_object']:
+                # Handle dictionary objects (standard structure elements)
+                return self._parse_dictionary_structure_element(element, pike_pdf, level)
+            else:
+                # Skip non-parseable types with informative logging
+                logger.debug(f"Skipping non-parseable structure element type: {obj_type}")
+                return None
+                
+        except Exception as e:
+            logger.warning(f"Error parsing structure element: {str(e)}")
+            return None
+    
+    def _create_name_tag_node(self, name_obj, level: int) -> AccessibilityTagNode:
+        """Create tag node from pikepdf Name object."""
+        import pikepdf
+        
+        if isinstance(name_obj, pikepdf.Name):
+            tag_type = str(name_obj)
+        else:
+            tag_type = 'Unknown'
+        
+        return AccessibilityTagNode(
+            tag_type=tag_type,
+            role=tag_type,
+            attributes={},
+            text_content=None,
+            children=[],
+            bounding_box=None,
+            page_number=0,
+            level=level
+        )
+    
+    def _parse_dictionary_structure_element(self, element, pike_pdf, level: int) -> Optional[AccessibilityTagNode]:
+        """Parse dictionary-type structure elements with enhanced safety."""
+        """Parse dictionary-type structure elements with enhanced safety."""
+        try:
             # Extract tag type and role with safer access
             tag_type = 'Unknown'
-            try:
-                s_value = self._safe_pikepdf_get(element, '/S')
-                if s_value is not None:
-                    tag_type = str(s_value)
-            except Exception as e:
-                logger.debug(f"Failed to extract tag type: {e}")
+            s_value = self._safe_pikepdf_get(element, '/S')
+            if s_value is not None:
+                tag_type = self._extract_pikepdf_value(s_value) or 'Unknown'
+                if not isinstance(tag_type, str):
+                    tag_type = str(tag_type)
             
             role = tag_type  # Default role is tag type
-            try:
-                t_value = self._safe_pikepdf_get(element, '/T')
-                if t_value is not None:
-                    role = str(t_value)
-            except Exception as e:
-                logger.debug(f"Failed to extract role: {e}")
+            t_value = self._safe_pikepdf_get(element, '/T')
+            if t_value is not None:
+                extracted_role = self._extract_pikepdf_value(t_value)
+                if extracted_role:
+                    role = str(extracted_role)
             
             # Extract attributes with safer access
             attributes = {}
-            try:
-                attr_dict = self._safe_pikepdf_get(element, '/A')
-                if attr_dict is not None and self._is_pikepdf_dictionary(attr_dict):
-                    # Parse common attributes safely
-                    for attr_key, attr_name in [('/BBox', 'bbox'), ('/Layout', 'layout'), ('/Placement', 'placement')]:
-                        try:
-                            attr_value = self._safe_pikepdf_get(attr_dict, attr_key)
-                            if attr_value is not None:
-                                attributes[attr_name] = str(attr_value)
-                        except Exception as e:
-                            logger.debug(f"Failed to extract attribute {attr_name}: {e}")
-            except Exception as e:
-                logger.debug(f"Failed to process attributes: {e}")
+            attr_dict = self._safe_pikepdf_get(element, '/A')
+            if attr_dict is not None and self._is_pikepdf_dictionary(attr_dict):
+                # Parse common attributes safely
+                for attr_key, attr_name in [('/BBox', 'bbox'), ('/Layout', 'layout'), ('/Placement', 'placement')]:
+                    attr_value = self._safe_pikepdf_get(attr_dict, attr_key)
+                    if attr_value is not None:
+                        extracted_value = self._extract_pikepdf_value(attr_value)
+                        if extracted_value is not None:
+                            attributes[attr_name] = str(extracted_value)
             
             # Extract text content with safer access
             text_content = None
-            try:
-                actual_text = self._safe_pikepdf_get(element, '/ActualText')
-                if actual_text is not None:
-                    text_content = str(actual_text)
-                else:
-                    alt_text = self._safe_pikepdf_get(element, '/Alt')
-                    if alt_text is not None:
-                        text_content = str(alt_text)
-            except Exception as e:
-                logger.debug(f"Failed to extract text content: {e}")
+            for text_key in ['/ActualText', '/Alt']:
+                text_value = self._safe_pikepdf_get(element, text_key)
+                if text_value is not None:
+                    extracted_text = self._extract_pikepdf_value(text_value)
+                    if extracted_text:
+                        text_content = str(extracted_text)
+                        break
             
             # Create tag node
             tag_node = AccessibilityTagNode(
@@ -517,31 +669,23 @@ class AccessibilityDataExtractor:
             )
             
             # Parse children recursively with safer access
-            try:
-                children_obj = self._safe_pikepdf_get(element, '/K')
-                if children_obj is not None:
-                    # Handle both single objects and arrays
-                    if not isinstance(children_obj, list):
-                        children = [children_obj]
-                    else:
-                        children = children_obj
-                    
-                    for child in children:
-                        # Process child if it's a valid dictionary-like object
-                        if self._is_pikepdf_dictionary(child):
-                            child_node = self._parse_structure_element(child, pike_pdf, level + 1)
-                            if child_node:
-                                tag_node.children.append(child_node)
-                        else:
-                            logger.debug(f"Skipping non-dictionary child of type: {type(child)}")
-            except Exception as e:
-                logger.debug(f"Failed to process children: {e}")
+            children_obj = self._safe_pikepdf_get(element, '/K')
+            if children_obj is not None:
+                children = self._extract_structure_children(children_obj)
+                
+                for child in children:
+                    child_node = self._parse_structure_element_safely(child, pike_pdf, level + 1)
+                    if child_node:
+                        tag_node.children.append(child_node)
             
             return tag_node
             
         except Exception as e:
-            logger.warning(f"Error parsing structure element: {str(e)}")
+            logger.warning(f"Error parsing dictionary structure element: {str(e)}")
             return None
+    def _parse_structure_element(self, element, pike_pdf, level: int) -> Optional[AccessibilityTagNode]:
+        """Legacy method wrapper - redirects to enhanced parsing system."""
+        return self._parse_structure_element_safely(element, pike_pdf, level)
     
     def _create_basic_structure_from_content(self, fitz_doc) -> AccessibilityTagNode:
         """Create basic accessibility structure from document content when no tag tree exists."""
