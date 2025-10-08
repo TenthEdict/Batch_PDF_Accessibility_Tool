@@ -56,7 +56,10 @@ test_venv/
 ocr_env/
 pdf_venv/
 docling_venv/
+accessibility-validation-env/
 **/venv*/
+**/*-env/
+**/*_env/
 
 # ===================================================================
 # IDE and Editor files
@@ -120,14 +123,17 @@ $RECYCLE.BIN/
 # ===================================================================
 # Project data and processing artifacts
 # ===================================================================
-# Input/output directories
+# Input/output directories (preserve structure with .gitkeep files)
 input/
 output/
-data/
+data/input/**/*
+data/output/**/*
+data/training/**/*
+!data/input/.gitkeep
+!data/output/.gitkeep
+!data/training/.gitkeep
 temp/
 tmp/
-logs/
-cache/
 downloads/
 processing_output/
 enhanced_pdfs/
@@ -137,6 +143,10 @@ test_batch_input/
 orchestration_output/
 pipeline_cache/
 scraper_cache/
+
+# Data directories that should not be committed
+data/models/**/*
+!data/models/.gitkeep
 
 # Preserve directory structure but ignore contents
 processor/unified_project/data/input/*
@@ -205,6 +215,23 @@ tesseract_*
 *.orig
 *.rej
 *.patch
+*~
+
+# Log directories
+logs/
+logs/**/*
+!logs/.gitkeep
+**/logs/
+log/
+*.logs/
+
+# Temporary processing files
+temp/
+tmp/
+temp_*/
+tmp_*/
+.temp/
+.tmp/
 
 # ===================================================================
 # Credentials and configuration
@@ -320,16 +347,38 @@ transformers_cache/
 # ===================================================================
 *_accessibility_report.xlsx
 *_report.json
+*_report.html
+*_report.xml
 accessibility_reports/
 reports/
+logs/reports/**/*
+!logs/reports/.gitkeep
 profile_*.log
 *.prof
+
+# Test outputs and validation results
+test_outputs/
+test_batch_output*/
+validation_output*/
+benchmark_results/
+profiling_output/
+*_validation_report.*
+validation_results.*
 
 # ===================================================================
 # Memory management and AI assistant files
 # ===================================================================
+# Claude AI memory bank and context files
 .memory-bank/
+.memory-bank/**/*
 .clauderules
+.claude/
+.cursor/
+
+# AI assistant conversation histories and caches
+.ai-context/
+.assistant-cache/
+cursor_metadata.pb
 
 # ===================================================================
 # Production and deployment
@@ -344,8 +393,13 @@ epubs_cache.db
 # Cache directories
 .cache/
 cache/
+cache/**/*
+!cache/.gitkeep
 ~/.cache/epubs/
 ~/.epubs/cache/
+*_cache/
+*.cache/
+__cache__/
 
 # Performance and monitoring
 metrics/
@@ -356,7 +410,9 @@ health_checks/
 # Archived and legacy content
 # ===================================================================
 # Exclude entire archived directory from version control
+# This contains deprecated code, old documentation, and test outputs
 archived/
+archived/**/*
 
 # Legacy files that should be removed
 legacy_*.py
@@ -364,6 +420,25 @@ old_*.py
 deprecated_*.py
 *_old.py
 *_backup.py
+*_BACKUP.*
+*_OLD.*
+*_DEPRECATED.*
+
+# ===================================================================
+# Documentation (local only - not for remote repository)
+# ===================================================================
+# Exclude ALL markdown files except root README.md
+*.md
+!README.md
+
+# Specifically exclude docs directory
+docs/
+docs/**/*
+docs/**/*.md
+
+# Exclude any markdown files in subdirectories
+**/*.md
+!README.md
 
 # ===================================================================
 # Security and compliance
@@ -372,12 +447,14 @@ deprecated_*.py
 bandit-report.json
 safety-report.json
 vulnerability-report.json
+*.sarif
+security-report*.json
+vulnerability-report*.json
 
 # Compliance and audit files
 audit_*.log
 compliance_*.json
 security_*.txt
-
 
 # ===================================================================
 # Implementation and Development Documentation
@@ -388,15 +465,13 @@ security_*.txt
 *_TEMP.md
 
 # ===================================================================
-# Security and Performance
+# Performance and profiling
 # ===================================================================
-# Security scan results (if generated in future)
-*.sarif
-security-report*.json
-vulnerability-report*.json
 performance-profile*.json
+*.prof
+profile_*.log
 
-# Temporary processing artifacts from new security features
+# Temporary processing artifacts from new features
 epubs_*.tmp
 .epubs_temp/
 
@@ -408,3 +483,76 @@ test_security_output/
 test_performance_output/
 benchmark_results/
 profiling_output/
+
+# ===================================================================
+# Comprehensive bloat prevention patterns
+# ===================================================================
+# Migration and setup scripts output
+migration_output/
+setup_output/
+build-artifacts/
+
+# Downloaded materials and samples
+downloaded_*/
+samples/
+examples_output/
+
+# Development notebooks and experiments
+experiments/
+notebooks/
+*.ipynb_checkpoints/
+
+# Generated documentation (keep source, ignore generated)
+docs/_build/
+docs/.doctrees/
+site/
+
+# Lock files from dependency managers (keep requirements.txt)
+poetry.lock
+Pipfile.lock
+yarn.lock
+package-lock.json
+
+# Node modules (if any JavaScript tooling is added)
+node_modules/
+
+# Any directory ending with _output, _artifacts, or _results
+*_output/
+*_artifacts/
+*_results/
+
+# Temporary test files
+test_temp*/
+testing_*/
+*_test_output/
+
+# Backup directories
+backups/
+backup_*/
+*_backup/
+
+# Build directories
+build/
+dist/
+*.egg-info/
+
+# Coverage and quality reports
+.coverage
+htmlcov/
+coverage/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS-specific files
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Compressed archives (except documentation)
+*.zip
+*.tar.gz
+*.7z
+*.rar
+!docs/**/*.zip
+!docs/**/*.tar.gz
