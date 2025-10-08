@@ -1,36 +1,85 @@
-# ePubs Accessibility Enhancement Project Brief
+# Project Brief
 
-## Project Overview
-The ePubs Accessibility Enhancement Project is a comprehensive toolkit for enhancing document accessibility across academic and historical publications. The system provides specialized tools for PDF processing, OCR enhancement, accessibility compliance validation, and **automated WCAG/PDF-UA/ADA compliance generation through machine learning**.
+## Overview
+
+ePubs Accessibility Enhancement is a Python toolkit for transforming academic and historical PDFs into accessibility-compliant documents meeting PDF/UA-1, Section 508, and ADA standards.
 
 ## Core Objectives
-1. **Universal Accessibility**: Transform documents to meet PDF/UA-1 compliance standards
-2. **Academic Specialization**: Handle complex academic layouts, mathematical content, tables, citations
-3. **Historical Document Processing**: Optimize OCR for degraded text and historical terminology  
-4. **Workflow Automation**: Provide end-to-end processing pipelines from acquisition to enhancement
-5. **🎯 NEW: Automated Compliance Generation**: Train ML models using 1600+ compliant PDFs to automatically generate WCAG/PDF-UA/ADA compliant accessibility structures
+
+1. **Universal Accessibility**: PDF/UA-1 compliance for screen readers and assistive technologies
+2. **Academic Specialization**: Handle complex layouts, mathematical content, tables, and citations
+3. **Historical Document Processing**: OCR optimization for degraded text and historical terminology
+4. **Workflow Automation**: End-to-end processing pipelines from acquisition to enhancement
+5. **Performance**: 5-8x processing speedup with Phase 2B advanced features
 
 ## Project Structure
-- **Scraper Component**: Document acquisition from library resources (Purdue focus)
-- **Processor Component**: Core document enhancement engine with unified architecture
-- **Data Pipeline**: Input/output processing with sample academic papers
-- **🆕 Accessibility Training System**: ML training infrastructure for automated compliance generation
 
-## Technical Foundation
-- **Language**: Python 3.9+ with modern packaging (pyproject.toml)
-- **Core Libraries**: PyMuPDF, pikepdf, ocrmypdf for PDF processing
-- **Architecture**: Service container pattern with dependency injection
-- **Processing**: Sequential enhancement pipeline (OCR → Metadata → Accessibility)
-- **🆕 ML Training**: Phase 2B extension with FAISS vector database, hierarchical caching, and accessibility pattern learning
+### Active Components
+- **processor/**: Core document enhancement engine with unified architecture
+- **scraper/**: Document acquisition from library resources (Purdue-focused)
+- **data/**: Input/output processing with academic paper samples
+- **tests/**: Unit and integration test suites
 
-## Enhanced Project Scope
-This is a monorepo containing all components required for document accessibility enhancement AND automated accessibility compliance generation, designed for academic research institutions and digital libraries requiring scalable accessibility compliance at institutional scale.
+### Archived Content
+- **archived/**: Historical development files, migration scripts, deprecated tools
+
+## Technical Stack
+
+### Core Technologies
+- **Python 3.9+**: Modern packaging with pyproject.toml
+- **PyMuPDF, pikepdf**: PDF processing and structure manipulation
+- **ocrmypdf**: OCR processing with Tesseract integration
+- **Pillow, OpenCV**: Image processing and optimization
+- **Typer, Rich**: CLI interface with progress tracking
+
+### Advanced Features
+- **FAISS**: High-performance vector similarity search
+- **scikit-learn**: ML-based OCR optimization
+- **pandas, numpy**: Data processing and analytics
+
+### Architecture
+- **Service Container**: Dependency injection pattern
+- **Sequential Pipeline**: OCR → Compression → Accessibility
+- **Enhancer Chain**: Pluggable transformation modules
+- **Phase 2B**: FAISS vector database, hierarchical caching, ML optimization
 
 ## Success Criteria
-1. PDF/UA-1 compliant output documents
-2. Automated OCR and font embedding
-3. Screen reader optimized content structure
-4. Scalable processing for document collections
-5. Docker containerization for deployment consistency
-6. **🎯 NEW: >90% accuracy in automated WCAG/PDF-UA/ADA compliance generation**
-7. **🎯 NEW: >95% compliance rate for automatically generated accessibility structures**
+
+### Functional Requirements ✅
+- ✅ PDF/UA-1 compliant output documents
+- ✅ Automated OCR and font embedding  
+- ✅ Screen reader optimized content structure
+- ✅ Scalable processing for document collections
+- ✅ Cross-platform compatibility (Windows, macOS, Linux)
+
+### Performance Metrics ✅
+- ✅ 5-8x processing speedup (Phase 2B)
+- ✅ 90.9% title extraction accuracy
+- ✅ 40-80% file size reduction
+- ✅ 100% processing success rate on test dataset
+
+### Quality Standards ✅
+- ✅ >99% text accuracy preservation
+- ✅ Mathematical content accessibility
+- ✅ Figure quality preservation
+- ✅ Adobe Acrobat compatibility
+
+## Use Cases
+
+### Primary Users
+- **Academic Libraries**: Digital commons platforms requiring accessibility compliance
+- **Research Institutions**: Scholarly paper enhancement and dissemination
+- **Historical Archives**: Document digitization with OCR
+- **Accessibility Teams**: Institutional compliance for digital collections
+
+### Deployment Scenarios
+- Single-user development environment
+- Batch processing for document collections
+- Automated workflow integration
+- Docker containerized deployment
+
+## Current Status
+
+**Production Ready**: Core functionality with validated performance
+**Experimental**: Accessibility training system (untested, may be removed)
+**Maintenance**: Documentation cleanup, security review, performance optimization

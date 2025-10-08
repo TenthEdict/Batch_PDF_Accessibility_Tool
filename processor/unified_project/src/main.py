@@ -8,6 +8,31 @@ import typer
 from pathlib import Path
 from typing import Optional
 
+# Security and performance utilities
+from processor.unified_project.src.utils.security import (
+    validate_output_path,
+    validate_pdf_file,
+    validate_batch_input
+)
+from processor.unified_project.src.utils.performance import (
+    iter_pdf_files,
+    count_pdf_files,
+    ResourceLimits,
+    memory_cleanup,
+    configure_logging_once,
+    should_use_progress_bar,
+    create_batch_chunks,
+    get_optimal_chunk_size
+)
+from processor.unified_project.src.utils.secure_logging import (
+    log_error_safe,
+    log_warning_safe
+)
+from processor.unified_project.src.utils.secure_temp import (
+    secure_temp_file,
+    secure_temp_dir
+)
+
 from processor.unified_project.src.services.enhancement_service import EnhancementService
 from processor.unified_project.src.batch.advanced_batch_processor import (
     AdvancedBatchProcessor, 
@@ -30,16 +55,8 @@ app = typer.Typer(
 )
 
 def setup_logging(verbose: bool):
-    """Sets up logging for the application."""
-    level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    # Reduce verbosity of noisy libraries
-    logging.getLogger("PIL").setLevel(logging.WARNING)
-    logging.getLogger("ocrmypdf").setLevel(logging.WARNING)
+    """Sets up logging for the application (singleton pattern for performance)."""
+    configure_logging_once(verbose)
 
 
 @app.command()
@@ -68,8 +85,22 @@ def process(
 
     logger.info(f"Starting processing for: {input_path}")
     
-    # Ensure output directory exists
+    # SECURITY: Validate input PDF file
+    is_valid, error_msg = validate_pdf_file(input_path, check_magic=True)
+    if not is_valid:
+        logger.error(f"Input validation failed: {error_msg}")
+        raise typer.Exit(code=1)
+    
+    # SECURITY: Validate output path
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    is_valid, error_msg = validate_output_path(
+        output_path,
+        allowed_parent=output_path.parent,
+        allow_overwrite=False
+    )
+    if not is_valid:
+        logger.error(f"Output path validation failed: {error_msg}")
+        raise typer.Exit(code=1)
 
     enhancement_service = EnhancementService()
 
@@ -80,15 +111,17 @@ def process(
         "language": language,
     }
 
-    success = enhancement_service.enhance_document(
-        input_path, output_path, mode=mode, **enhancement_kwargs
-    )
+    # PERFORMANCE: Use memory cleanup context
+    with memory_cleanup():
+        success = enhancement_service.enhance_document(
+            input_path, output_path, mode=mode, **enhancement_kwargs
+        )
 
     if success:
         logger.info(f"Successfully processed file and saved to: {output_path}")
         raise typer.Exit(code=0)
     else:
-        logger.error(f"Failed to process file: {input_path}")
+        logger.error(f"Failed to process file")
         raise typer.Exit(code=1)
 
 
@@ -125,6 +158,12 @@ def batch_process(
     setup_logging(verbose)
     logger = logging.getLogger(__name__)
 
+    # SECURITY: Validate batch input/output directories
+    is_valid, error_msg = validate_batch_input(input_dir, output_dir, allow_overwrite=False)
+    if not is_valid:
+        logger.error(f"Batch validation failed: {error_msg}")
+        raise typer.Exit(code=1)
+
     # Determine processing mode
     if enable_phase2b or processing_mode == "phase2b":
         if not PHASE2B_AVAILABLE:
@@ -139,6 +178,21 @@ def batch_process(
     logger.info(f"Starting batch processing for directory: {input_dir}")
     logger.info(f"Processing mode: {processing_mode}")
     
+    # PERFORMANCE: Count files without loading all into memory
+    total_files = count_pdf_files(input_dir)
+    logger.info(f"Found {total_files} PDF files to process")
+    
+    if total_files == 0:
+        logger.warning("No PDF files found in input directory")
+        raise typer.Exit(code=0)
+    
+    # PERFORMANCE: Initialize resource limits
+    resource_limits = ResourceLimits(
+        max_memory_percent=80.0,
+        max_cpu_percent=90.0,
+        max_workers=parallel_workers
+    )
+    
     # Create batch processing configuration
     config = BatchProcessingConfiguration(
         input_dir=str(input_dir),
@@ -148,12 +202,27 @@ def batch_process(
     # Initialize appropriate processor based on mode
     if processing_mode == "phase2b":
         logger.info("🎯 Initializing Phase 2B Enhanced Processor (FAISS + Cache + ML)")
-        processor = create_phase2b_batch_processor(config, max_workers=parallel_workers)
+        processor = create_phase2b_batch_processor(config, max_workers=resource_limits.max_workers)
         
         # Run Phase 2B enhanced processing
         try:
-            pdf_files = list(input_dir.glob("*.pdf"))
-            metrics = processor.process_files_parallel(pdf_files, Path(output_dir))
+            # PERFORMANCE: Use iterator instead of glob() to save memory
+            pdf_files = list(iter_pdf_files(input_dir))
+            
+            # SECURITY: Validate and sanitize filenames
+            validated_files = []
+            for pdf_file in pdf_files:
+                is_valid, error_msg = validate_pdf_file(pdf_file, check_magic=True)
+                if is_valid:
+                    validated_files.append(pdf_file)
+                else:
+                    logger.warning(f"Skipping invalid file {pdf_file.name}: {error_msg}")
+            
+            logger.info(f"Processing {len(validated_files)} validated PDF files")
+            
+            # PERFORMANCE: Use memory cleanup context
+            with memory_cleanup():
+                metrics = processor.process_files_parallel(validated_files, Path(output_dir))
             
             # Show Phase 2B performance summary
             phase2b_report = processor.get_phase2b_performance_report()
@@ -174,26 +243,42 @@ def batch_process(
             
             success = metrics.successful_files > 0
         except Exception as e:
-            logger.error(f"Phase 2B processing failed: {e}")
+            logger.error(f"Phase 2B processing failed: {str(e)[:200]}")
             success = False
             
     elif processing_mode == "parallel":
         logger.info("⚡ Initializing Phase 1 Parallel Processor")
-        processor = ParallelBatchProcessor(config, max_workers=parallel_workers)
+        processor = ParallelBatchProcessor(config, max_workers=resource_limits.max_workers)
         
         # Run parallel processing  
         try:
-            pdf_files = list(input_dir.glob("*.pdf"))
-            metrics = processor.process_files_parallel(pdf_files, Path(output_dir))
+            # PERFORMANCE: Use iterator instead of glob()
+            pdf_files = list(iter_pdf_files(input_dir))
+            
+            # SECURITY: Validate files
+            validated_files = []
+            for pdf_file in pdf_files:
+                is_valid, error_msg = validate_pdf_file(pdf_file, check_magic=True)
+                if is_valid:
+                    validated_files.append(pdf_file)
+                else:
+                    logger.warning(f"Skipping invalid file {pdf_file.name}: {error_msg}")
+            
+            logger.info(f"Processing {len(validated_files)} validated PDF files")
+            
+            with memory_cleanup():
+                metrics = processor.process_files_parallel(validated_files, Path(output_dir))
             success = metrics.successful_files > 0
         except Exception as e:
-            logger.error(f"Parallel processing failed: {e}")
+            logger.error(f"Parallel processing failed: {str(e)[:200]}")
             success = False
             
     else:  # sequential
         logger.info("📄 Initializing Sequential Processor")
         processor = AdvancedBatchProcessor(config)
-        success = processor.process_batch()
+        
+        with memory_cleanup():
+            success = processor.process_batch()
     
     if success:
         logger.info("Batch processing completed successfully")
@@ -276,7 +361,18 @@ def show(
         
         # Output to file or console
         if output:
-            with open(output, 'w') as f:
+            # SECURITY: Validate output path
+            output_path = Path(output)
+            is_valid, error_msg = validate_output_path(
+                output_path,
+                allow_overwrite=True  # Stats can overwrite
+            )
+            if not is_valid:
+                print(f"❌ Invalid output path: {error_msg}")
+                logger.error(f"Output path validation failed: {error_msg}")
+                raise typer.Exit(code=1)
+            
+            with open(output_path, 'w') as f:
                 f.write(output_text)
             print(f"📋 Statistics saved to: {output}")
         else:

@@ -1,209 +1,150 @@
-# Technical Context: ePubs Accessibility Enhancement
+# Technical Context
 
-## Technologies Used
+## Core Technology Stack
 
-### Core Python Stack
-- **Python 3.9+**: Minimum version for modern typing and performance features
-- **pyproject.toml**: Modern Python packaging with dependency management
-- **Poetry/pip**: Package management with lock file dependency resolution
+### Python Environment
+- **Python**: 3.9+ (tested on 3.9, 3.10, 3.11, 3.12)
+- **Packaging**: pyproject.toml with setuptools
+- **Dependency Management**: pip with requirements.txt and lock files
 
-### Document Processing Libraries
-- **PyMuPDF (fitz) 1.22.5+**: Core PDF manipulation and text extraction
-- **pikepdf 9.4.2+**: PDF structure manipulation and metadata management
-- **ocrmypdf 16.10.2+**: OCR processing with Tesseract integration
-- **Tesseract 5.5.1+**: OCR engine for text recognition
-- **Pillow (PIL) 11.3.0+**: Image processing and manipulation
+### PDF Processing
+- **PyMuPDF (fitz) 1.23+**: Core PDF manipulation and text extraction
+- **pikepdf 8.3+**: PDF structure manipulation and metadata
+- **ocrmypdf 16+**: OCR processing with Tesseract integration
+- **pdf2image 1.16+**: PDF to image conversion
+- **pdfplumber 0.7+**: Text and table extraction
 
-### Cloud Services Integration
-- **Adobe PDF Services SDK 4.1.0+**: Cloud-based AI-powered structure tagging
-- **Adobe AutoTag API**: Semantic document analysis and accessibility enhancement
-- **REST API Integration**: HTTP-based cloud service communication
+### Image Processing
+- **Pillow 10+**: Image manipulation and format conversion
+- **opencv-python-headless 4.8+**: Advanced image processing
+- **scikit-image 0.21+**: Scientific image analysis
 
-### CLI and Configuration
-- **Typer 0.12.5+**: Modern CLI framework with type hints and validation
-- **PyYAML**: Configuration management and environment-specific settings
-- **Hydra**: Advanced configuration management for complex scenarios
+### OCR
+- **Tesseract 5.5.1+**: Text recognition engine
+- **pytesseract 0.3.10+**: Python wrapper for Tesseract
 
-### Development and Quality
-- **pytest**: Testing framework with fixtures and parametrization
-- **black**: Code formatting with 88-character line length
-- **isort**: Import sorting with black profile compatibility
-- **flake8**: Linting and code quality analysis
-- **mypy**: Static type checking for enhanced reliability
+### Machine Learning
+- **scikit-learn 1.3+**: ML algorithms and pattern recognition
+- **pandas 1.5+**: Data processing and analysis
+- **numpy 1.24+**: Numerical computing
+- **faiss-cpu 1.7.4+**: High-performance vector similarity search
+- **scipy 1.7+**: Scientific computing
 
-## Development Setup
+### CLI and Interface
+- **Typer 0.12+**: Modern CLI framework with type hints
+- **Rich 13+**: Terminal formatting and progress bars
+- **PyYAML 6+**: Configuration management
 
-### System Dependencies
+### Development Tools
+- **pytest 7+**: Testing framework
+- **black 23+**: Code formatting
+- **isort 5.12+**: Import sorting
+- **flake8 6+**: Linting
+- **mypy 1+**: Static type checking
+- **pytest-cov 4+**: Code coverage
 
-#### Windows
+## System Dependencies
+
+### Windows
 ```powershell
 # Option 1: Chocolatey (Recommended)
 choco install python tesseract
 
-# Option 2: Manual Installation
-# Download and install from official sources:
-# - Python: https://python.org/downloads/
-# - Tesseract: https://github.com/UB-Mannheim/tesseract/wiki
+# Option 2: Manual
+# Download Python from python.org
+# Download Tesseract from github.com/UB-Mannheim/tesseract/wiki
 ```
 
-#### macOS
+### macOS
 ```bash
 brew install python tesseract poppler
 ```
 
-#### Ubuntu/Debian
+### Linux (Ubuntu/Debian)
 ```bash
 apt-get install python3 python3-pip tesseract-ocr poppler-utils
 ```
 
-#### Docker
-```dockerfile
-FROM python:3.11-slim
-RUN apt-get update && apt-get install -y poppler-utils tesseract-ocr
-```
+## Installation
 
-### Python Environment Setup
-
-#### Windows
-```powershell
-# Create and activate virtual environment
-python -m venv venv
-.\venv\Scripts\activate
-
-# Install dependencies
-pip install -e .[dev]    # Development installation
-pip install -e .[test]   # Testing dependencies
-pip install -e .[all]    # All optional dependencies
-```
-
-#### macOS/Linux
+### Standard Installation
 ```bash
-# Create and activate virtual environment
+# Clone repository
+git clone https://github.itap.purdue.edu/schipp0/ePubs_Main.git
+cd ePubs_Main
+
+# Create virtual environment
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # Linux/macOS
+.\venv\Scripts\activate   # Windows
 
 # Install dependencies
-pip install -e .[dev]    # Development installation
-pip install -e .[test]   # Testing dependencies
-pip install -e .[all]    # All optional dependencies
+pip install -e .[all]      # All features
+pip install -e .[dev]      # Development
+pip install -e .[test]     # Testing only
+pip install -e .[ml]       # ML features (Phase 2B)
 ```
 
-### Adobe PDF Services Configuration
-```bash
-# Environment variables for cloud services
-export ADOBE_CLIENT_ID="your_client_id"
-export ADOBE_CLIENT_SECRET="your_client_secret"
-export ADOBE_ORGANIZATION_ID="your_org_id"
-export ADOBE_ACCOUNT_ID="your_account_id"
-```
+### Dependency Groups
 
-## Technical Constraints
-
-### Memory and Performance
-- **Large Document Handling**: PyMuPDF memory efficiency for documents >100MB
-- **Batch Processing**: Parallel processing limited by available system memory
-- **OCR Performance**: Tesseract processing time scales with document image complexity
-- **Cloud API Limits**: Adobe PDF Services quota and rate limiting considerations
-
-### Platform Compatibility
-- **Operating Systems**: Windows 10/11, macOS 10.15+, Linux (Ubuntu 20.04+)
-- **Python Versions**: 3.9, 3.10, 3.11, 3.12 (tested and supported)
-- **Container Platforms**: Docker, Podman, Kubernetes deployment ready
-- **Architecture**: x86_64, ARM64 (M1/M2 Mac, ARM64 Windows) compatibility
-- **Windows Notes**: Native Windows support with PowerShell and Command Prompt
-
-### Document Format Support
-- **Input Formats**: PDF (all versions), with focus on PDF 1.4+ for accessibility features
-- **Output Standards**: PDF/UA-1 compliance, PDF 1.7+ for accessibility metadata
-- **Text Encoding**: UTF-8 with Unicode support for international content
-- **Image Handling**: JPEG, PNG, TIFF embedded images with accessibility descriptions
-
-## Dependencies Architecture
-
-### Core Dependencies (Required)
+#### Core (Required)
 ```toml
-[project]
 dependencies = [
-    "typer>=0.12.5,<1.0.0",
-    "PyMuPDF>=1.22.5,<2.0.0",
-    "pikepdf>=9.4.2,<10.0.0",
-    "ocrmypdf>=16.10.2,<17.0.0",
-    "Pillow>=11.3.0,<12.0.0",
-    "PyYAML>=6.0.1,<7.0.0",
+    "PyMuPDF>=1.23.0,<1.25.0",
+    "pikepdf>=8.3.0,<9.0.0",
+    "ocrmypdf>=16.0.0,<17.0.0",
+    "Pillow>=10.0.0,<11.0.0",
+    "opencv-python-headless>=4.8.0,<5.0.0",
+    "typer>=0.12.0,<1.0.0",
+    # ... (see pyproject.toml for complete list)
 ]
 ```
 
-### Optional Dependencies (Cloud Services)
-```toml
-[project.optional-dependencies]
-cloud = [
-    "pdfservices-sdk>=4.1.0,<5.0.0",
-    "requests>=2.31.0,<3.0.0",
-    "openpyxl>=3.1.0,<4.0.0",  # For accessibility reports
-]
-```
-
-### Development Dependencies
-```toml
-dev = [
-    "black>=23.0.0",
-    "isort>=5.12.0",
-    "flake8>=6.0.0",
-    "mypy>=1.5.0",
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "pytest-xdist>=3.3.0",  # Parallel testing
-]
-```
-
-### Machine Learning Dependencies
+#### Optional: Machine Learning
 ```toml
 ml = [
-    "scikit-learn>=1.7.1,<2.0.0",
-    "pandas>=2.0.0,<3.0.0",
+    "scikit-learn>=1.3.0,<2.0.0",
+    "pandas>=1.5.0,<3.0.0",
     "numpy>=1.24.0,<2.0.0",
-    "joblib>=1.3.0,<2.0.0",  # Model persistence
+    "faiss-cpu>=1.7.4,<2.0.0",
+    "joblib>=1.3.0,<2.0.0",
+]
+```
+
+#### Optional: Development
+```toml
+dev = [
+    "pytest>=7.0.0,<8.0.0",
+    "black>=23.0.0,<24.0.0",
+    "mypy>=1.0.0,<2.0.0",
+    # ... (see pyproject.toml for complete list)
 ]
 ```
 
 ## Architecture Patterns
 
-### Clean Architecture Implementation
-- **Domain Layer**: Core business entities and rules (`src/domain/`)
-- **Application Layer**: Business logic orchestration (`src/services/`)
-- **Infrastructure Layer**: External dependencies (`src/repositories/`, `src/enhancers/`)
-- **Interface Layer**: CLI and user interfaces (`src/main.py`)
+### Clean Architecture
+- **Domain Layer**: Core entities and rules (`src/domain/`)
+- **Application Layer**: Business logic (`src/services/`)
+- **Infrastructure Layer**: External dependencies (`src/enhancers/`, `src/repositories/`)
+- **Interface Layer**: CLI and APIs (`src/main.py`)
 
-### Dependency Injection Pattern
-- **Service Container**: Central dependency management (`src/core/service_container.py`)
-- **Factory Pattern**: Service instantiation with singleton behavior
-- **Interface Segregation**: Abstract base classes for component interfaces
-
-### Enhancement Pipeline Architecture
-- **Chain of Responsibility**: Sequential enhancement processing
+### Design Patterns
+- **Service Container**: Central dependency management
+- **Factory Pattern**: Service instantiation
 - **Strategy Pattern**: Configurable enhancement strategies
+- **Chain of Responsibility**: Sequential processing
 - **Observer Pattern**: Progress tracking and logging
-- **Command Pattern**: Encapsulated document operations
 
-### Machine Learning Architecture
-- **AdaptiveMLEnhancer**: Document-level learning and OCR optimization (677 lines)
-- **Python ML Stack**: scikit-learn, pandas, numpy for all ML operations
-- **Knowledge Base**: Persistent document profiles with similarity matching
-- **Performance Focus**: Lightweight ML suitable for document processing workloads
-
-**Architectural Decision: Python-Only ML Stack**
-*Decision Date: August 2025*
-*Reasoning*: After comprehensive analysis, Julia integration was evaluated but not adopted because:
-- Current Python ML operations are not computationally intensive enough to benefit from Julia's performance
-- System bottlenecks are in OCR/PDF processing, not ML computation
-- Adding Julia would introduce unnecessary complexity to a production-ready system (100% success rate)
-- Current scikit-learn implementation meets all project needs effectively
-- Cross-platform deployment complexity would increase significantly
-*Future Consideration*: Julia integration may be reconsidered if requirements expand to include deep learning, large-scale matrix operations, or computationally intensive scientific computing tasks.
+### ML Architecture
+- **AdaptiveMLEnhancer**: 677-line document-level learning system
+- **Python-Only Stack**: scikit-learn, pandas, numpy (Julia not needed)
+- **Knowledge Base**: Persistent document profiles
+- **Performance Focus**: Lightweight ML suitable for document processing
 
 ## Configuration Management
 
-### Environment-Specific Configuration
+### Environment-Specific Config
 ```yaml
 # config/academic.yaml
 processing:
@@ -212,54 +153,127 @@ processing:
     enabled: true
     language: "eng"
     preserve_interword_spaces: true
-  adobe_autotag:
-    enabled: true
-    generate_accessibility_report: true
 ```
 
-### Configuration Schema Validation
-- **Pydantic Models**: Type-safe configuration validation
-- **Environment Variables**: Override configuration with env vars
-- **Configuration Inheritance**: Base configuration with mode-specific overrides
+### Configuration Loading
+- **Pydantic Models**: Type-safe validation
+- **Environment Variables**: Override with env vars
+- **Configuration Inheritance**: Base + mode-specific overrides
 
-## Integration Points
+## Platform Compatibility
 
-### External Service Integration
-- **Adobe PDF Services**: Cloud-based document analysis and enhancement
-- **Tesseract OCR**: Local text recognition and extraction
-- **File System**: Document input/output with path validation
-- **Logging System**: Structured logging with configurable levels
+### Operating Systems
+- **Windows**: 10/11 (native support, PowerShell setup)
+- **macOS**: 10.15+ (Intel and Apple Silicon)
+- **Linux**: Ubuntu 20.04+, Debian-based distributions
 
-### API Compatibility
-- **REST APIs**: HTTP-based cloud service communication
-- **CLI Interface**: Command-line tool integration for automation
-- **Docker API**: Container orchestration and deployment
-- **File System API**: Cross-platform file operations
+### Architectures
+- **x86_64**: Intel/AMD 64-bit
+- **ARM64**: M1/M2/M3 Mac, ARM64 Windows
 
 ## Performance Considerations
 
 ### Optimization Strategies
 - **Memory Management**: Efficient PDF processing with resource cleanup
-- **Parallel Processing**: Batch operations with concurrent document handling
-- **Caching**: Configuration and metadata caching for improved performance
+- **Parallel Processing**: Batch operations with 6 concurrent workers
+- **FAISS Acceleration**: 10x faster similarity search
+- **Hierarchical Caching**: 70-80% cache hit rates
 - **Lazy Loading**: On-demand component initialization
 
-### Scalability Patterns
-- **Horizontal Scaling**: Container-based deployment for load distribution
-- **Vertical Scaling**: Memory and CPU optimization for large documents
-- **Queue Processing**: Asynchronous batch processing capabilities
-- **Resource Monitoring**: Memory and processing time tracking
+### Scalability
+- **Horizontal**: Container-based deployment
+- **Vertical**: Memory and CPU optimization
+- **Batch**: Queue processing with progress tracking
+- **Monitoring**: Resource usage tracking
 
-## Security Considerations
+## Security
 
 ### Credential Management
 - **Environment Variables**: Secure credential storage
-- **No Hardcoded Secrets**: Configuration-based credential management
-- **API Key Rotation**: Support for credential updates without code changes
+- **No Hardcoded Secrets**: Configuration-based management
+- **API Key Rotation**: Support for credential updates
 
 ### Input Validation
-- **File Type Validation**: PDF format verification and sanitization
+- **File Type**: PDF format verification
 - **Path Sanitization**: Secure file path handling
-- **Content Validation**: PDF structure verification before processing
+- **Content Validation**: PDF structure verification
 
-This technical foundation provides the reliability and scalability needed for institutional deployment while maintaining the flexibility required for diverse academic document processing requirements.
+## Technical Constraints
+
+### Performance
+- **Large Documents**: PyMuPDF efficient for >100MB files
+- **Batch Processing**: Memory-limited (4GB+ recommended)
+- **OCR Performance**: Scales with image complexity
+
+### Compatibility
+- **PDF Formats**: PDF 1.4+ (focus on PDF 1.7+ for accessibility)
+- **Text Encoding**: UTF-8 with Unicode support
+- **Image Formats**: JPEG, PNG, TIFF embedded images
+
+## Integration Points
+
+### External Services
+- **Tesseract OCR**: Local text recognition
+- **File System**: Document input/output
+- **Logging System**: Structured logging
+
+### APIs
+- **CLI Interface**: Command-line automation
+- **Docker API**: Container orchestration
+- **File System API**: Cross-platform operations
+
+## Development Workflow
+
+### Setup
+1. Install system dependencies (Python, Tesseract, Poppler)
+2. Clone repository
+3. Create virtual environment
+4. Install Python dependencies
+5. Run tests to verify setup
+
+### Testing
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=processor --cov=scraper
+
+# Run specific test types
+pytest -m unit           # Unit tests only
+pytest -m integration    # Integration tests only
+pytest -m "not slow"     # Skip slow tests
+```
+
+### Code Quality
+```bash
+# Format code
+black processor/ scraper/
+
+# Sort imports
+isort processor/ scraper/
+
+# Lint
+flake8 processor/ scraper/
+
+# Type check
+mypy processor/ scraper/
+```
+
+## Deployment
+
+### Docker
+```bash
+# Build image
+docker build -t epubs-accessibility .
+
+# Run container
+docker run -v /path/to/data:/data epubs-accessibility \
+  batch-process /data/input /data/output
+```
+
+### Production Considerations
+- 4GB+ RAM recommended for batch processing
+- Tesseract and Poppler must be installed
+- Virtual environment isolation recommended
+- Log rotation for long-running services
