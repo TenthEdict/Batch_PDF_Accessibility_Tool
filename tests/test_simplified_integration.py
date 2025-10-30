@@ -19,9 +19,9 @@ import shutil
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from processor.unified_project.src.services.simple_enhancement_service import SimpleEnhancementService
-from processor.unified_project.src.enhancers.simple_ocr_enhancer import SimpleOCREnhancer
-from processor.unified_project.src.enhancers.simple_pdfua_enhancer import SimplePDFUAEnhancer
+from src.processor.simple_enhancement_service import SimpleEnhancementService
+from src.processor.simple_ocr_enhancer import SimpleOCREnhancer
+from src.processor.simple_pdfua_enhancer import SimplePDFUAEnhancer
 
 try:
     import pikepdf

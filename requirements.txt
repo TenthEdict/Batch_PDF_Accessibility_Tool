@@ -1,34 +1,69 @@
-# Core PDF processing
-PyMuPDF>=1.23.0,<1.25.0
-pikepdf>=8.3.0,<9.0.0
-pdf2image>=1.16.3,<2.0.0
-pdfplumber>=0.7.0,<1.0.0
+# ePubs PDF Accessibility Enhancement - Consolidated Requirements
+# Production-ready simplified system (Stage 2 & 3 complete)
+# Last updated: 2025-10-29
+
+# ==============================================================================
+# PRODUCTION DEPENDENCIES
+# ==============================================================================
+
+# Core PDF Processing
+PyMuPDF>=1.23.0,<1.25.0       # PDF manipulation and text extraction
+pikepdf>=8.3.0,<9.0.0          # PDF structure modification and enhancement
 
 # Image Processing
-Pillow>=10.0.0,<11.0.0
-opencv-python-headless>=4.8.0,<5.0.0
-scikit-image>=0.21.0,<1.0.0
-numpy>=1.24.0,<2.0.0
+Pillow>=10.0.0,<11.0.0         # Image manipulation for OCR
+numpy>=1.24.0,<2.0.0           # Numerical operations for image processing
 
 # OCR
-pytesseract>=0.3.10,<1.0.0
+ocrmypdf>=16.0.0,<17.0.0       # Integrated OCR solution with proper text positioning
+pytesseract>=0.3.10,<1.0.0     # Tesseract OCR interface (used by ocrmypdf)
 
-# Data Processing
-pandas>=1.5.0,<3.0.0
-scipy>=1.7.0,<2.0.0
-tqdm>=4.66.0,<5.0.0
+# Progress Tracking
+tqdm>=4.66.0,<5.0.0            # Progress bars for batch processing
 
-# Configuration and Environment
-pyyaml>=6.0.0,<7.0.0
-python-decouple>=3.6,<4.0
+# Configuration
+pyyaml>=6.0.0,<7.0.0           # YAML configuration files
+python-decouple>=3.6,<4.0      # Environment configuration
 
-# CLI and User Interface
-typer>=0.12.0,<1.0.0
-rich>=13.0.0,<14.0.0
+# CLI Interface
+typer>=0.12.0,<1.0.0           # CLI framework
+rich>=13.0.0,<14.0.0           # Rich terminal output
 
 # Utilities
-pathlib-mate>=1.0.0,<2.0.0
-python-magic>=0.4.27,<1.0.0
-ocrmypdf>=16.0.0,<17.0.0
-faiss-cpu
+python-magic>=0.4.27,<1.0.0    # File type detection
 
+# ==============================================================================
+# DEVELOPMENT DEPENDENCIES (Optional - for contributors)
+# ==============================================================================
+# Uncomment if you're developing/contributing to the project:
+
+# pytest>=7.0.0,<8.0.0          # Testing framework
+# pytest-cov>=4.0.0,<5.0.0      # Test coverage reporting
+# black>=23.0.0,<24.0.0         # Code formatting
+# isort>=5.12.0,<6.0.0          # Import sorting
+
+# ==============================================================================
+# SYSTEM REQUIREMENTS
+# ==============================================================================
+# Tesseract OCR must be installed separately:
+# - macOS:   brew install tesseract
+# - Ubuntu:  sudo apt-get install tesseract-ocr
+# - Windows: Download from https://github.com/UB-Mannheim/tesseract/wiki
+
+# ==============================================================================
+# INSTALLATION
+# ==============================================================================
+# pip install -r requirements.txt
+
+# ==============================================================================
+# NOTES
+# ==============================================================================
+# This simplified requirements file replaces all previous variations:
+# - requirements.txt (old Phase 2B with 33+ packages)
+# - requirements-simple.txt (Stage 2 minimal deps)
+# - requirements-dev.txt (development tools)
+# - requirements-lock.txt (pinned versions)
+# - requirements-docs.txt (document format support)
+#
+# Total production dependencies: 12 packages (down from 33+)
+# This is the ONLY requirements file needed for the project.
