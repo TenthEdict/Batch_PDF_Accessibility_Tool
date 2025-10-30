@@ -685,6 +685,21 @@ class AccessibilityMLEnhancer(EnhancerBase):
                     compliance_results['pdf_ua_elements_added'] += 1
                     compliance_results['modifications_applied'].append('MarkInfo_added')
                 
+                # CRITICAL: Create StructTreeRoot if it doesn't exist
+                # Adobe Acrobat cannot add tags if MarkInfo.Marked = True but StructTreeRoot is missing
+                if not document.Root.get('/StructTreeRoot'):
+                    struct_tree_root = pikepdf.Dictionary({
+                        '/Type': pikepdf.Name('/StructTreeRoot'),
+                        '/K': pikepdf.Array(),  # Empty children array - Acrobat can now add tags
+                        '/ParentTree': pikepdf.Dictionary({
+                            '/Nums': pikepdf.Array()
+                        })
+                    })
+                    document.Root['/StructTreeRoot'] = struct_tree_root
+                    compliance_results['pdf_ua_elements_added'] += 1
+                    compliance_results['modifications_applied'].append('StructTreeRoot_added')
+                    logger.info("Created StructTreeRoot for PDF/UA-1 accessibility tagging")
+                
                 # Add OutputIntent for PDF/UA-1
                 if not document.Root.get('/OutputIntents'):
                     output_intent = pikepdf.Dictionary({
@@ -925,8 +940,23 @@ class AccessibilityMLEnhancer(EnhancerBase):
                 elif not mark_info.get("/Marked"):
                     mark_info["/Marked"] = True
                     elements_added += 1
+                
+                # CRITICAL: Create StructTreeRoot if it doesn't exist
+                # Adobe Acrobat cannot add tags if MarkInfo.Marked = True but StructTreeRoot is missing
+                if not document.Root.get("/StructTreeRoot"):
+                    struct_tree_root = pikepdf.Dictionary({
+                        '/Type': pikepdf.Name('/StructTreeRoot'),
+                        '/K': pikepdf.Array(),  # Empty children array - Acrobat can now add tags
+                        '/ParentTree': pikepdf.Dictionary({
+                            '/Nums': pikepdf.Array()
+                        })
+                    })
+                    document.Root["/StructTreeRoot"] = struct_tree_root
+                    elements_added += 1
+                    logger.info("Created StructTreeRoot for accessibility tagging")
+                    
             except Exception as e:
-                logger.warning(f"Could not set MarkInfo: {e}")
+                logger.warning(f"Could not set MarkInfo or StructTreeRoot: {e}")
             
             logger.info(f"Applied basic accessibility enhancements - {elements_added} elements added")
             
@@ -990,6 +1020,20 @@ class AccessibilityMLEnhancer(EnhancerBase):
         if not document.Root.get('/MarkInfo'):
             document.Root['/MarkInfo'] = pikepdf.Dictionary({'/Marked': True})
             elements_added += 1
+        
+        # CRITICAL: Create StructTreeRoot if it doesn't exist
+        # Adobe Acrobat cannot add tags if MarkInfo.Marked = True but StructTreeRoot is missing
+        if not document.Root.get('/StructTreeRoot'):
+            struct_tree_root = pikepdf.Dictionary({
+                '/Type': pikepdf.Name('/StructTreeRoot'),
+                '/K': pikepdf.Array(),  # Empty children array - Acrobat can now add tags
+                '/ParentTree': pikepdf.Dictionary({
+                    '/Nums': pikepdf.Array()
+                })
+            })
+            document.Root['/StructTreeRoot'] = struct_tree_root
+            elements_added += 1
+            logger.info("Created StructTreeRoot for accessibility tagging")
         
         # Basic language (should be enhanced with detection)
         if not document.Root.get('/Lang'):

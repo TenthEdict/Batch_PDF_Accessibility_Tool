@@ -30,5 +30,5 @@ rich>=13.0.0,<14.0.0
 pathlib-mate>=1.0.0,<2.0.0
 python-magic>=0.4.27,<1.0.0
 ocrmypdf>=16.0.0,<17.0.0
-
+faiss-cpu
 

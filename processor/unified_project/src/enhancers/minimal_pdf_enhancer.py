@@ -114,6 +114,128 @@ class MinimalPDFEnhancer(EnhancerBase):
                 return True
                 
         return False
+    
+    def _strip_orphan_tags(self, document: pikepdf.Pdf) -> int:
+        """
+        Strip orphan tagged content from PDF that interferes with proper tag tree creation.
+        
+        Some PDFs have malformed tagging where:
+        - Pages have StructParents entries but no StructTreeRoot exists
+        - Content streams have BDC/BMC/EMC marked content operators without structure
+        - This creates "orphan tags" that confuse Acrobat's tagging system
+        
+        This function aggressively cleans these orphan tags to allow proper tag tree creation.
+        
+        Args:
+            document: The PDF document to clean
+            
+        Returns:
+            int: Number of pages cleaned
+        """
+        logger.info("Starting orphan tag cleanup...")
+        pages_cleaned = 0
+        streams_cleaned = 0
+        
+        try:
+            # Remove StructParents from all pages (these are orphan references)
+            for page in document.pages:
+                if Name.StructParents in page:
+                    del page[Name.StructParents]
+                    pages_cleaned += 1
+                
+                # CRITICAL: Strip marked content operators from content streams
+                # These orphan BMC/BDC/EMC operators prevent Acrobat from adding tags properly
+                try:
+                    if Name.Contents in page:
+                        contents = page.Contents
+                        
+                        # Handle both single stream and array of streams
+                        if isinstance(contents, pikepdf.Array):
+                            for i, stream in enumerate(contents):
+                                if self._strip_marked_content_from_stream(stream):
+                                    streams_cleaned += 1
+                        else:
+                            if self._strip_marked_content_from_stream(contents):
+                                streams_cleaned += 1
+                                
+                except Exception as e:
+                    logger.debug(f"Could not clean content stream on page: {e}")
+                    continue
+            
+            if pages_cleaned > 0:
+                logger.info(f"Removed orphan StructParents from {pages_cleaned} pages")
+            if streams_cleaned > 0:
+                logger.info(f"Stripped marked content operators from {streams_cleaned} content streams")
+            
+        except Exception as e:
+            logger.warning(f"Error stripping orphan tags: {e}")
+        
+        return pages_cleaned
+    
+    def _strip_marked_content_from_stream(self, stream) -> bool:
+        """
+        Strip marked content operators (BMC, BDC, EMC) from a content stream.
+        
+        These operators create marked content sections but without a proper structure tree,
+        they become orphans that interfere with Acrobat's tag editing capabilities.
+        
+        Args:
+            stream: PDF content stream object
+            
+        Returns:
+            bool: True if stream was modified, False otherwise
+        """
+        try:
+            # Uncompress the stream if needed to read content
+            content_bytes = stream.read_raw_bytes()
+            
+            # Try to decode - handle various encodings
+            try:
+                content_str = content_bytes.decode('utf-8', errors='ignore')
+            except:
+                try:
+                    content_str = content_bytes.decode('latin-1', errors='ignore')
+                except:
+                    return False
+            
+            # Check if there are any marked content operators
+            if not any(op in content_str for op in [' BMC', ' BDC', ' EMC', '\nBMC', '\nBDC', '\nEMC']):
+                return False
+            
+            # Count operators before stripping (for logging)
+            bdc_before = len(re.findall(r'/\w+\s+(?:<<[^>]*>>\s+)?BDC', content_str))
+            bmc_before = len(re.findall(r'/\w+\s+BMC', content_str))
+            emc_before = len(re.findall(r'EMC', content_str))
+            
+            # Pattern to match marked content operators:
+            # /Tag BDC ... EMC
+            # /Tag BMC ... EMC  
+            # Standalone EMC
+            
+            # Remove BDC operations (Begin Marked Content with Dictionary)
+            # Pattern: /TagName BDC or /TagName << ... >> BDC
+            content_str = re.sub(r'/\w+\s+(?:<<[^>]*>>\s+)?BDC\s*', '', content_str)
+            
+            # Remove BMC operations (Begin Marked Content)
+            # Pattern: /TagName BMC
+            content_str = re.sub(r'/\w+\s+BMC\s*', '', content_str)
+            
+            # Remove EMC operations (End Marked Content)
+            content_str = re.sub(r'EMC\s*', '', content_str)
+            
+            # Write the cleaned content back to the stream with compression
+            new_content_bytes = content_str.encode('latin-1', errors='ignore')
+            stream.write(new_content_bytes, filter=pikepdf.Name.FlateDecode)
+            
+            total_removed = bdc_before + bmc_before + emc_before
+            if total_removed > 0:
+                logger.debug(f"Stripped {total_removed} marked content operators (BDC:{bdc_before}, BMC:{bmc_before}, EMC:{emc_before})")
+            
+            return True
+            
+        except Exception as e:
+            logger.debug(f"Could not strip marked content from stream: {e}")
+            return False
 
     def _extract_document_title(self, document: pikepdf.Pdf, input_path: Path) -> Optional[str]:
         """
@@ -621,7 +743,10 @@ class MinimalPDFEnhancer(EnhancerBase):
             
             # Detect mathematical content in the document
             logger.info(f"Analyzing mathematical content in {source_path.name}")
-            boundary_result = boundary_extractor.extract_equation_boundaries(str(source_path))
+            detection_result = math_detector.detect_mathematical_notation(str(source_path))
+            
+            # Extract equation boundaries from detection result
+            boundary_result = boundary_extractor.extract_equation_boundaries(detection_result)
             
             if not boundary_result or not boundary_result.equation_boundaries:
                 logger.info("No mathematical content detected in document")
@@ -710,7 +835,13 @@ class MinimalPDFEnhancer(EnhancerBase):
         Returns:
             pikepdf.Pdf: The enhanced PDF document with mathematical accessibility
         """
-        # First, remove any existing accessibility tags to ensure clean processing
+        # STEP 1: Strip orphan tags from input document
+        # These interfere with proper tag tree creation in Acrobat
+        orphan_pages_cleaned = self._strip_orphan_tags(document)
+        if orphan_pages_cleaned > 0:
+            logger.info(f"Cleaned orphan tags from {orphan_pages_cleaned} pages")
+        
+        # STEP 2: Remove any existing accessibility tags to ensure clean processing
         removed_items = self._remove_existing_accessibility_tags(document)
         
         # Extract parameters with academic paper defaults
@@ -852,6 +983,49 @@ class MinimalPDFEnhancer(EnhancerBase):
         if Name.MarkInfo not in document.Root:
             document.Root.MarkInfo = Dictionary()
         document.Root.MarkInfo[Name.Marked] = True
+        
+        # 1b. CRITICAL: Create StructTreeRoot if it doesn't exist
+        # Adobe Acrobat cannot add tags if MarkInfo.Marked = True but StructTreeRoot is missing
+        if Name.StructTreeRoot not in document.Root:
+            # Create ParentTree as an indirect object (required for proper tag tree functionality)
+            parent_tree_nums = document.make_indirect(Array())
+            parent_tree = document.make_indirect(Dictionary(
+                Nums=parent_tree_nums
+            ))
+            
+            # Create StructTreeRoot with proper indirect object reference
+            struct_tree_root = document.make_indirect(Dictionary(
+                Type=Name.StructTreeRoot,
+                K=Array(),  # Will add Document element below
+                ParentTree=parent_tree,
+                ParentTreeNextKey=0  # Initialize counter for structure elements
+            ))
+            
+            document.Root.StructTreeRoot = struct_tree_root
+            
+            # CRITICAL: Add root Document structure element
+            # Acrobat requires at least one structure element to enable manual tagging
+            root_document_element = document.make_indirect(Dictionary(
+                Type=Name.StructElem,
+                S=Name.Document,  # Standard structure type for document root
+                P=struct_tree_root,  # Parent is StructTreeRoot
+                K=Array(),  # Empty children array - user can add content here
+                Lang=String(language)  # Document language
+            ))
+            
+            # Add Document element to StructTreeRoot.K array
+            struct_tree_root.K.append(root_document_element)
+            
+            logger.info("Created StructTreeRoot with root Document element for accessibility tagging")
+            
+            # Initialize StructParents on all pages (required for tag tree linkage)
+            try:
+                for page_num, page in enumerate(document.pages):
+                    if Name.StructParents not in page:
+                        page[Name.StructParents] = page_num
+                logger.info(f"Initialized StructParents for {len(document.pages)} pages")
+            except Exception as e:
+                logger.warning(f"Could not initialize StructParents on pages: {e}")
         
         # 2. Set document language in catalog
         document.Root[Name.Lang] = String(language)

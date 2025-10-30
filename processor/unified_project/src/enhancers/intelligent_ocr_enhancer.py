@@ -16,6 +16,7 @@ Features:
 import logging
 import time
 import tempfile
+import io
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass
@@ -178,6 +179,7 @@ class IntelligentOCREnhancer(EnhancerBase):
             input_path: Path to input PDF file
             output_path: Path for enhanced output file
             **kwargs: Additional processing parameters
+                - force_ocr_override: bool - Force OCR even if text exists (cleans orphan tags)
             
         Returns:
             bool: True if enhancement was successful
@@ -192,8 +194,15 @@ class IntelligentOCREnhancer(EnhancerBase):
         try:
             start_time = time.time()
             
+            # Check for force OCR override (needed to clean orphan tagged content)
+            force_ocr_override = kwargs.pop('force_ocr_override', False)
+            
             # Step 1: Analyze document to determine if OCR is needed
-            needs_ocr = self._analyze_document_needs_ocr(input_path)
+            if force_ocr_override:
+                needs_ocr = True
+                logger.info(f"OCR forced by override to clean orphan tagged content in {input_path.name}")
+            else:
+                needs_ocr = self._analyze_document_needs_ocr(input_path)
             
             if not needs_ocr:
                 logger.info(f"Document {input_path.name} has sufficient text content, skipping OCR")
@@ -439,22 +448,33 @@ class IntelligentOCREnhancer(EnhancerBase):
                 # Preprocess image
                 processed_img = self._preprocess_image_for_ocr(img_np)
                 
-                # Perform OCR
-                ocr_text = pytesseract.image_to_string(
-                    processed_img,
-                    config=self._build_ocr_config(ocr_params)
-                )
+                # Perform OCR with error handling for pytesseract Unicode issues
+                try:
+                    ocr_text = pytesseract.image_to_string(
+                        processed_img,
+                        config=self._build_ocr_config(ocr_params)
+                    )
+                except UnicodeDecodeError as ude:
+                    # Pytesseract bug: Tesseract error output contains binary data
+                    logger.warning(f"Page {page_num + 1}: Pytesseract Unicode decode error (Tesseract may have issues with this page), skipping")
+                    ocr_text = ""
+                except Exception as ocr_err:
+                    logger.warning(f"Page {page_num + 1}: OCR failed: {ocr_err}, skipping")
+                    ocr_text = ""
                 
                 # Get confidence data if available
-                confidence_data = pytesseract.image_to_data(
-                    processed_img,
-                    config=self._build_ocr_config(ocr_params),
-                    output_type=pytesseract.Output.DICT
-                )
-                
-                # Calculate average confidence
-                confidences = [int(conf) for conf in confidence_data['conf'] if int(conf) > 0]
-                page_confidence = np.mean(confidences) if confidences else 0.0
+                try:
+                    confidence_data = pytesseract.image_to_data(
+                        processed_img,
+                        config=self._build_ocr_config(ocr_params),
+                        output_type=pytesseract.Output.DICT
+                    )
+                    # Calculate average confidence
+                    confidences = [int(conf) for conf in confidence_data['conf'] if int(conf) > 0]
+                    page_confidence = np.mean(confidences) if confidences else 0.0
+                except (UnicodeDecodeError, Exception) as conf_err:
+                    logger.debug(f"Page {page_num + 1}: Could not get confidence data: {conf_err}")
+                    page_confidence = 0.0
                 
                 all_text.append(ocr_text)
                 total_confidence += page_confidence
@@ -490,7 +510,8 @@ class IntelligentOCREnhancer(EnhancerBase):
             )
             
         except Exception as e:
-            logger.error(f"OCR processing failed: {e}")
+            # Safely log exception - avoid UTF-8 decode errors from binary data in exception messages
+            logger.error(f"OCR processing failed: {type(e).__name__}", exc_info=True)
             return OCRProcessingResult(
                 success=False,
                 text_content="",
@@ -682,7 +703,3 @@ class IntelligentOCREnhancer(EnhancerBase):
             stats['ml_learning_stats'] = self.adaptive_ml.get_learning_statistics()
         
         return stats
-
-
-# Import io for BytesIO
-import io

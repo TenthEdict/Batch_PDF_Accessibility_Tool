@@ -26,7 +26,7 @@ import pickle
 import threading
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, TYPE_CHECKING
 import numpy as np
 from dataclasses import dataclass
 
@@ -37,6 +37,10 @@ try:
 except ImportError:
     FAISS_AVAILABLE = False
     faiss = None
+
+# Import for type hints only (not evaluated at runtime)
+if TYPE_CHECKING:
+    import faiss as faiss_typing
 
 # GPU acceleration imports
 try:
@@ -163,16 +167,18 @@ class FAISSVectorDatabase:
         
         return False
     
-    def _create_index(self, size_hint: int = 1000) -> faiss.Index:
+    def _create_index(self, size_hint: int = 1000) -> Optional['faiss_typing.Index']:
         """
         Create appropriate FAISS index based on data size and requirements.
-        
+
         Args:
             size_hint: Expected number of vectors to optimize index type
-            
+
         Returns:
             FAISS index instance
         """
+        if not FAISS_AVAILABLE:
+            raise RuntimeError("FAISS not available - cannot create index")
         if size_hint < 100:
             # Small dataset: use flat index (exact search)
             index = faiss.IndexFlatIP(self.dimension)  # Inner product (cosine similarity)
@@ -195,8 +201,10 @@ class FAISSVectorDatabase:
         logger.info(f"Created FAISS index: {index_type} for {size_hint} vectors")
         return index
     
-    def _move_to_gpu(self, index: faiss.Index) -> faiss.Index:
+    def _move_to_gpu(self, index: 'faiss_typing.Index') -> Optional['faiss_typing.Index']:
         """Move index to GPU if GPU acceleration is enabled."""
+        if not FAISS_AVAILABLE:
+            raise RuntimeError("FAISS not available - cannot use GPU acceleration")
         if not self.gpu_enabled:
             return index
         

@@ -25,7 +25,7 @@ import json
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, TYPE_CHECKING
 from dataclasses import dataclass, asdict
 import time
 import hashlib
@@ -42,7 +42,14 @@ try:
     ML_DEPS_AVAILABLE = True
 except ImportError as e:
     ML_DEPS_AVAILABLE = False
+    StandardScaler = None
+    LabelEncoder = None
     logging.warning(f"ML dependencies not available: {e}")
+
+# Type hints only (not evaluated at runtime)
+if TYPE_CHECKING:
+    from sklearn.preprocessing import StandardScaler as StandardScalerType
+    from sklearn.preprocessing import LabelEncoder as LabelEncoderType
 
 # FAISS integration (Phase 2B infrastructure)
 try:
@@ -80,8 +87,8 @@ class AccessibilityTrainingDataset:
     y_val: Dict[str, np.ndarray]
     feature_names: List[str]
     target_names: Dict[str, List[str]]
-    scaler: StandardScaler
-    label_encoders: Dict[str, LabelEncoder]
+    scaler: Optional['StandardScalerType']
+    label_encoders: Dict[str, 'LabelEncoderType']
     metadata: Dict[str, Any]
 
 

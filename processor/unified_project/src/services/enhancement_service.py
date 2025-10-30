@@ -113,14 +113,35 @@ class EnhancementService:
         try:
             with tempfile.TemporaryDirectory() as temp_dir:
                 temp_path = Path(temp_dir)
+                preprocessed_path = temp_path / "preprocessed.pdf"
                 ocr_output_path = temp_path / "ocr_enhanced.pdf"
                 compressed_output_path = temp_path / "compressed.pdf"
 
+                # Step 0: CRITICAL PREPROCESSING - Strip orphan marked content tags
+                # Input PDFs may have marked content operators (BDC/EMC) without structure tree
+                # These interfere with Acrobat's ability to add tags properly
+                self.logger.info("Step 0: Preprocessing - Stripping orphan marked content tags...")
+                try:
+                    import pikepdf
+                    with pikepdf.open(input_path) as pdf:
+                        # Use minimal_pdf_enhancer's strip function
+                        pages_cleaned = self.minimal_pdf_enhancer._strip_orphan_tags(pdf)
+                        if pages_cleaned > 0:
+                            self.logger.info(f"Preprocessed: cleaned {pages_cleaned} pages of orphan tags")
+                        pdf.save(preprocessed_path)
+                    # Use preprocessed PDF for OCR
+                    ocr_input_path = preprocessed_path
+                except Exception as e:
+                    self.logger.warning(f"Could not preprocess to strip orphan tags: {e}")
+                    # Fall back to using original input
+                    ocr_input_path = input_path
+
                 # Step 1: Intelligent OCR Processing (Default for academic documents)
+                # Force OCR to regenerate clean content streams
                 if self.intelligent_ocr_enhancer:
                     self.logger.info("Step 1: Applying intelligent OCR with ML-enhanced processing for academic documents...")
                     ocr_success = self.intelligent_ocr_enhancer.enhance_file(
-                        input_path, ocr_output_path
+                        ocr_input_path, ocr_output_path
                     )
                     if ocr_success:
                         # Get processing statistics
@@ -128,11 +149,11 @@ class EnhancementService:
                         self.logger.info(f"Intelligent OCR completed. Success rate: {stats.get('success_rate', 0):.2%}")
                     else:
                         self.logger.warning("Intelligent OCR failed, falling back to standard OCR...")
-                        ocr_success = self.ocr_enhancer.enhance_file(input_path, ocr_output_path)
+                        ocr_success = self.ocr_enhancer.enhance_file(ocr_input_path, ocr_output_path)
                 else:
                     self.logger.info("Step 1: Applying standard OCR with aggressive web compression...")
                     ocr_success = self.ocr_enhancer.enhance_file(
-                        input_path, ocr_output_path
+                        ocr_input_path, ocr_output_path
                     )
                 
                 if not ocr_success:

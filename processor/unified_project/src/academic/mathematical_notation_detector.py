@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import logging
 import time
+import io
 from PIL import Image
 import fitz  # PyMuPDF for PDF processing
 
@@ -216,7 +217,7 @@ class MathematicalNotationDetector:
             return result
             
         except Exception as e:
-            self.logger.error(f"Mathematical notation detection failed: {e}")
+            self.logger.error(f"Mathematical notation detection failed: {e}", exc_info=True)
             if MONITORING_AVAILABLE and self.enable_monitoring:
                 ml_collector.record_ml_operation(
                     operation_type=MLOperationType.FEATURE_EXTRACTION,
@@ -498,7 +499,7 @@ class MathematicalNotationDetector:
         if width < 50 or height < 10:  # Too small to be an equation
             return False
         
-        if width > gray_image.shape[1] * 0.8:  # Too wide, likely regular text
+        if width > roi.shape[1] * 0.8:  # Too wide, likely regular text
             return False
         
         # Check for mathematical symbol density
@@ -695,7 +696,3 @@ def create_academic_math_detector(enable_monitoring: bool = True) -> Mathematica
         max_element_area=75000,   # Larger maximum for complex equations
         enable_monitoring=enable_monitoring
     )
-
-
-# Missing import that was referenced
-import io
