@@ -1,29 +1,18 @@
 """
 Batch processing module for ePubs Accessibility Enhancement.
 
-This module provides advanced batch processing capabilities for PDF accessibility
-enhancement with comprehensive monitoring, error handling, and quality assurance.
-
-Features:
-- Sequential batch processing (AdvancedBatchProcessor)
-- Parallel batch processing with dynamic worker scaling (ParallelBatchProcessor)
-- Enhanced batch processor with automatic mode selection (EnhancedBatchProcessor)
-- Resource monitoring and performance optimization
+SIMPLIFIED VERSION (Stage 2): Only exports SimpleBatchProcessor.
+Legacy Phase 2B batch processors (AdvancedBatchProcessor, ParallelBatchProcessor)
+are still in the codebase but require archived dependencies.
 """
 
-from .advanced_batch_processor import AdvancedBatchProcessor, BatchProcessingConfiguration
-from .parallel_batch_processor import (
-    ParallelBatchProcessor, 
-    EnhancedBatchProcessor,
-    ResourceMonitor,
-    ParallelProcessingMetrics
-)
+# Import simplified batch processor (primary interface)
+from .simple_batch_processor import SimpleBatchProcessor
 
 __all__ = [
-    'AdvancedBatchProcessor', 
-    'BatchProcessingConfiguration',
-    'ParallelBatchProcessor',
-    'EnhancedBatchProcessor', 
-    'ResourceMonitor',
-    'ParallelProcessingMetrics'
+    'SimpleBatchProcessor',  # Simplified processor (no Phase 2B dependencies)
 ]
+
+# Note: Legacy processors (AdvancedBatchProcessor, ParallelBatchProcessor)
+# are available in the codebase but require Phase 2B dependencies
+# (FAISS, monitoring, caching) which are now archived in /archive/phase2b/
