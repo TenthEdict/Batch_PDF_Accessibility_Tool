@@ -125,6 +125,7 @@ def batch_process(
     workers: int = typer.Option(1, "--workers", "-w", help="Number of parallel workers (1 = sequential)"),
     recursive: bool = typer.Option(True, "--recursive/--no-recursive", help="Process subdirectories recursively"),
     skip_ocr: bool = typer.Option(False, "--skip-ocr", help="Skip OCR processing for all files"),
+    force_ocr: bool = typer.Option(False, "--force-ocr", help="Force OCR even if text exists"),
     text_threshold: int = typer.Option(100, "--text-threshold", help="Minimum chars/page to skip OCR"),
     dpi: int = typer.Option(300, "--dpi", help="DPI for OCR image conversion"),
     ocr_language: str = typer.Option("eng", "--ocr-lang", help="Tesseract language code"),
@@ -137,6 +138,7 @@ def batch_process(
         epubs-simple batch-process input_folder/ output_folder/
         epubs-simple batch-process input_folder/ output_folder/ --workers 4
         epubs-simple batch-process input_folder/ output_folder/ --skip-ocr
+        epubs-simple batch-process input_folder/ output_folder/ --force-ocr
     """
     setup_logging(verbose)
 
@@ -167,7 +169,8 @@ def batch_process(
             output_dir=output_dir,
             workers=workers,
             recursive=recursive,
-            skip_ocr=skip_ocr
+            skip_ocr=skip_ocr,
+            force_ocr=force_ocr
         )
 
         # Display summary
