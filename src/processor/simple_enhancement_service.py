@@ -99,10 +99,15 @@ class SimpleEnhancementService:
             logger.info(f"Starting enhancement pipeline for: {input_path}")
             logger.info(f"Output will be saved to: {output_path}")
 
+            # Step 0: Normalize MediaBox to fix coordinate system issues
+            # This fixes PDFs with non-standard origins (e.g., MediaBox [0, -40, 456, 672])
+            normalized_input = self.ocr_enhancer._normalize_page_boxes(input_path)
+            temp_normalized = normalized_input if normalized_input != input_path else None
+
             # Step 1: OCR Enhancement (if needed)
             if skip_ocr:
                 logger.info("Skipping OCR step (skip_ocr=True)")
-                ocr_output = input_path
+                ocr_output = normalized_input
             else:
                 # Use temporary file for OCR output
                 with tempfile.NamedTemporaryFile(
@@ -114,16 +119,18 @@ class SimpleEnhancementService:
 
                 logger.info("Step 1/2: OCR Enhancement")
                 ocr_success = self.ocr_enhancer.enhance_file(
-                    input_path,
+                    normalized_input,
                     ocr_output,
                     force_ocr=force_ocr
                 )
 
                 if not ocr_success:
                     logger.error("OCR enhancement failed")
-                    # Clean up temp file
+                    # Clean up temp files
                     if ocr_output.exists():
                         ocr_output.unlink()
+                    if temp_normalized and Path(temp_normalized).exists():
+                        Path(temp_normalized).unlink()
                     return False
 
             # Step 2: PDF/UA Enhancement
@@ -140,10 +147,15 @@ class SimpleEnhancementService:
             )
 
             # Clean up temporary OCR file if it was created
-            if not skip_ocr and ocr_output != input_path:
+            if not skip_ocr and ocr_output != normalized_input:
                 if ocr_output.exists():
                     ocr_output.unlink()
-                    logger.debug(f"Cleaned up temporary file: {ocr_output}")
+                    logger.debug(f"Cleaned up temporary OCR file: {ocr_output}")
+
+            # Clean up normalized file if it was created
+            if temp_normalized and Path(temp_normalized).exists():
+                Path(temp_normalized).unlink()
+                logger.debug(f"Cleaned up normalized file: {temp_normalized}")
 
             if not pdfua_success:
                 logger.error("PDF/UA enhancement failed")
