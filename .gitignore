@@ -17,3 +17,5 @@ __pycache__/
 *.ini
 urls.txt
 venv/
+.memory-bank/
+archive/
