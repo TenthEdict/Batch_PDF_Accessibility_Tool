@@ -104,7 +104,18 @@ class SimpleEnhancementService:
             normalized_input = self.ocr_enhancer._normalize_page_boxes(input_path)
             temp_normalized = normalized_input if normalized_input != input_path else None
 
+            # Step 0b: --force-ocr replaces the existing OCR text, but ocrmypdf can't
+            # strip text it previously put inside a Form XObject, so the text layer
+            # would be duplicated. Flatten it into the page first so it can.
+            if force_ocr and not skip_ocr:
+                flattened = self.pdfua_enhancer.flatten_ocr_layers_to_temp(normalized_input)
+                if flattened is not None:
+                    if temp_normalized and Path(temp_normalized).exists():
+                        Path(temp_normalized).unlink()
+                    normalized_input = temp_normalized = flattened
+
             # Step 1: OCR Enhancement (if needed)
+            ocr_performed = False
             if skip_ocr:
                 logger.info("Skipping OCR step (skip_ocr=True)")
                 ocr_output = normalized_input
@@ -118,7 +129,7 @@ class SimpleEnhancementService:
                     ocr_output = Path(tmp_file.name)
 
                 logger.info("Step 1/2: OCR Enhancement")
-                ocr_success = self.ocr_enhancer.enhance_file(
+                ocr_success, ocr_performed = self.ocr_enhancer.enhance_file_with_status(
                     normalized_input,
                     ocr_output,
                     force_ocr=force_ocr
@@ -135,8 +146,8 @@ class SimpleEnhancementService:
 
             # Step 2: PDF/UA Enhancement
             logger.info("Step 2/2: PDF/UA-1 Enhancement")
-            # Pass ocr_performed flag to help PDF/UA enhancer make smart decisions
-            ocr_performed = not skip_ocr
+            # Tell the PDF/UA enhancer whether OCR actually ran (not just whether it
+            # was allowed to): files copied through unchanged keep valid tags.
             pdfua_success = self.pdfua_enhancer.enhance_file(
                 ocr_output,
                 output_path,
