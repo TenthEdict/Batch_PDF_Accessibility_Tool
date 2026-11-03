@@ -13,7 +13,7 @@ This project provides **two essential components** for PDF accessibility workflo
 1. **Processor** - Prepares PDFs for accessibility tagging
    - OCR text layer generation (invisible text for screen readers)
    - Orphan tag stripping (critical for Acrobat compatibility)
-   - PDF/UA-1 metadata compliance
+   - Accurate tagging/language metadata (no false PDF/UA-1 claims)
    - Batch processing with folder preservation
 
 2. **Scraper** - Downloads academic papers from digital repositories
@@ -220,10 +220,11 @@ python3 -m src.processor.main_simple batch-process \
 ### PDF/UA-1 Preprocessing
 - ✅ OCR text layer (invisible - for screen readers only)
 - ✅ Orphan tag stripping (removes malformed marked content)
-- ✅ PDF/UA-1 metadata
+- ✅ OCR text layer flattened into page content (prevents Acrobat tagging every page as a Figure)
+- ✅ No PDF/UA-1 conformance claim on untagged output (add tags in Acrobat first)
 - ✅ Document properties (title, language, author)
 - ✅ Clean structure for Acrobat manual tagging
-- ✅ Marked content "hooks" for Acrobat to link text to tags
+- ✅ Existing valid tag trees preserved when OCR isn't needed
 - ❌ No auto-generated accessibility tags (do this in Acrobat)
 
 ### Key Feature: Intelligent Tag Cleanup
@@ -360,9 +361,8 @@ top  # or htop
 
 This is normal! The enhancements are structural:
 - OCR text layer (invisible to sighted users)
-- PDF/UA metadata (in document properties)
+- Title, author and language (in document properties)
 - Orphan tag removal (in PDF structure)
-- Marked content operators (for Acrobat tagging)
 
 Verify enhancements:
 ```bash
@@ -448,7 +448,7 @@ project/
 4. **Fix any issues**
 5. **Export compliant PDF**
 
-The orphan tag stripping and PDF/UA metadata from this tool ensure clean tagging in Acrobat!
+The orphan tag stripping and OCR layer flattening from this tool ensure clean tagging in Acrobat!
 
 ---
 

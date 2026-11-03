@@ -11,7 +11,7 @@ boundaries and text positioning.
 import logging
 import fitz  # PyMuPDF
 from pathlib import Path
-from typing import Union, Optional
+from typing import Optional, Tuple, Union
 
 try:
     import ocrmypdf
@@ -104,8 +104,24 @@ class SimpleOCREnhancer:
         force_ocr: bool = False,
         **kwargs
     ) -> bool:
+        """Apply OCR if needed. Returns True on success (see enhance_file_with_status)."""
+        success, _ = self.enhance_file_with_status(
+            input_path, output_path, force_ocr=force_ocr, **kwargs
+        )
+        return success
+
+    def enhance_file_with_status(
+        self,
+        input_path: Union[str, Path],
+        output_path: Union[str, Path],
+        force_ocr: bool = False,
+        **kwargs
+    ) -> Tuple[bool, bool]:
         """
-        Apply OCR to PDF file if needed.
+        Apply OCR to PDF file if needed, reporting whether OCR actually ran.
+
+        Returning the status (rather than storing it on self) keeps this safe
+        when one enhancer is shared across batch worker threads.
 
         Args:
             input_path: Path to the input PDF
@@ -114,7 +130,8 @@ class SimpleOCREnhancer:
             **kwargs: Additional parameters (ignored for simplicity)
 
         Returns:
-            bool: True if successful, False otherwise
+            (success, ocr_performed): ocr_performed is False when the input
+            was copied through unchanged (enough text already present).
         """
         try:
             input_path = Path(input_path)
@@ -122,7 +139,7 @@ class SimpleOCREnhancer:
 
             if not input_path.exists():
                 logger.error(f"Input file not found: {input_path}")
-                return False
+                return False, False
 
             # Create output directory if needed
             output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -133,7 +150,7 @@ class SimpleOCREnhancer:
                 # Just copy the file if OCR not needed
                 import shutil
                 shutil.copy2(input_path, output_path)
-                return True
+                return True, False
 
             # Perform OCR
             logger.info(f"Starting OCR processing: {input_path}")
@@ -141,9 +158,11 @@ class SimpleOCREnhancer:
 
         except Exception as e:
             logger.error(f"Error in OCR enhancement: {e}")
-            return False
+            return False, False
 
-    def _apply_ocr(self, input_path: Path, output_path: Path, force_ocr: bool = False) -> bool:
+    def _apply_ocr(
+        self, input_path: Path, output_path: Path, force_ocr: bool = False
+    ) -> Tuple[bool, bool]:
         """
         Apply OCR to PDF using ocrmypdf with proper text positioning.
 
@@ -153,7 +172,7 @@ class SimpleOCREnhancer:
             force_ocr: Force OCR even if text exists
 
         Returns:
-            bool: True if successful
+            (success, ocr_performed)
         """
         try:
             logger.info(f"Starting OCR processing with ocrmypdf: {input_path}")
@@ -207,24 +226,24 @@ class SimpleOCREnhancer:
                     pass
 
             logger.info(f"OCR complete: {output_path}")
-            return True
+            return True, True
 
         except ocrmypdf.exceptions.PriorOcrFoundError:
             # PDF already has OCR text, just copy it
             logger.info("PDF already has OCR text, copying to output")
             import shutil
             shutil.copy2(input_path, output_path)
-            return True
+            return True, False
 
         except ocrmypdf.exceptions.EncryptedPdfError:
             logger.error(f"Cannot process encrypted PDF: {input_path}")
-            return False
+            return False, False
 
         except Exception as e:
             logger.error(f"Error applying OCR: {e}")
             import traceback
             logger.error(f"Full traceback: {traceback.format_exc()}")
-            return False
+            return False, False
 
     def _normalize_page_boxes(self, input_path: Path) -> Path:
         """

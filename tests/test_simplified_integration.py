@@ -156,15 +156,12 @@ def test_end_to_end_processing():
         if PIKEPDF_AVAILABLE:
             pdf = pikepdf.open(output_path)
 
-            # Check marked as tagged
-            marked = pdf.Root.get("/MarkInfo", {}).get("/Marked", False)
-            if not marked:
-                print("✗ PDF not marked as tagged")
-                return False
+            has_tree = "/StructTreeRoot" in pdf.Root
 
-            # Check StructTreeRoot exists
-            if "/StructTreeRoot" not in pdf.Root:
-                print("✗ StructTreeRoot not present")
+            # MarkInfo must reflect whether a structure tree exists
+            marked = bool(pdf.Root.get("/MarkInfo", {}).get("/Marked", False))
+            if marked != has_tree:
+                print(f"✗ MarkInfo Marked={marked} but StructTreeRoot present={has_tree}")
                 return False
 
             # Check language
@@ -172,13 +169,20 @@ def test_end_to_end_processing():
                 print("✗ Language not set")
                 return False
 
-            # Check OutputIntents
-            if "/OutputIntents" not in pdf.Root:
-                print("✗ OutputIntents not present")
-                return False
+            # No non-standard PDF/UA OutputIntent
+            for intent in pdf.Root.get("/OutputIntents", []):
+                if intent.get("/S") == "/GTS_PDFUA1":
+                    print("✗ Non-standard GTS_PDFUA1 OutputIntent present")
+                    return False
+
+            # Untagged output must not claim PDF/UA-1 conformance
+            with pdf.open_metadata() as meta:
+                if not has_tree and "pdfuaid:part" in meta:
+                    print("✗ Untagged PDF claims PDF/UA-1 (pdfuaid:part)")
+                    return False
 
             pdf.close()
-            print("✓ PDF/UA compliance verified")
+            print("✓ Tagging state and metadata verified")
 
         # Cleanup
         output_path.unlink()
