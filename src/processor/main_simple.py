@@ -63,7 +63,7 @@ def process(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging"),
 ):
     """
-    Process a single PDF file with OCR and PDF/UA-1 compliance.
+    Process a single PDF file: OCR if needed, then prepare it for tagging in Acrobat.
 
     Examples:
         epubs-simple process input.pdf output.pdf
@@ -174,7 +174,11 @@ def batch_process(
         )
 
         # Display summary
-        if summary.get("success"):
+        if summary.get("success") and summary.get("total_files", 0) == 0:
+            # Nothing to do is not an error (and this summary has no durations)
+            console.print(f"[yellow]{summary.get('message', 'No PDF files found')}[/yellow]")
+            raise typer.Exit(code=0)
+        elif summary.get("success"):
             console.print(f"\n[bold]Processing Summary:[/bold]")
             console.print(f"  Total files:     {summary['total_files']}")
             console.print(f"  [green]Successful:[/green]      {summary['processed']}")
@@ -195,6 +199,9 @@ def batch_process(
             console.print(f"\n[red]✗ Batch processing failed:[/red] {summary.get('error', 'Unknown error')}")
             raise typer.Exit(code=1)
 
+    except typer.Exit:
+        # typer.Exit subclasses Exception; without this, Exit(0) became exit 1
+        raise
     except Exception as e:
         logger.error(f"Error in batch processing: {e}")
         console.print(f"\n[red]✗ Error:[/red] {e}")
@@ -211,7 +218,7 @@ def version():
     console.print("Stage: 2 - Modular Refactoring\n")
     console.print("Features:")
     console.print("  - Simple OCR with Tesseract")
-    console.print("  - PDF/UA-1 compliance")
+    console.print("  - Acrobat-friendly OCR text layer (avoids all-Figure autotagging)")
     console.print("  - Orphan tag stripping")
     console.print("  - Batch processing with folder preservation\n")
 
@@ -224,7 +231,7 @@ def main():
     This tool provides basic PDF preprocessing for accessibility:
     - OCR text layer generation
     - Orphan tag stripping for Acrobat compatibility
-    - PDF/UA-1 metadata compliance
+    - Accurate tagging and language metadata (no PDF/UA claim until tagged)
     - Batch processing with folder structure preservation
 
     Workflow:
