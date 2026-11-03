@@ -20,7 +20,7 @@ from .batch_processor import TranscriptBatchProcessor
 
 app = typer.Typer(
     name="transcript-ocr",
-    help="OCR TIFF files into structured transcripts.",
+    help="OCR single-page TIFF files into one text file per page.",
     add_completion=False,
 )
 console = Console()
@@ -105,10 +105,10 @@ def process(
         help="Enable verbose logging",
     ),
 ):
-    """Process TIFF files into structured transcripts.
+    """OCR TIFF files into one text file per page.
 
     Groups TIFF files by collection and reference ID parsed from filenames,
-    then OCRs and combines pages into transcript text files.
+    then writes each page's text to output_dir/{collection}/{reference_id}/.
     """
     setup_logging(verbose)
 
@@ -118,6 +118,11 @@ def process(
         ref_ids_filter = set(r.strip() for r in ref_ids.split(","))
     elif ref_ids_file:
         ref_ids_filter = load_ref_ids_from_file(ref_ids_file)
+        if not ref_ids_filter:
+            console.print(
+                f"[yellow]Warning:[/yellow] {ref_ids_file} contains no reference IDs; "
+                "nothing will be processed"
+            )
 
     # Show what we're processing
     console.print(f"[bold]Input directory:[/bold] {input_dir}")

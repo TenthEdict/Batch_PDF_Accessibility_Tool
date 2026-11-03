@@ -164,6 +164,7 @@ addopts = [
     "--strict-config",
     "--cov=src.processor",
     "--cov=src.scraper",
+    "--cov=src.transcript_ocr",
     "--cov-report=term-missing",
     "--cov-report=html:htmlcov",
     "--cov-report=xml",
