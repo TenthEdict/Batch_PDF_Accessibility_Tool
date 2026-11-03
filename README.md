@@ -85,7 +85,8 @@ python3 -m src.processor.main_simple batch-process \
 
 **Common options:**
 - `--skip-ocr` - Skip OCR if text already exists
-- `--force-ocr` - Force OCR even if text exists
+- `--force-ocr` - Redo OCR even if text exists (for scans with a bad existing OCR layer). Avoid on born-digital PDFs (Word exports etc.): real text is normally left alone, but text in non-embedded fonts can get OCR'd again and read twice by screen readers
+- `--language en-GB` - Document language; by default the PDF's own language is kept (en-US if it has none)
 - `--verbose` - Show detailed logging
 - `--workers N` - Use N parallel workers for batch
 - `--dpi 400` - Higher DPI for degraded scans
@@ -178,7 +179,7 @@ python3 -m src.processor.main_simple batch-process \
 ```
 
 ### Modern PDFs with Text
-PDFs with text needing PDF/UA compliance only:
+PDFs with real text, e.g. Word exports (already-tagged files keep their tags):
 ```bash
 python3 -m src.processor.main_simple batch-process \
     modern_pdfs/ compliant_pdfs/ \

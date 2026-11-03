@@ -64,7 +64,7 @@ class SimpleEnhancementService:
         output_path: Union[str, Path],
         title: Optional[str] = None,
         author: Optional[str] = None,
-        language: str = "en-US",
+        language: Optional[str] = None,
         skip_ocr: bool = False,
         force_ocr: bool = False,
         **kwargs
@@ -77,7 +77,8 @@ class SimpleEnhancementService:
             output_path: Path where enhanced PDF should be saved
             title: Document title (default: extracted from filename)
             author: Document author (default: None)
-            language: Document language (default: "en-US")
+            language: Document language (default: keep the document's own
+                /Lang, else "en-US")
             skip_ocr: Skip OCR step entirely (default: False)
             force_ocr: Force OCR even if text exists (default: False)
             **kwargs: Additional parameters (ignored)

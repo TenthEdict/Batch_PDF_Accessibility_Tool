@@ -50,7 +50,7 @@ class SimplePDFUAEnhancer:
         output_path: Union[str, Path],
         title: Optional[str] = None,
         author: Optional[str] = None,
-        language: str = "en-US",
+        language: Optional[str] = None,
         ocr_performed: bool = False,
         **kwargs
     ) -> bool:
@@ -62,7 +62,8 @@ class SimplePDFUAEnhancer:
             output_path: Path where the enhanced PDF should be saved
             title: Document title (default: extracted from filename)
             author: Document author (default: None)
-            language: Document language (default: "en-US")
+            language: Document language. None keeps the document's own /Lang,
+                falling back to "en-US" when it has none.
             ocr_performed: Whether OCR was just performed (default: False)
             **kwargs: Additional parameters (ignored for simplicity)
 
@@ -105,7 +106,7 @@ class SimplePDFUAEnhancer:
         input_path: Path,
         title: Optional[str],
         author: Optional[str],
-        language: str,
+        language: Optional[str],
         ocr_performed: bool = False
     ) -> None:
         """
@@ -142,7 +143,8 @@ class SimplePDFUAEnhancer:
         if not title:
             title = self._extract_title(document, input_path)
 
-        # Step 3: Update document metadata
+        # Step 3: Resolve the language, then update document metadata
+        language = self._resolve_language(document, language)
         self._update_metadata(document, title, author, language)
 
         # Step 4: Set tagging state and language (no compliance claims)
@@ -523,6 +525,23 @@ class SimplePDFUAEnhancer:
 
         except Exception as e:
             logger.warning(f"Error updating metadata: {e}")
+
+    DEFAULT_LANGUAGE = "en-US"
+
+    @classmethod
+    def _resolve_language(cls, document: pikepdf.Pdf, language: Optional[str]) -> str:
+        """
+        An explicit language wins; otherwise keep the document's own /Lang
+        (e.g. "en" from a Word export) rather than overwriting it; otherwise
+        fall back to en-US.
+        """
+        if language:
+            return language
+        existing = document.Root.get(Name.Lang)
+        if existing is not None and str(existing).strip():
+            logger.info(f"Keeping document language: {str(existing).strip()}")
+            return str(existing).strip()
+        return cls.DEFAULT_LANGUAGE
 
     def _set_tagging_state(self, document: pikepdf.Pdf, language: str) -> None:
         """
