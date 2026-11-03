@@ -14,7 +14,6 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from .filename_parser import FilenameParseError, TiffFileInfo, parse_tiff_filename
 from .tiff_ocr_processor import TiffOCRProcessor
-from .transcript_assembler import PageData, TranscriptAssembler
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,6 @@ class TranscriptBatchProcessor:
             dpi: DPI hint for Tesseract.
         """
         self.ocr_processor = TiffOCRProcessor(language=language, dpi=dpi)
-        self.assembler = TranscriptAssembler()
 
     def discover_and_group(
         self,
@@ -119,39 +117,33 @@ class TranscriptBatchProcessor:
             Result dictionary with success status, output path, and stats.
         """
         start_time = datetime.now()
-        page_data_list: List[PageData] = []
         errors = 0
+        output_files: List[str] = []
+
+        # Create output folder: output_dir/{collection}/{reference_id}/
+        transcript_output_dir = output_dir / collection / reference_id
+        transcript_output_dir.mkdir(parents=True, exist_ok=True)
 
         for tiff_path, info in pages:
             text, error = self.ocr_processor.process_tiff_safe(tiff_path)
-            page_data = PageData(
-                page_number=info.page_number,
-                filename=info.original_filename,
-                text=text or "",
-                error=error,
-            )
-            page_data_list.append(page_data)
+
             if error:
                 errors += 1
+                logger.warning(f"OCR error for {info.original_filename}: {error}")
 
-        # Assemble transcript
-        transcript_text = self.assembler.assemble(
-            collection=collection,
-            reference_id=reference_id,
-            pages=page_data_list,
-        )
-
-        # Write output file
-        output_path = output_dir / collection / f"{reference_id}.txt"
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(transcript_text, encoding="utf-8")
+            # Write individual page file with same base name as TIFF
+            txt_filename = Path(info.original_filename).stem + ".txt"
+            output_path = transcript_output_dir / txt_filename
+            output_path.write_text(text or "", encoding="utf-8")
+            output_files.append(str(output_path))
 
         duration = (datetime.now() - start_time).total_seconds()
 
         return {
             "collection": collection,
             "reference_id": reference_id,
-            "output_path": str(output_path),
+            "output_dir": str(transcript_output_dir),
+            "output_files": output_files,
             "total_pages": len(pages),
             "successful_pages": len(pages) - errors,
             "errors": errors,
@@ -294,15 +286,17 @@ class TranscriptBatchProcessor:
 
         # Group by collection for stats
         collections: Dict[str, Dict] = defaultdict(
-            lambda: {"transcripts": 0, "pages": 0, "errors": 0}
+            lambda: {"transcripts": 0, "pages": 0, "files": 0, "errors": 0}
         )
         for r in successful:
             col = r["collection"]
             collections[col]["transcripts"] += 1
             collections[col]["pages"] += r.get("total_pages", 0)
+            collections[col]["files"] += len(r.get("output_files", []))
             collections[col]["errors"] += r.get("errors", 0)
 
         total_pages = sum(r.get("total_pages", 0) for r in successful)
+        total_files = sum(len(r.get("output_files", [])) for r in successful)
         total_errors = sum(r.get("errors", 0) for r in successful)
 
         return {
@@ -311,6 +305,7 @@ class TranscriptBatchProcessor:
             "successful_transcripts": len(successful),
             "failed_transcripts": len(failed),
             "total_pages": total_pages,
+            "total_files_generated": total_files,
             "total_ocr_errors": total_errors,
             "total_duration": total_duration,
             "avg_duration_per_transcript": (
