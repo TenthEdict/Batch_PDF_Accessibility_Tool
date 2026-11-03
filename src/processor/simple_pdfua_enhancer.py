@@ -182,6 +182,157 @@ class SimplePDFUAEnhancer:
         # DO NOT strip marked content - Acrobat needs it for manual tagging!
         logger.info("Preserved marked content operators for Acrobat tagging")
 
+        # Move ocrmypdf's text layer out of its Form XObject into the page
+        flattened = self._flatten_ocr_text_layers(document)
+        if flattened > 0:
+            logger.info(f"Flattened OCR text layer into page content on {flattened} pages")
+
+    # ------------------------------------------------------------------
+    # OCR text layer flattening
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _matmul(m, n):
+        """Multiply two PDF matrices (a b c d e f): result = m x n."""
+        a1, b1, c1, d1, e1, f1 = m
+        a2, b2, c2, d2, e2, f2 = n
+        return (
+            a1 * a2 + b1 * c2,
+            a1 * b2 + b1 * d2,
+            c1 * a2 + d1 * c2,
+            c1 * b2 + d1 * d2,
+            e1 * a2 + f1 * c2 + e2,
+            e1 * b2 + f1 * d2 + f2,
+        )
+
+    def _flatten_ocr_text_layers(self, document: pikepdf.Pdf) -> int:
+        """
+        Inline ocrmypdf's invisible text layer into each page's content stream.
+
+        ocrmypdf grafts its OCR text as a Form XObject (named ``/OCR-...``) that
+        is painted *underneath* the scanned image. Acrobat's auto-tagger
+        (Accessibility > Autotag / "Tagged PDF" fix) frequently treats such
+        pages as "difficult pages" and tags everything on them as a Figure.
+
+        Acrobat's own OCR output instead writes invisible text (3 Tr) directly
+        in the page content, after the image. This method rewrites pages into
+        that layout. The page looks identical; only the paint order and
+        location of the invisible text change.
+
+        Returns:
+            int: Number of pages flattened
+        """
+        flattened = 0
+        for page_num, page in enumerate(document.pages):
+            try:
+                if self._flatten_page_ocr_layer(document, page):
+                    flattened += 1
+            except Exception as e:
+                logger.warning(f"Could not flatten OCR layer on page {page_num + 1}: {e}")
+        return flattened
+
+    def _flatten_page_ocr_layer(self, document: pikepdf.Pdf, page) -> bool:
+        resources = page.obj.get(Name.Resources)
+        if resources is None or Name.XObject not in resources:
+            return False
+        xobjects = resources[Name.XObject]
+
+        ocr_forms = {
+            str(name): xobjects[name]
+            for name in list(xobjects.keys())
+            if str(name).startswith("/OCR-")
+            and xobjects[name].get(Name.Subtype) == Name.Form
+        }
+        if not ocr_forms:
+            return False
+
+        # Only handle forms whose resources are fonts alone (what ocrmypdf emits)
+        for form in ocr_forms.values():
+            form_res = form.get(Name.Resources, Dictionary())
+            if any(key != Name.Font for key in form_res.keys()):
+                logger.debug("OCR form has non-font resources; leaving page unchanged")
+                return False
+
+        identity = (1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+        ctm = identity
+        stack = []
+        kept = []
+        text_blocks = []
+
+        for instr in pikepdf.parse_content_stream(page):
+            op = str(instr.operator) if not isinstance(
+                instr, pikepdf.ContentStreamInlineImage
+            ) else "INLINE IMAGE"
+            if op == "q":
+                stack.append(ctm)
+            elif op == "Q":
+                ctm = stack.pop() if stack else identity
+            elif op == "cm":
+                ctm = self._matmul(tuple(float(x) for x in instr.operands), ctm)
+            elif op == "Do" and str(instr.operands[0]) in ocr_forms:
+                text_blocks.append((ctm, ocr_forms[str(instr.operands[0])]))
+                continue  # drop the Do; text is re-emitted below
+            kept.append(instr)
+
+        if not text_blocks:
+            return False
+
+        page_fonts = resources.get(Name.Font)
+        if page_fonts is None:
+            resources[Name.Font] = Dictionary()
+            page_fonts = resources[Name.Font]
+
+        new_ops = [pikepdf.ContentStreamInstruction([], pikepdf.Operator("q"))]
+        new_ops.extend(kept)
+        new_ops.append(pikepdf.ContentStreamInstruction([], pikepdf.Operator("Q")))
+
+        for block_ctm, form in text_blocks:
+            # Merge form fonts into page fonts, renaming on collision
+            rename = {}
+            form_fonts = form.get(Name.Resources, Dictionary()).get(Name.Font, Dictionary())
+            for fname in list(form_fonts.keys()):
+                font = form_fonts[fname]
+                existing = page_fonts.get(fname)
+                if existing is not None and existing.objgen == font.objgen and font.objgen != (0, 0):
+                    continue
+                if existing is None:
+                    page_fonts[fname] = font
+                    continue
+                i = 0
+                while Name(f"/OCRf{i}") in page_fonts:
+                    i += 1
+                page_fonts[Name(f"/OCRf{i}")] = font
+                rename[str(fname)] = Name(f"/OCRf{i}")
+
+            matrix = form.get(Name.Matrix)
+            full = block_ctm
+            if matrix is not None:
+                full = self._matmul(tuple(float(x) for x in matrix), block_ctm)
+
+            new_ops.append(pikepdf.ContentStreamInstruction([], pikepdf.Operator("q")))
+            new_ops.append(
+                pikepdf.ContentStreamInstruction(list(full), pikepdf.Operator("cm"))
+            )
+            for instr in pikepdf.parse_content_stream(form):
+                if (
+                    not isinstance(instr, pikepdf.ContentStreamInlineImage)
+                    and str(instr.operator) == "Tf"
+                    and str(instr.operands[0]) in rename
+                ):
+                    instr = pikepdf.ContentStreamInstruction(
+                        [rename[str(instr.operands[0])], instr.operands[1]],
+                        instr.operator,
+                    )
+                new_ops.append(instr)
+            new_ops.append(pikepdf.ContentStreamInstruction([], pikepdf.Operator("Q")))
+
+        page.obj[Name.Contents] = document.make_stream(
+            pikepdf.unparse_content_stream(new_ops)
+        )
+        for name in ocr_forms:
+            del xobjects[Name(name)]
+        return True
+
     def _strip_orphan_tags(self, document: pikepdf.Pdf) -> int:
         """
         Strip orphan tagged content that interferes with proper tag tree creation.
@@ -380,11 +531,14 @@ class SimplePDFUAEnhancer:
         if Name.MarkInfo not in document.Root:
             document.Root.MarkInfo = Dictionary()
 
-        # Mark document with Suspects flag to indicate it needs manual tagging
-        # Don't mark as fully tagged since we don't have a complete tag structure
-        document.Root.MarkInfo[Name.Marked] = True
-        document.Root.MarkInfo[Name.Suspects] = True
-        logger.info("Marked document for manual tagging (Suspects=True)")
+        # Only claim the document is tagged if a structure tree actually exists.
+        # Marked=True / Suspects=True with no StructTreeRoot tells Acrobat the
+        # file has (suspect) tags it can't find, which can derail auto-tagging.
+        has_struct_tree = Name.StructTreeRoot in document.Root
+        document.Root.MarkInfo[Name.Marked] = has_struct_tree
+        if Name.Suspects in document.Root.MarkInfo:
+            del document.Root.MarkInfo[Name.Suspects]
+        logger.info(f"MarkInfo Marked={has_struct_tree} (untagged files are left for Acrobat to tag)")
 
         # 2. Set document language (required for PDF/UA)
         document.Root[Name.Lang] = String(language)

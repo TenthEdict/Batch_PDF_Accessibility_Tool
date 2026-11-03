@@ -90,3 +90,10 @@ epubs-scrape --url "https://docs.lib.purdue.edu/etd/" --output data/input
 - Memory bank has accumulated significant context rot
 - Multiple deprecated README files need consolidation
 - Archived directory contains outdated migration info
+
+## 2026-11-03: Acrobat "difficult pages" → every page tagged as Figure
+- Report: after our tool, Acrobat's Tagged PDF fix said "Some difficult pages were encountered requiring all graphics on those pages to be labeled as figures".
+- Cause (probable): ocrmypdf grafts the invisible text into a Form XObject (`/OCR-...`) painted *under* the page image; we also set MarkInfo Marked=True/Suspects=True with no StructTreeRoot.
+- Fix in `simple_pdfua_enhancer.py`: `_flatten_ocr_text_layers()` inlines the OCR text into the page content stream after the image (Acrobat-OCR layout); MarkInfo Marked now reflects whether a StructTreeRoot exists, Suspects removed. Rendering and text positions verified identical.
+- Side benefit: `--force-ocr` on already-processed output no longer duplicates the text layer (ocrmypdf redo_ocr can't strip text inside forms).
+- Not yet confirmed in Acrobat by the reporter.
