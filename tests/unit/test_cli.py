@@ -109,7 +109,7 @@ def test_process_defaults(tmp_path):
     service_cls.assert_called_once_with(text_threshold=100, dpi=300, language="eng")
     kwargs = service_cls.return_value.enhance_document.call_args.kwargs
     assert kwargs["title"] is None and kwargs["author"] is None
-    assert kwargs["language"] == "en-US"
+    assert kwargs["language"] is None  # resolved later: keep the PDF's own
     assert kwargs["skip_ocr"] is True and kwargs["force_ocr"] is False
 
 

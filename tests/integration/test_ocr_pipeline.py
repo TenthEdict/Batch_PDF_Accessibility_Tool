@@ -162,3 +162,28 @@ def test_parallel_batch_handles_each_file_independently(tmp_path):
         "scanned.pdf", "tagged.pdf", "orphan.pdf", "digital.pdf"
     }
     assert not leftovers
+
+
+def test_short_tagged_file_keeps_tags_when_ocr_adds_nothing(tmp_path):
+    """
+    Regression (found with a real Word export): a tagged file with little
+    text falls under the 100 chars/page threshold, so ocrmypdf is invoked and
+    skips the page (it has real text), but the tag tree used to be removed
+    anyway. The --force-ocr variant (empty layer) is covered in
+    tests/unit/test_pdfua_tagging.py, because this fixture's non-embedded
+    font makes ocrmypdf's redo mode re-OCR its visible text.
+    """
+    src = make_tagged(tmp_path / "short_tagged.pdf", body_lines=0)
+    out = tmp_path / "out.pdf"
+
+    status = SimpleOCREnhancer().enhance_file_with_status(src, tmp_path / "ocr.pdf")
+    assert status == (True, False)
+
+    assert SimpleEnhancementService().enhance_document(src, out)
+    assert marked_content_tags(out) == marked_content_tags(src)
+    assert words(out) == words(src)
+    assert renders_identically(src, out)
+    assert pdfua_claim(out) == "1"
+    with pikepdf.open(out) as pdf:
+        assert Name.StructTreeRoot in pdf.Root
+        assert bool(pdf.Root.MarkInfo.Marked) is True

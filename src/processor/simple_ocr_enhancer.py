@@ -225,7 +225,16 @@ class SimpleOCREnhancer:
                 except:
                     pass
 
-            logger.info(f"OCR complete: {output_path}")
+            # ocrmypdf skips pages that already have real text, so being invoked
+            # doesn't mean it added anything. Report OCR as performed only if it
+            # grafted a text layer: callers remove the existing tag tree when OCR
+            # was performed, which would destroy a valid tagged document for no gain.
+            ocr_pages = self._count_ocr_text_layers(output_path)
+            if ocr_pages == 0:
+                logger.info("OCR complete: no pages needed a text layer (existing text kept)")
+                return True, False
+
+            logger.info(f"OCR complete: added text layer to {ocr_pages} pages: {output_path}")
             return True, True
 
         except ocrmypdf.exceptions.PriorOcrFoundError:
@@ -244,6 +253,44 @@ class SimpleOCREnhancer:
             import traceback
             logger.error(f"Full traceback: {traceback.format_exc()}")
             return False, False
+
+    @staticmethod
+    def _count_ocr_text_layers(pdf_path: Path) -> int:
+        """
+        Count pages where ocrmypdf grafted a text layer that contains text.
+
+        ocrmypdf's layer is a /OCR-... Form XObject. With redo_ocr it can graft
+        an *empty* one (just ``q ... cm Q``) on pages whose text is all real,
+        so only layers with text-showing operators count.
+
+        If the file can't be inspected, assume OCR added text (the previous,
+        conservative behaviour) rather than risk keeping an incomplete tag tree.
+        """
+        text_ops = {"Tj", "TJ", "'", '"'}
+        try:
+            import pikepdf
+
+            with pikepdf.open(pdf_path) as pdf:
+                count = 0
+                for page in pdf.pages:
+                    resources = page.obj.get("/Resources")
+                    xobjects = resources.get("/XObject") if resources is not None else None
+                    if xobjects is None:
+                        continue
+                    for name in xobjects.keys():
+                        if not str(name).startswith("/OCR-"):
+                            continue
+                        if any(
+                            not isinstance(instr, pikepdf.ContentStreamInlineImage)
+                            and str(instr.operator) in text_ops
+                            for instr in pikepdf.parse_content_stream(xobjects[name])
+                        ):
+                            count += 1
+                            break
+                return count
+        except Exception as e:
+            logger.warning(f"Could not inspect OCR output ({e}); assuming text was added")
+            return 1
 
     def _normalize_page_boxes(self, input_path: Path) -> Path:
         """

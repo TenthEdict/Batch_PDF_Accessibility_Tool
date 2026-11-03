@@ -6,6 +6,7 @@ the same shape ocrmypdf produces (a /OCR-... Form XObject).
 """
 
 from pathlib import Path
+from unittest.mock import patch
 
 import fitz
 import pikepdf
@@ -347,3 +348,134 @@ def test_flatten_to_temp(enhancer, tmp_path):
 
     plain = make_born_digital(tmp_path / "plain.pdf")
     assert enhancer.flatten_ocr_layers_to_temp(plain) is None
+
+
+# ----------------------------------------------------------------------
+# Detecting whether ocrmypdf actually added text
+# ----------------------------------------------------------------------
+
+
+def _with_ocr_form(path: Path, form_content: bytes) -> Path:
+    pdf = pikepdf.new()
+    form = pdf.make_stream(
+        form_content, Type=Name.XObject, Subtype=Name.Form, BBox=Array([0, 0, 612, 792])
+    )
+    page = Dictionary(
+        Type=Name.Page, MediaBox=Array([0, 0, 612, 792]),
+        Resources=Dictionary(XObject=Dictionary({"/OCR-abc": form})),
+    )
+    pdf.pages.append(pikepdf.Page(page))
+    pdf.pages[0].obj.Contents = pdf.make_stream(b"q /OCR-abc Do Q")
+    pdf.save(path)
+    return path
+
+
+@pytest.mark.parametrize(
+    "content, expected",
+    [
+        (b"q 612 0 0 792 0 0 cm Q\n", 0),  # empty layer redo_ocr grafts on text pages
+        (b"BT 3 Tr /F1 10 Tf 72 700 Td (word) Tj ET", 1),
+        (b"BT 3 Tr /F1 10 Tf 72 700 Td [(wo) 10 (rd)] TJ ET", 1),
+    ],
+)
+def test_count_ocr_text_layers(tmp_path, content, expected):
+    path = _with_ocr_form(tmp_path / "layer.pdf", content)
+    assert SimpleOCREnhancer._count_ocr_text_layers(path) == expected
+
+
+def test_count_ocr_text_layers_without_layer(tmp_path):
+    assert SimpleOCREnhancer._count_ocr_text_layers(make_born_digital(tmp_path / "d.pdf")) == 0
+
+
+def test_count_ocr_text_layers_unreadable_assumes_text(tmp_path):
+    bad = tmp_path / "bad.pdf"
+    bad.write_bytes(b"not a pdf")
+    assert SimpleOCREnhancer._count_ocr_text_layers(bad) == 1
+
+
+def test_force_ocr_with_empty_layer_keeps_tags(tmp_path):
+    """
+    ocrmypdf's redo mode grafted an empty /OCR- layer (``q ... cm Q``) on a
+    real Word export whose text was all real; the tag tree must survive.
+    """
+    import shutil
+
+    import ocrmypdf
+
+    def fake_ocr(input_file, output_file, **options):
+        assert options["redo_ocr"] is True
+        shutil.copy(input_file, output_file)
+        with pikepdf.open(output_file, allow_overwriting_input=True) as pdf:
+            page = pdf.pages[0].obj
+            form = pdf.make_stream(
+                b"q 612 0 0 792 0 0 cm Q\n",
+                Type=Name.XObject, Subtype=Name.Form, BBox=Array([0, 0, 612, 792]),
+            )
+            if Name.XObject not in page.Resources:
+                page.Resources.XObject = Dictionary()
+            page.Resources.XObject["/OCR-empty"] = form
+            page.Contents = pdf.make_stream(b"q /OCR-empty Do Q\n" + page.Contents.read_bytes())
+            pdf.save(output_file)
+
+    src = make_tagged(tmp_path / "tagged.pdf", body_lines=0)
+    out = tmp_path / "out.pdf"
+    with patch.object(ocrmypdf, "ocr", side_effect=fake_ocr):
+        status = SimpleOCREnhancer().enhance_file_with_status(src, tmp_path / "ocr.pdf", force_ocr=True)
+        assert status == (True, False)
+        assert SimpleEnhancementService().enhance_document(src, out, force_ocr=True)
+
+    assert marked_content_tags(out) == marked_content_tags(src)
+    assert renders_identically(src, out)
+    with pikepdf.open(out) as pdf:
+        assert Name.StructTreeRoot in pdf.Root
+
+
+# ----------------------------------------------------------------------
+# Document language
+# ----------------------------------------------------------------------
+
+
+def _with_lang(path: Path, lang) -> Path:
+    make_born_digital(path)
+    if lang is not None:
+        with pikepdf.open(path, allow_overwriting_input=True) as pdf:
+            pdf.Root.Lang = pikepdf.String(lang)
+            pdf.save(path)
+    return path
+
+
+def _lang(path: Path):
+    with pikepdf.open(path) as pdf:
+        with pdf.open_metadata() as meta:
+            return str(pdf.Root.Lang), meta.get("dc:language")
+
+
+@pytest.mark.parametrize(
+    "existing, requested, expected",
+    [
+        ("en", None, "en"),          # Word export: keep the document's own
+        ("fr-CA", None, "fr-CA"),
+        (None, None, "en-US"),       # nothing declared: default
+        ("  ", None, "en-US"),       # blank counts as nothing
+        ("en", "de-DE", "de-DE"),    # explicit --language wins
+    ],
+)
+def test_document_language_resolution(enhancer, tmp_path, existing, requested, expected):
+    src = _with_lang(tmp_path / "in.pdf", existing)
+    out = tmp_path / "out.pdf"
+    assert enhancer.enhance_file(src, out, language=requested)
+    lang, dc_language = _lang(out)
+    assert lang == expected
+    assert expected in str(dc_language)
+
+
+def test_cli_keeps_document_language_by_default(tmp_path):
+    from typer.testing import CliRunner
+
+    from src.processor.main_simple import app
+
+    src = _with_lang(tmp_path / "in.pdf", "en")
+    out = tmp_path / "out.pdf"
+    result = CliRunner().invoke(app, ["process", str(src), str(out), "--skip-ocr"])
+    assert result.exit_code == 0, result.output
+    assert _lang(out)[0] == "en"

@@ -54,7 +54,7 @@ def make_scanned(path: Path, pages: int = 1, dpi: int = 200) -> Path:
     return path
 
 
-def _marked_content_stream() -> bytes:
+def _marked_content_stream(body_lines: int = BODY_LINES) -> bytes:
     """
     Content mixing every kind of marked content the stripper must handle.
 
@@ -66,7 +66,7 @@ def _marked_content_stream() -> bytes:
     body = b"".join(
         b"BT /F1 11 Tf 72 %d Td (Body line %d of the marked content fixture.) Tj ET\n"
         % (640 - i * 16, i)
-        for i in range(BODY_LINES)
+        for i in range(body_lines)
     )
     return (
         b"/P <</MCID 0>> BDC BT /F1 18 Tf 72 700 Td (Heading EMC test) Tj ET EMC\n"
@@ -127,9 +127,14 @@ def make_orphan_tagged(path: Path, legacy_claims: bool = True) -> Path:
     return path
 
 
-def make_tagged(path: Path) -> Path:
-    """A minimal but valid tagged PDF (StructTreeRoot + ParentTree) claiming PDF/UA."""
-    pdf = _base_marked_pdf(_marked_content_stream())
+def make_tagged(path: Path, body_lines: int = BODY_LINES) -> Path:
+    """
+    A minimal but valid tagged PDF (StructTreeRoot + ParentTree) claiming PDF/UA.
+
+    body_lines=0 gives a short document (under the 100 chars/page OCR
+    threshold), like a one-page Word export with a heading and a table.
+    """
+    pdf = _base_marked_pdf(_marked_content_stream(body_lines))
     page = pdf.pages[0].obj
     document = pdf.make_indirect(Dictionary(Type=Name.StructElem, S=Name.Document))
     heading = pdf.make_indirect(
