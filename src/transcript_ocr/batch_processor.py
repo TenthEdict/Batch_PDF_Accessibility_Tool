@@ -1,7 +1,7 @@
 """Batch processor for TIFF transcript OCR.
 
-Discovers TIFF files, groups them by collection/reference_id, and processes
-them into transcript files with parallel execution support.
+Discovers TIFF files, groups them by collection/reference_id, and writes one
+text file per page, with parallel execution support.
 """
 
 import json
@@ -62,8 +62,14 @@ class TranscriptBatchProcessor:
         )
         skipped_count = 0
 
-        # Find all TIFF files
-        tiff_files = list(input_dir.rglob("*.tif")) + list(input_dir.rglob("*.tiff"))
+        # Find all TIFF files. Match the extension case-insensitively (like the
+        # filename pattern): rglob("*.tif") misses .TIF on case-sensitive file
+        # systems such as Linux/WSL.
+        tiff_files = sorted(
+            path
+            for path in input_dir.rglob("*")
+            if path.suffix.lower() in (".tif", ".tiff") and path.is_file()
+        )
         logger.info(f"Found {len(tiff_files)} TIFF files in {input_dir}")
 
         for tiff_path in tiff_files:
@@ -77,7 +83,8 @@ class TranscriptBatchProcessor:
             # Apply filters
             if collection_filter and info.collection != collection_filter:
                 continue
-            if ref_ids_filter and info.reference_id not in ref_ids_filter:
+            # `is not None`: an empty filter means "match nothing", not "everything"
+            if ref_ids_filter is not None and info.reference_id not in ref_ids_filter:
                 continue
 
             groups[info.transcript_key].append((tiff_path, info))

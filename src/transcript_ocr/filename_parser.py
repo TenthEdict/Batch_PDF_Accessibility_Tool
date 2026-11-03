@@ -11,7 +11,7 @@ Example:
 
 import re
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Union
 
 
@@ -70,9 +70,10 @@ def parse_tiff_filename(filename: Union[str, Path]) -> TiffFileInfo:
     if isinstance(filename, Path):
         filename = filename.name
 
-    # Extract just the filename if a path was passed as string
+    # Extract just the filename if a path was passed as string. PureWindowsPath
+    # splits on both "/" and "\\", so Windows-style paths also work on Linux.
     if "/" in filename or "\\" in filename:
-        filename = Path(filename).name
+        filename = PureWindowsPath(filename).name
 
     match = FILENAME_PATTERN.match(filename)
     if not match:
