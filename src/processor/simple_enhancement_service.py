@@ -155,7 +155,9 @@ class SimpleEnhancementService:
                 title=title,
                 author=author,
                 language=language,
-                ocr_performed=ocr_performed
+                ocr_performed=ocr_performed,
+                # ocr_output is a temp file; name the title after the original
+                title_source=input_path
             )
 
             # Clean up temporary OCR file if it was created

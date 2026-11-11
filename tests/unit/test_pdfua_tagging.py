@@ -479,3 +479,19 @@ def test_cli_keeps_document_language_by_default(tmp_path):
     result = CliRunner().invoke(app, ["process", str(src), str(out), "--skip-ocr"])
     assert result.exit_code == 0, result.output
     assert _lang(out)[0] == "en"
+
+
+# ----------------------------------------------------------------------
+# Fallback title
+# ----------------------------------------------------------------------
+
+
+def test_fallback_title_uses_original_filename_not_temp_file(tmp_path):
+    """The PDF/UA step reads a temp copy; its name must not become the title."""
+    src = make_born_digital(tmp_path / "campus_catalog-2001.pdf")
+    out = tmp_path / "out.pdf"
+
+    assert SimpleEnhancementService().enhance_document(src, out)
+
+    with pikepdf.open(out) as pdf, pdf.open_metadata() as meta:
+        assert meta.get("dc:title") == "Campus Catalog 2001"

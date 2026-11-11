@@ -52,6 +52,7 @@ class SimplePDFUAEnhancer:
         author: Optional[str] = None,
         language: Optional[str] = None,
         ocr_performed: bool = False,
+        title_source: Optional[Union[str, Path]] = None,
         **kwargs
     ) -> bool:
         """
@@ -65,6 +66,9 @@ class SimplePDFUAEnhancer:
             language: Document language. None keeps the document's own /Lang,
                 falling back to "en-US" when it has none.
             ocr_performed: Whether OCR was just performed (default: False)
+            title_source: File whose name is the fallback title. Pass the
+                user's original file when input_path is a temporary file,
+                otherwise the temp name ("Tmp4Bhwjsgv") becomes the title.
             **kwargs: Additional parameters (ignored for simplicity)
 
         Returns:
@@ -86,7 +90,8 @@ class SimplePDFUAEnhancer:
             document = pikepdf.open(input_path)
 
             # Apply enhancements
-            self._enhance(document, input_path, title, author, language, ocr_performed)
+            title_path = Path(title_source) if title_source else input_path
+            self._enhance(document, title_path, title, author, language, ocr_performed)
 
             # Save enhanced PDF
             logger.info(f"Saving enhanced PDF: {output_path}")
@@ -341,6 +346,10 @@ class SimplePDFUAEnhancer:
     # Marked content that stays meaningful without a structure tree:
     # /OC controls optional-content (layer) visibility, /Artifact marks
     # headers/footers/decoration that assistive tech should skip.
+    # (Acrobat's autotagger re-evaluates /Artifact itself: on a PDFium export
+    # whose body-text forms were painted inside /Artifact, it tagged the same
+    # text whether or not we stripped the marks, and kept more decorative
+    # shapes as artifacts when we left them. Verified 2026-11-11.)
     _KEEP_MARKED_CONTENT = frozenset({"/OC", "/Artifact"})
 
     def _strip_orphan_tags(self, document: pikepdf.Pdf) -> int:
