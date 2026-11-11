@@ -98,3 +98,11 @@ epubs-scrape --url "https://docs.lib.purdue.edu/etd/" --output data/input
 - Side benefit: `--force-ocr` on already-processed output no longer duplicates the text layer (ocrmypdf redo_ocr can't strip text inside forms).
 - Not yet confirmed in Acrobat by the reporter.
 - Follow-up (same day): `ocr_performed` now comes from `SimpleOCREnhancer.enhance_file_with_status()` (True only if ocrmypdf actually ran; tuple return keeps shared-service threads safe). Regex marked-content stripper replaced with a parsed-operator version (keeps /OC and /Artifact, recurses into forms, clears annotation StructParent). Flatten now always runs, and runs on the input before --force-ocr. Tool no longer writes pdfuaid:part or the GTS_PDFUA1 OutputIntent, and removes them from untagged files.
+
+## 2026-11-11: Reporter's before/after spreadsheet + 4 test PDFs
+- Ran c7bf0aa8 ("v1") and e83660f3 ("v2") on the reporter's files (catalog scan, newspaper with Acrobat Paper Capture OCR, two PDFium born-digital exports). None has a StructTreeRoot.
+- Honors thesis (PDFium poster export): the reporter's bad v2 numbers (Tables/Lists/Alt Text all failing, "no fix option", 78 Tagged content failures) were taken on the *untagged* file; Acrobat fails every structure rule until the Tagged PDF fix is run. After autotagging, v2 output fails only Character encoding, Figures alt text and Appropriate nesting, same as the untouched original. Not a regression.
+- Tried stripping orphan /Artifact too (the thesis paints body-text forms inside `/Artifact BMC`). Compared Acrobat-autotagged results: identical tag tree and identical tagged text either way; keeping /Artifact left 8 more decorative shape blocks as artifacts. Reverted: `_KEEP_MARKED_CONTENT` stays `/OC` + `/Artifact`.
+- Fallback title came from the temp OCR file name ("Tmp4Bhwjsgv") in both versions whenever OCR wasn't skipped. Fix: `enhance_file(title_source=...)`, passed by the service.
+- Catalog: v1's 0 table/heading errors are probably vacuous (every page tagged as one Figure, so nothing else to check); unconfirmed.
+- Newspaper: already has Acrobat OCR text, so neither version OCRs or flattens; v2 only strips 307 `/Suspect` marks. Why its Acrobat results differ from untouched is unexplained.
